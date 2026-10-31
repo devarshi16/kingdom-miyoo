@@ -1,5 +1,9 @@
 # Kingdom: New Lands — Miyoo Mini / Mini Plus Port
 
+<p align="center">
+  <img src="media/gameplay.gif" alt="Kingdom: New Lands on Miyoo Mini Plus" width="360" />
+</p>
+
 A native, clean-room port of **Kingdom: New Lands** for the **Miyoo Mini** and **Miyoo Mini Plus** running OnionOS.
 
 This is a **Bring Your Own Data (BYOD)** port. You must provide game files from your own legally purchased copy of *Kingdom: New Lands* (Steam, Epic Games Store, or GOG). **No game assets or proprietary code are distributed here.**
