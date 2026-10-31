@@ -131,8 +131,8 @@ namespace Rewired
             {
                 case "Horizontal": case "HorizontalP2": return KNL.Buttons.Right;
                 case "Vertical": return KNL.Buttons.Up;
-                case "Pay": return KNL.Buttons.Down | KNL.Buttons.X;
-                case "Gallop": return KNL.Buttons.B;
+                case "Pay": return KNL.Buttons.Down | KNL.Buttons.A | KNL.Buttons.X;
+                case "Gallop": return KNL.Buttons.B | KNL.Buttons.L | KNL.Buttons.R;
                 case "Submit": return KNL.Buttons.A;
                 case "Start": return KNL.Buttons.Start;
                 case "Cancel": return KNL.Buttons.B | KNL.Buttons.Select;
