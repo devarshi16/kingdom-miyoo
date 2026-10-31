@@ -19,3 +19,5 @@ pack/
 
 .m2_drop/
 *.log
+*.zip
+release_pkg/
