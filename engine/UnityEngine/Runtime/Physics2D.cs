@@ -69,8 +69,10 @@ namespace UnityEngine
         internal bool m_IsTrigger; internal Vector2 m_Offset; internal PhysicsMaterial2D m_Material;
         internal Rigidbody2D m_CachedRb;
         internal bool m_RbCached;
+        internal KNL.Aabb m_CachedAabb;
+        internal int m_AabbStamp = -1;
         public bool isTrigger { get { return m_IsTrigger; } set { m_IsTrigger = value; } }
-        public Vector2 offset { get { return m_Offset; } set { m_Offset = value; } }
+        public Vector2 offset { get { return m_Offset; } set { m_Offset = value; m_AabbStamp = -1; } }
         public PhysicsMaterial2D sharedMaterial { get { return m_Material; } set { m_Material = value; } }
         public Rigidbody2D attachedRigidbody
         {
@@ -93,7 +95,7 @@ namespace UnityEngine
     public sealed partial class BoxCollider2D
     {
         internal Vector2 m_Size = Vector2.one;
-        public Vector2 size { get { return m_Size; } set { m_Size = value; } }
+        public Vector2 size { get { return m_Size; } set { m_Size = value; m_AabbStamp = -1; } }
         internal override void LocalPoints(List<Vector2> p)
         {
             var h = m_Size * 0.5f;
@@ -104,7 +106,7 @@ namespace UnityEngine
     public sealed partial class CircleCollider2D
     {
         internal float m_Radius = 0.5f;
-        public float radius { get { return m_Radius; } set { m_Radius = value; } }
+        public float radius { get { return m_Radius; } set { m_Radius = value; m_AabbStamp = -1; } }
         internal override void LocalPoints(List<Vector2> p)
         {
             p.Add(m_Offset + new Vector2(-m_Radius, -m_Radius)); p.Add(m_Offset + new Vector2(m_Radius, -m_Radius));
@@ -116,16 +118,18 @@ namespace UnityEngine
         internal List<Vector2[]> m_Paths = new List<Vector2[]>();
         public int pathCount { get { return m_Paths.Count; } set { while (m_Paths.Count < value) m_Paths.Add(new Vector2[0]); while (m_Paths.Count > value) m_Paths.RemoveAt(m_Paths.Count - 1); } }
         public Vector2[] GetPath(int i) { return i < m_Paths.Count ? (Vector2[])m_Paths[i].Clone() : new Vector2[0]; }
-        public void SetPath(int i, Vector2[] pts) { pathCount = Mathf.Max(pathCount, i + 1); m_Paths[i] = (Vector2[])pts.Clone(); }
+        public void SetPath(int i, Vector2[] pts) { pathCount = Mathf.Max(pathCount, i + 1); m_Paths[i] = (Vector2[])pts.Clone(); m_AabbStamp = -1; }
         public Vector2[] points { get { return GetPath(0); } set { SetPath(0, value); } }
         internal override void LocalPoints(List<Vector2> p) { foreach (var path in m_Paths) foreach (var v in path) p.Add(v + m_Offset); }
     }
     public sealed partial class EdgeCollider2D
     {
         internal Vector2[] m_Points = { new Vector2(-0.5f, 0), new Vector2(0.5f, 0) };
-        public Vector2[] points { get { return (Vector2[])m_Points.Clone(); } set { m_Points = value ?? new Vector2[0]; } }
+        public Vector2[] points { get { return (Vector2[])m_Points.Clone(); } set { m_Points = value ?? new Vector2[0]; m_AabbStamp = -1; m_WorldPointsStamp = -1; } }
         public int pointCount { get { return m_Points.Length; } }
         internal override void LocalPoints(List<Vector2> p) { foreach (var v in m_Points) p.Add(v + m_Offset); }
+        internal Vector2[] m_WorldPoints;
+        internal int m_WorldPointsStamp = -1;
     }
 
     public sealed partial class PhysicsMaterial2D
@@ -249,10 +253,16 @@ namespace KNL
         static readonly List<Vector2> tmp = new List<Vector2>();
         public static Aabb AabbOf(Collider2D c)
         {
+            var t = c.transform;
+            if (t != null)
+            {
+                t.UpdateWorld();
+                if (c.m_AabbStamp == t.m_Stamp && c.m_AabbStamp != -1) return c.m_CachedAabb;
+            }
+            Aabb a;
             var box = c as BoxCollider2D;
             if (box != null)
             {
-                var t = c.transform;
                 if (t != null && t.m_LocalRotation.z == 0f && t.m_LocalRotation.w == 1f && (t.m_Parent == null || t.m_Parent.m_LocalRotation.z == 0f))
                 {
                     var pos = t.position;
@@ -261,20 +271,28 @@ namespace KNL
                     float cy = pos.y + box.m_Offset.y * scale.y;
                     float hx = Mathf.Abs(box.m_Size.x * 0.5f * scale.x);
                     float hy = Mathf.Abs(box.m_Size.y * 0.5f * scale.y);
-                    return new Aabb { x0 = cx - hx, x1 = cx + hx, y0 = cy - hy, y1 = cy + hy };
+                    a = new Aabb { x0 = cx - hx, x1 = cx + hx, y0 = cy - hy, y1 = cy + hy };
+                    c.m_CachedAabb = a;
+                    if (t != null) c.m_AabbStamp = t.m_Stamp;
+                    return a;
                 }
             }
             tmp.Clear(); c.LocalPoints(tmp);
-            var m = c.transform.localToWorldMatrix;
-            var a = new Aabb { x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue };
-            if (tmp.Count == 0) { var p = m.MultiplyPoint3x4(Vector3.zero); a.x0 = a.x1 = p.x; a.y0 = a.y1 = p.y; return a; }
-            int count = tmp.Count;
-            for (int i = 0; i < count; i++)
+            var m = t != null ? t.localToWorldMatrix : Matrix4x4.identity;
+            a = new Aabb { x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue };
+            if (tmp.Count == 0) { var p = m.MultiplyPoint3x4(Vector3.zero); a.x0 = a.x1 = p.x; a.y0 = a.y1 = p.y; }
+            else
             {
-                var p = m.MultiplyPoint3x4(tmp[i]);
-                if (p.x < a.x0) a.x0 = p.x; if (p.x > a.x1) a.x1 = p.x;
-                if (p.y < a.y0) a.y0 = p.y; if (p.y > a.y1) a.y1 = p.y;
+                int count = tmp.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    var p = m.MultiplyPoint3x4(tmp[i]);
+                    if (p.x < a.x0) a.x0 = p.x; if (p.x > a.x1) a.x1 = p.x;
+                    if (p.y < a.y0) a.y0 = p.y; if (p.y > a.y1) a.y1 = p.y;
+                }
             }
+            c.m_CachedAabb = a;
+            if (t != null) c.m_AabbStamp = t.m_Stamp;
             return a;
         }
 
@@ -404,10 +422,10 @@ namespace KNL
                 {
                     var B = entries[j];
                     if (B.box.x0 > A.box.x1) break;
-                    if (!A.box.Overlaps(B.box)) continue;
-                    if (A.rb != null && ReferenceEquals(A.rb, B.rb)) continue;   // same body
                     if (A.rb == null && B.rb == null) continue;                  // static vs static
                     if (!LayersCollide(A.layer, B.layer)) continue;
+                    if (!A.box.Overlaps(B.box)) continue;
+                    if (A.rb != null && ReferenceEquals(A.rb, B.rb)) continue;   // same body
                     if (A.c.m_IsTrigger || B.c.m_IsTrigger)
                     {
                         if (A.c is EdgeCollider2D || B.c is EdgeCollider2D)
@@ -437,10 +455,23 @@ namespace KNL
         }
         static float EdgeY(EdgeCollider2D e, float x)
         {
-            var m = e.transform.localToWorldMatrix; var pts = e.m_Points;
-            for (int i = 0; i + 1 < pts.Length; i++)
+            var t = e.transform;
+            if (t != null) t.UpdateWorld();
+            int stamp = t != null ? t.m_Stamp : 0;
+            if (e.m_WorldPointsStamp != stamp || e.m_WorldPoints == null)
             {
-                var a = m.MultiplyPoint3x4(pts[i] + e.m_Offset); var b = m.MultiplyPoint3x4(pts[i + 1] + e.m_Offset);
+                var m = t != null ? t.localToWorldMatrix : Matrix4x4.identity;
+                var pts = e.m_Points;
+                if (e.m_WorldPoints == null || e.m_WorldPoints.Length != pts.Length)
+                    e.m_WorldPoints = new Vector2[pts.Length];
+                for (int i = 0; i < pts.Length; i++)
+                    e.m_WorldPoints[i] = m.MultiplyPoint3x4(pts[i] + e.m_Offset);
+                e.m_WorldPointsStamp = stamp;
+            }
+            var wpts = e.m_WorldPoints;
+            for (int i = 0; i + 1 < wpts.Length; i++)
+            {
+                var a = wpts[i]; var b = wpts[i + 1];
                 float lo = Mathf.Min(a.x, b.x), hi = Mathf.Max(a.x, b.x);
                 if (x >= lo && x <= hi) return Mathf.Abs(b.x - a.x) < 1e-6f ? Mathf.Max(a.y, b.y) : a.y + (b.y - a.y) * (x - a.x) / (b.x - a.x);
             }
@@ -518,23 +549,27 @@ namespace KNL
         // -------------------------------------------------------------- messages
         static void Dispatch()
         {
-            foreach (var k in triggersNow) Send(k, triggersPrev.Contains(k) ? "OnTriggerStay2D" : "OnTriggerEnter2D", true);
-            foreach (var k in triggersPrev) if (!triggersNow.Contains(k)) Send(k, "OnTriggerExit2D", true);
-            foreach (var k in contactsNow) Send(k, contactsPrev.Contains(k) ? "OnCollisionStay2D" : "OnCollisionEnter2D", false);
-            foreach (var k in contactsPrev) if (!contactsNow.Contains(k)) Send(k, "OnCollisionExit2D", false);
+            foreach (var k in triggersNow) Send(k, triggersPrev.Contains(k) ? (byte)2 : (byte)1, triggersPrev.Contains(k) ? "OnTriggerStay2D" : "OnTriggerEnter2D", true);
+            foreach (var k in triggersPrev) if (!triggersNow.Contains(k)) Send(k, 4, "OnTriggerExit2D", true);
+            foreach (var k in contactsNow) Send(k, contactsPrev.Contains(k) ? (byte)16 : (byte)8, contactsPrev.Contains(k) ? "OnCollisionStay2D" : "OnCollisionEnter2D", false);
             var t = triggersPrev; triggersPrev = triggersNow; triggersNow = t;
             var c = contactsPrev; contactsPrev = contactsNow; contactsNow = c;
             contactInfo.Clear();
         }
 
-        static void Send(PairKey k, string msg, bool trigger)
+        static void Send(PairKey k, byte mask, string msg, bool trigger)
         {
             if (k.a == null || k.b == null || k.a.m_Destroyed || k.b.m_Destroyed) return;
-            Deliver(k.a, k.b, msg, trigger, k);
-            Deliver(k.b, k.a, msg, trigger, k);
+            Deliver(k.a, k.b, mask, msg, trigger, k);
+            Deliver(k.b, k.a, mask, msg, trigger, k);
         }
-        static void Deliver(Collider2D self, Collider2D other, string msg, bool trigger, PairKey k)
+        static void Deliver(Collider2D self, Collider2D other, byte mask, string msg, bool trigger, PairKey k)
         {
+            var go = self.gameObject;
+            var rb = self.attachedRigidbody;
+            var rbGo = (rb != null && rb.gameObject != go) ? rb.gameObject : null;
+            if ((go == null || (go.PhysicsMask & mask) == 0) && (rbGo == null || (rbGo.PhysicsMask & mask) == 0)) return;
+
             object arg = other;
             if (!trigger)
             {
@@ -545,24 +580,34 @@ namespace KNL
                     col.m_Contacts = new[] { new ContactPoint2D { m_Point = (Vector2)self.transform.position, m_Normal = Vector2.up } };
                 arg = col;
             }
-            Notify(self.gameObject, msg, arg);
-            var rb = self.attachedRigidbody;
-            if (rb != null && rb.gameObject != self.gameObject) Notify(rb.gameObject, msg, arg);
+            if (go != null) Notify(go, mask, msg, arg);
+            if (rbGo != null) Notify(rbGo, mask, msg, arg);
         }
-        static void Notify(GameObject go, string msg, object arg)
+        static void Notify(GameObject go, byte mask, string msg, object arg)
         {
-            if (go == null || go.m_Destroyed) return;
+            if (go == null || go.m_Destroyed || (go.PhysicsMask & mask) == 0) return;
             var comps = go.m_Components;
             int count = comps.Count;
             for (int i = 0; i < count; i++)
             {
                 var comp = comps[i];
-                if (comp is MonoBehaviour && !comp.m_Destroyed)
+                var mb = comp as MonoBehaviour;
+                if (mb != null && !mb.m_Destroyed)
                 {
-                    var m = Reflect.FindMethod(comp.GetType(), msg);
-                    if (m == null) continue;
-                    try { Reflect.Call(m, comp, arg); }
-                    catch (Exception e) { Lifecycle.Fail(comp, msg, e); }
+                    var info = KNL.ScriptInfo.Of(mb.GetType());
+                    if ((info.physicsMask & mask) != 0)
+                    {
+                        System.Reflection.MethodInfo m = (mask == 1) ? info.OnTriggerEnter2D :
+                                       (mask == 2) ? info.OnTriggerStay2D :
+                                       (mask == 4) ? info.OnTriggerExit2D :
+                                       (mask == 8) ? info.OnCollisionEnter2D :
+                                       (mask == 16) ? info.OnCollisionStay2D : info.OnCollisionExit2D;
+                        if (m != null)
+                        {
+                            try { Reflect.Call(m, mb, arg); }
+                            catch (Exception e) { Lifecycle.Fail(mb, msg, e); }
+                        }
+                    }
                 }
             }
         }

@@ -169,13 +169,36 @@ namespace UnityEngine
             get
             {
                 if (c_ActivePass == s_ActiveTopologyVersion) return c_Active;
-                bool a = m_IsActive && m_Scene != null;
-                if (a) { var p = m_Transform != null ? m_Transform.m_Parent : null; a = p == null || p.m_GameObject.activeInHierarchy; }
+                if (!m_IsActive || m_Scene == null) { c_Active = false; c_ActivePass = s_ActiveTopologyVersion; return false; }
+                var p = m_Transform != null ? m_Transform.m_Parent : null;
+                bool a = p == null || p.m_GameObject.activeInHierarchy;
                 c_ActivePass = s_ActiveTopologyVersion; c_Active = a;
                 return a;
             }
         }
         internal bool ActiveInPass(int pass) { return activeInHierarchy; }
+
+        internal byte m_PhysicsMask;
+        internal bool m_PhysicsMaskValid;
+        public byte PhysicsMask
+        {
+            get
+            {
+                if (m_PhysicsMaskValid) return m_PhysicsMask;
+                byte mask = 0;
+                var comps = m_Components;
+                int count = comps.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    var mb = comps[i] as MonoBehaviour;
+                    if (mb != null) mask |= KNL.ScriptInfo.Of(mb.GetType()).physicsMask;
+                }
+                m_PhysicsMask = mask;
+                m_PhysicsMaskValid = true;
+                return mask;
+            }
+        }
+
         public bool isStatic { get; set; }
         public void SetActive(bool value)
         {

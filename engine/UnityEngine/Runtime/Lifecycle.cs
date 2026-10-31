@@ -16,6 +16,9 @@ namespace KNL
     {
         public int order; public string name;
         public MethodInfo Awake, OnEnable, OnDisable, Start, Update, LateUpdate, FixedUpdate, OnDestroy;
+        public MethodInfo OnTriggerEnter2D, OnTriggerStay2D, OnTriggerExit2D;
+        public MethodInfo OnCollisionEnter2D, OnCollisionStay2D, OnCollisionExit2D;
+        public byte physicsMask; // 1: TriggerEnter, 2: TriggerStay, 4: TriggerExit, 8: CollisionEnter, 16: CollisionStay, 32: CollisionExit
         static readonly Dictionary<Type, ScriptInfo> cache = new Dictionary<Type, ScriptInfo>();
         public static readonly Dictionary<string, int> ExecutionOrder = new Dictionary<string, int>();
 
@@ -30,6 +33,20 @@ namespace KNL
             s.Awake = M(t, "Awake"); s.OnEnable = M(t, "OnEnable"); s.OnDisable = M(t, "OnDisable");
             s.Start = M(t, "Start"); s.Update = M(t, "Update"); s.LateUpdate = M(t, "LateUpdate");
             s.FixedUpdate = M(t, "FixedUpdate"); s.OnDestroy = M(t, "OnDestroy");
+
+            s.OnTriggerEnter2D = M1(t, "OnTriggerEnter2D", typeof(Collider2D));
+            s.OnTriggerStay2D = M1(t, "OnTriggerStay2D", typeof(Collider2D));
+            s.OnTriggerExit2D = M1(t, "OnTriggerExit2D", typeof(Collider2D));
+            s.OnCollisionEnter2D = M1(t, "OnCollisionEnter2D", typeof(Collision2D));
+            s.OnCollisionStay2D = M1(t, "OnCollisionStay2D", typeof(Collision2D));
+            s.OnCollisionExit2D = M1(t, "OnCollisionExit2D", typeof(Collision2D));
+            if (s.OnTriggerEnter2D != null) s.physicsMask |= 1;
+            if (s.OnTriggerStay2D != null) s.physicsMask |= 2;
+            if (s.OnTriggerExit2D != null) s.physicsMask |= 4;
+            if (s.OnCollisionEnter2D != null) s.physicsMask |= 8;
+            if (s.OnCollisionStay2D != null) s.physicsMask |= 16;
+            if (s.OnCollisionExit2D != null) s.physicsMask |= 32;
+
             cache[t] = s;
             return s;
         }
@@ -39,6 +56,20 @@ namespace KNL
             {
                 var m = tt.GetMethod(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly, null, Type.EmptyTypes, null);
                 if (m != null) return m;
+            }
+            return null;
+        }
+        static MethodInfo M1(Type t, string n, Type paramType)
+        {
+            for (var tt = t; tt != null && tt != typeof(MonoBehaviour) && tt != typeof(object); tt = tt.BaseType)
+            {
+                var m = tt.GetMethod(n, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+                if (m != null)
+                {
+                    var ps = m.GetParameters();
+                    if (ps.Length == 1 && ps[0].ParameterType.IsAssignableFrom(paramType)) return m;
+                    if (ps.Length == 0) return m;
+                }
             }
             return null;
         }

@@ -770,6 +770,7 @@ namespace KNL
             var c = (Component)CreateScriptInstance(t);
             c.m_GameObject = go; c.name = go.name;
             go.m_Components.Add(c);
+            go.m_PhysicsMaskValid = false;
             if (go.m_Scene != null) RegisterSceneComponent(c);
             Lifecycle.OnComponentAdded(c);
             return c;

@@ -234,17 +234,26 @@ static int aa_columns(const Tex *T, float ia, float ic, float tx, int *x0, int *
 static inline uint32_t blend(uint32_t dst, uint32_t r, uint32_t g, uint32_t b, uint32_t a, int mode)
 {
     if (mode == 0 && a >= 255) return (r & 255) | ((g & 255) << 8) | ((b & 255) << 16) | 0xFF000000u;
-    uint32_t dr = dst & 255, dg = (dst >> 8) & 255, db = (dst >> 16) & 255;
     if (mode == 1) {                    /* additive (src * a + dst) */
-        dr += DIV255(r * a); dg += DIV255(g * a); db += DIV255(b * a);
+        uint32_t dr = (dst & 255) + DIV255((r & 255) * a);
+        uint32_t dg = ((dst >> 8) & 255) + DIV255((g & 255) * a);
+        uint32_t db = ((dst >> 16) & 255) + DIV255((b & 255) * a);
         if (dr > 255) dr = 255;
         if (dg > 255) dg = 255;
         if (db > 255) db = 255;
-    } else {                            /* alpha */
+        return dr | (dg << 8) | (db << 16) | 0xFF000000u;
+    } else {                            /* alpha (paired Red+Blue fast path) */
         uint32_t ia = 255 - a;
-        dr = DIV255(r * a + dr * ia); dg = DIV255(g * a + dg * ia); db = DIV255(b * a + db * ia);
+        uint32_t src_rb = (r & 255) | ((b & 255) << 16);
+        uint32_t dst_rb = dst & 0x00FF00FFu;
+        uint32_t res_rb = src_rb * a + dst_rb * ia + 0x00010001u;
+        res_rb = (res_rb + ((res_rb >> 8) & 0x00FF00FFu)) >> 8;
+        res_rb &= 0x00FF00FFu;
+
+        uint32_t dg = (dst >> 8) & 255;
+        dg = DIV255((g & 255) * a + dg * ia);
+        return res_rb | (dg << 8) | 0xFF000000u;
     }
-    return dr | (dg << 8) | (db << 16) | 0xFF000000u;
 }
 
 /*
@@ -443,10 +452,13 @@ static void do_draw_lit(int t, float a, float b, float c, float d, float tx, flo
                     mb = (int)(cm[2] * w00 + cm[5] * w10 + cm[8] * w01 + cm[11] * w11);
                 }
             }
+            if (mr < 0) mr = 0;
+            if (mg < 0) mg = 0;
+            if (mb < 0) mb = 0;
             int r = ((pr * mr) >> 8) + ar, g = ((pg * mg) >> 8) + ag, bl = ((pb * mb) >> 8) + ab;
-            if (r > 255) r = 255;
-            if (g > 255) g = 255;
-            if (bl > 255) bl = 255;
+            if (r < 0) r = 0; else if (r > 255) r = 255;
+            if (g < 0) g = 0; else if (g > 255) g = 255;
+            if (bl < 0) bl = 0; else if (bl > 255) bl = 255;
             row[x] = blend(row[x], (uint32_t)r, (uint32_t)g, (uint32_t)bl, (uint32_t)oa, mode);
             g_stats_pixels++;
         }

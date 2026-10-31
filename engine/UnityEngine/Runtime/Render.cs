@@ -177,6 +177,31 @@ namespace KNL
             return null;
         }
 
+        static Camera s_InterfaceCameraCache;
+        static int s_InterfaceCameraFrame = -1;
+        public static Camera InterfaceCamera
+        {
+            get
+            {
+                if (s_InterfaceCameraFrame == Time.frameCount) return s_InterfaceCameraCache;
+                s_InterfaceCameraCache = null;
+                var cams = Camera.s_All;
+                int count = cams.Count;
+                for (int i = 0; i < count; i++)
+                {
+                    var c = cams[i];
+                    if (c != null && !c.m_Destroyed && c.m_Enabled && c.m_GameObject != null && !c.m_GameObject.m_Destroyed && c.m_GameObject.activeInHierarchy &&
+                        (c.m_GameObject.m_Tag == "InterfaceCamera" || c.m_GameObject.name == "Interface Camera"))
+                    {
+                        s_InterfaceCameraCache = c;
+                        break;
+                    }
+                }
+                s_InterfaceCameraFrame = Time.frameCount;
+                return s_InterfaceCameraCache;
+            }
+        }
+
         static Vector3 CamPos()
         {
             if (CameraOverride.HasValue) return CameraOverride.Value;
@@ -208,6 +233,9 @@ namespace KNL
             return res;
         }
 
+        static readonly List<Item> s_UiItems = new List<Item>();
+        static Key[] s_UiKeys = new Key[64];
+
         public static void RenderFrame()
         {
             long pt = Prof.Now();
@@ -218,9 +246,14 @@ namespace KNL
             float halfW = Width / 2f / k + 4f, halfH = Height / 2f / k + 4f;   // generous cull margin (world units)
             Native.knl_clear(MainCamera != null && !CameraOverride.HasValue ? MainCamera.m_BackgroundColor.ToRGBA32() | 0xFF000000u : ClearColor.ToRGBA32());
 
+            var ic = InterfaceCamera;
+            bool hasIc = ic != null && ic.m_Enabled && ic.m_GameObject != null && ic.m_GameObject.activeInHierarchy;
+            Vector3 icPos = hasIc ? ic.transform.position : Vector3.zero;
+            float icHalfW = Width / 2f / k + 2f, icHalfH = Height / 2f / k + 2f;
+            if (hasIc) s_UiItems.Clear();
+
             items.Clear();
             LastCandidates = 0;
-            int pass = GameObject.NewPass();
             var all = Renderer.s_All;
             int count = all.Count;
             for (int i = 0; i < count; i++)
@@ -228,22 +261,40 @@ namespace KNL
                 var r = all[i];
                 if (r == null || r.m_Destroyed || !r.m_RendererEnabled) continue;
                 var g = r.m_GameObject;
-                if (g == null || g.m_Destroyed || !g.ActiveInPass(pass)) continue;
+                if (g == null || g.m_Destroyed || !g.activeInHierarchy) continue;
+
+                var sr = r as SpriteRenderer;
+                if (sr != null)
+                {
+                    if (sr.m_Sprite == null || sr.m_Sprite.data == null) continue;
+                    LastCandidates++;
+                    var tr = sr.transform;
+                    if (tr.m_Parent == null)
+                    {
+                        float px = tr.m_LocalPosition.x, py = tr.m_LocalPosition.y;
+                        bool nearMain = Mathf.Abs(px - cp.x) <= halfW + 8f && Mathf.Abs(py - cp.y) <= halfH + 8f;
+                        bool nearIc = hasIc && Mathf.Abs(px - icPos.x) <= icHalfW && Mathf.Abs(py - icPos.y) <= icHalfH;
+                        if (!nearMain && !nearIc) continue;
+                    }
+                    var m = tr.localToWorldMatrix;
+                    float wx = m.m03, wy = m.m13;
+                    if (Mathf.Abs(wx - cp.x) <= halfW + 8f && Mathf.Abs(wy - cp.y) <= halfH + 8f)
+                    {
+                        items.Add(new Item { sr = sr, m = m, dist = m.m23 - cp.z, order = sr.m_SortingOrder, id = sr.m_InstanceID });
+                    }
+                    else if (hasIc && Mathf.Abs(wx - icPos.x) <= icHalfW && Mathf.Abs(wy - icPos.y) <= icHalfH)
+                    {
+                        s_UiItems.Add(new Item { sr = sr, m = m, dist = m.m23 - icPos.z, order = sr.m_SortingOrder, id = sr.m_InstanceID });
+                    }
+                    continue;
+                }
 
                 var mr = r as MeshRenderer;
                 if (mr != null)
                 {
                     var mm = mr.transform.localToWorldMatrix;
                     items.Add(new Item { mr = mr, m = mm, dist = mm.m23 - cp.z, order = mr.m_SortingOrder, id = mr.m_InstanceID });
-                    continue;
                 }
-                var sr = r as SpriteRenderer;
-                if (sr == null || sr.m_Sprite == null || sr.m_Sprite.data == null) continue;
-                LastCandidates++;
-                var m = sr.transform.localToWorldMatrix;
-                float wx = m.m03, wy = m.m13;
-                if (Mathf.Abs(wx - cp.x) > halfW + 8f || Mathf.Abs(wy - cp.y) > halfH + 8f) continue;
-                items.Add(new Item { sr = sr, m = m, dist = m.m23 - cp.z, order = sr.m_SortingOrder, id = sr.m_InstanceID });
             }
             pt = Prof.Add("render: collect + cull", pt);
             // Unity transparent queue: sorting layer (single 'Default' here), order in layer, then
@@ -259,6 +310,19 @@ namespace KNL
                 var it = items[keys[i].idx];
                 if (it.mr != null) { DrawMesh(it.mr, it.m, cp, k); pt = Prof.Add("render: meshes", pt); }
                 else { DrawSprite(it.sr, it.m, cp, k); pt = Prof.Add("render: sprites", pt); }
+            }
+            if (hasIc && s_UiItems.Count > 0)
+            {
+                int uin = s_UiItems.Count;
+                if (s_UiKeys.Length < uin) s_UiKeys = new Key[uin * 2];
+                for (int i = 0; i < uin; i++) { var it = s_UiItems[i]; s_UiKeys[i] = new Key { order = it.order, dist = it.dist, id = it.id, idx = i }; }
+                Array.Sort(s_UiKeys, 0, uin, keyOrder);
+                for (int i = 0; i < uin; i++)
+                {
+                    var it = s_UiItems[s_UiKeys[i].idx];
+                    DrawSprite(it.sr, it.m, icPos, k);
+                }
+                pt = Prof.Add("render: interface", pt);
             }
             UIRender.Draw(cp, k);
             pt = Prof.Add("render: UI draw", pt);
@@ -311,14 +375,30 @@ namespace KNL
             }
             // vertex lighting at the four texture corners (TL, TR, BL, BR), interpolated by the blitter
             float keep = 1f - ov.a;
-            for (int corner = 0; corner < 4; corner++)
+            if (s_ActiveLightCount == 0)
             {
-                float cu = (corner & 1) != 0 ? sd.imgW : 0, cv = (corner & 2) != 0 ? sd.imgH : 0;
-                var wp = m.MultiplyPoint3x4(new Vector3(sx * (sd.offX + cu - px) * inv, sy * (sd.offY + sd.imgH - cv - py) * inv, 0));
-                Color vl = VertexLight(wp);
-                mul12[corner * 3] = Mathf.Max(0, (int)(keep * (1f + resp * (vl.r - 1f)) * 256f));
-                mul12[corner * 3 + 1] = Mathf.Max(0, (int)(keep * (1f + resp * (vl.g - 1f)) * 256f));
-                mul12[corner * 3 + 2] = Mathf.Max(0, (int)(keep * (1f + resp * (vl.b - 1f)) * 256f));
+                var amb = RenderSettings.s_AmbientSky;
+                int m0 = Mathf.Max(0, (int)(keep * (1f + resp * (amb.r - 1f)) * 256f));
+                int m1 = Mathf.Max(0, (int)(keep * (1f + resp * (amb.g - 1f)) * 256f));
+                int m2 = Mathf.Max(0, (int)(keep * (1f + resp * (amb.b - 1f)) * 256f));
+                for (int corner = 0; corner < 4; corner++)
+                {
+                    mul12[corner * 3] = m0;
+                    mul12[corner * 3 + 1] = m1;
+                    mul12[corner * 3 + 2] = m2;
+                }
+            }
+            else
+            {
+                for (int corner = 0; corner < 4; corner++)
+                {
+                    float cu = (corner & 1) != 0 ? sd.imgW : 0, cv = (corner & 2) != 0 ? sd.imgH : 0;
+                    var wp = m.MultiplyPoint3x4(new Vector3(sx * (sd.offX + cu - px) * inv, sy * (sd.offY + sd.imgH - cv - py) * inv, 0));
+                    Color vl = VertexLight(wp);
+                    mul12[corner * 3] = Mathf.Max(0, (int)(keep * (1f + resp * (vl.r - 1f)) * 256f));
+                    mul12[corner * 3 + 1] = Mathf.Max(0, (int)(keep * (1f + resp * (vl.g - 1f)) * 256f));
+                    mul12[corner * 3 + 2] = Mathf.Max(0, (int)(keep * (1f + resp * (vl.b - 1f)) * 256f));
+                }
             }
             add3[0] = (int)(ov.r * ov.a * 255f); add3[1] = (int)(ov.g * ov.a * 255f); add3[2] = (int)(ov.b * ov.a * 255f);
             for (int i = 0; i < 3; i++) { if (add3[i] < 0) add3[i] = 0; else if (add3[i] > 255) add3[i] = 255; }
@@ -330,7 +410,7 @@ namespace KNL
         static readonly int[] mul12 = new int[12], add3 = new int[3];
 
         struct ActiveLight { public float x, y, z, w; }
-        static readonly ActiveLight[] s_ActiveLights = new ActiveLight[32];
+        static readonly ActiveLight[] s_ActiveLights = new ActiveLight[64];
         static int s_ActiveLightCount;
 
         static void PrepareLights(Vector3 cp, float halfW)
@@ -365,6 +445,9 @@ namespace KNL
                 float f = (1f - Mathf.Sqrt(d2) * (1f / 3f)) * s_ActiveLights[i].w;
                 r += f * 0.49f; g += f * 0.425f; b += f * 0.34f;
             }
+            if (r < 0f) r = 0f;
+            if (g < 0f) g = 0f;
+            if (b < 0f) b = 0f;
             return new Color(r, g, b, 1f);
         }
 
