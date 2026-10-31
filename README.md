@@ -28,7 +28,7 @@ Locate the `Kingdom_Data` directory from your PC installation:
 
 ## 🚀 Installation (Pre-built Release)
 
-1. Download the latest `KingdomNewLands-Miyoo.zip` from **Releases**.
+1. Download the latest `KingdomNewLands-MiyooMini-v1.0.zip` from [Releases](https://github.com/devarshi16/kingdom-miyoo/releases).
 2. Extract the `Roms/` folder to the root of your Miyoo SD card.
 3. On your PC, convert and pack your game data:
    ```bash
@@ -47,8 +47,8 @@ Locate the `Kingdom_Data` directory from your PC installation:
 sudo apt update && sudo apt install -y build-essential mono-devel libsdl2-dev python3 python3-pip ffmpeg
 
 # 2. Clone and build
-git clone https://github.com/<your-username>/KingdomNewLandsMiyooMini.git
-cd KingdomNewLandsMiyooMini
+git clone https://github.com/devarshi16/kingdom-miyoo.git
+cd kingdom-miyoo
 ./compile.sh "/path/to/Kingdom_Data"
 
 # 3. Copy output to SD card
@@ -61,8 +61,8 @@ cp -r engine/build-miyoo/Roms/* /media/$USER/<SDCARD>/Roms/
 brew install mono-libgdiplus sdl2 ffmpeg python
 
 # 2. Build desktop engine and pack data
-git clone https://github.com/<your-username>/KingdomNewLandsMiyooMini.git
-cd KingdomNewLandsMiyooMini
+git clone https://github.com/devarshi16/kingdom-miyoo.git
+cd kingdom-miyoo
 ./compile.sh "/path/to/Kingdom_Data"
 ```
 *(To cross-compile the ARM device binary on macOS, use Docker or the pre-compiled release binary).*
@@ -76,8 +76,8 @@ wsl
 sudo apt update && sudo apt install -y build-essential mono-devel libsdl2-dev python3 python3-pip ffmpeg
 
 # 3. Build using your Windows game install path
-git clone https://github.com/<your-username>/KingdomNewLandsMiyooMini.git
-cd KingdomNewLandsMiyooMini
+git clone https://github.com/devarshi16/kingdom-miyoo.git
+cd kingdom-miyoo
 ./compile.sh "/mnt/c/Program Files (x86)/Steam/steamapps/common/Kingdom New Lands/Kingdom_Data"
 
 # 4. Copy engine/build-miyoo/Roms to your SD card
@@ -90,7 +90,7 @@ cd KingdomNewLandsMiyooMini
 You can paste this prompt directly into an AI coding agent (Antigravity, Cursor, Claude Code, Aider, etc.) to set up and deploy the port automatically:
 
 ```text
-Install the Kingdom: New Lands port from github.com/<your-username>/KingdomNewLandsMiyooMini on my Miyoo Mini Plus available at IP [your_miyoo_ip].
+Install the Kingdom: New Lands port from github.com/devarshi16/kingdom-miyoo on my Miyoo Mini Plus available at IP [your_miyoo_ip].
 For the game data, it is installed on my system at [path_to_game or steam/epic/gog location].
 Run ./compile.sh to build and pack the assets, sync the Roms directory to /mnt/SDCARD/ over SSH, and verify that the game boots cleanly.
 ```
