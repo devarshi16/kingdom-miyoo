@@ -116,9 +116,11 @@ namespace UnityEngine
     public sealed partial class PolygonCollider2D
     {
         internal List<Vector2[]> m_Paths = new List<Vector2[]>();
-        public int pathCount { get { return m_Paths.Count; } set { while (m_Paths.Count < value) m_Paths.Add(new Vector2[0]); while (m_Paths.Count > value) m_Paths.RemoveAt(m_Paths.Count - 1); } }
+        internal Vector2[][] m_WorldPaths;
+        internal int m_WorldPathsStamp = -1;
+        public int pathCount { get { return m_Paths.Count; } set { while (m_Paths.Count < value) m_Paths.Add(new Vector2[0]); while (m_Paths.Count > value) m_Paths.RemoveAt(m_Paths.Count - 1); m_AabbStamp = -1; m_WorldPathsStamp = -1; } }
         public Vector2[] GetPath(int i) { return i < m_Paths.Count ? (Vector2[])m_Paths[i].Clone() : new Vector2[0]; }
-        public void SetPath(int i, Vector2[] pts) { pathCount = Mathf.Max(pathCount, i + 1); m_Paths[i] = (Vector2[])pts.Clone(); m_AabbStamp = -1; }
+        public void SetPath(int i, Vector2[] pts) { pathCount = Mathf.Max(pathCount, i + 1); m_Paths[i] = (Vector2[])pts.Clone(); m_AabbStamp = -1; m_WorldPathsStamp = -1; }
         public Vector2[] points { get { return GetPath(0); } set { SetPath(0, value); } }
         internal override void LocalPoints(List<Vector2> p) { foreach (var path in m_Paths) foreach (var v in path) p.Add(v + m_Offset); }
     }
@@ -430,6 +432,8 @@ namespace KNL
                     {
                         if (A.c is EdgeCollider2D || B.c is EdgeCollider2D)
                         { if (!EdgeTouch(A, B)) continue; }
+                        else if (A.c is PolygonCollider2D || B.c is PolygonCollider2D)
+                        { if (!PolygonTouch(A, B)) continue; }
                         triggersNow.Add(Key(A.c, B.c));
                         continue;
                     }
@@ -478,6 +482,153 @@ namespace KNL
             return float.NaN;
         }
 
+        static void UpdatePolygonWorldPaths(PolygonCollider2D poly)
+        {
+            var t = poly.transform;
+            if (t != null) t.UpdateWorld();
+            int stamp = t != null ? t.m_Stamp : 0;
+            if (poly.m_WorldPathsStamp != stamp || poly.m_WorldPaths == null)
+            {
+                var m = t != null ? t.localToWorldMatrix : Matrix4x4.identity;
+                int pCount = poly.m_Paths.Count;
+                if (poly.m_WorldPaths == null || poly.m_WorldPaths.Length != pCount)
+                    poly.m_WorldPaths = new Vector2[pCount][];
+                for (int pi = 0; pi < pCount; pi++)
+                {
+                    var lp = poly.m_Paths[pi];
+                    if (poly.m_WorldPaths[pi] == null || poly.m_WorldPaths[pi].Length != lp.Length)
+                        poly.m_WorldPaths[pi] = new Vector2[lp.Length];
+                    for (int i = 0; i < lp.Length; i++)
+                        poly.m_WorldPaths[pi][i] = m.MultiplyPoint3x4(lp[i] + poly.m_Offset);
+                }
+                poly.m_WorldPathsStamp = stamp;
+            }
+        }
+
+        static bool PolygonResolve(PolygonCollider2D poly, Entry dyn, out Vector2 bestN, out float bestPen)
+        {
+            bestN = Vector2.zero;
+            bestPen = 0f;
+            UpdatePolygonWorldPaths(poly);
+
+            float cx = (dyn.box.x0 + dyn.box.x1) * 0.5f;
+            float cy = (dyn.box.y0 + dyn.box.y1) * 0.5f;
+            float r = Mathf.Min(dyn.box.x1 - dyn.box.x0, dyn.box.y1 - dyn.box.y0) * 0.5f;
+
+            var paths = poly.m_WorldPaths;
+            if (paths == null) return false;
+            for (int pi = 0; pi < paths.Length; pi++)
+            {
+                var wpts = paths[pi];
+                int len = wpts.Length;
+                if (len < 2) continue;
+                for (int i = 0; i < len; i++)
+                {
+                    var p1 = wpts[i];
+                    var p2 = wpts[(i + 1) % len];
+                    float dx = p2.x - p1.x, dy = p2.y - p1.y;
+                    float l2 = dx * dx + dy * dy;
+                    if (l2 < 1e-6f) continue;
+                    float segT = Mathf.Clamp01(((cx - p1.x) * dx + (cy - p1.y) * dy) / l2);
+                    float qx = p1.x + segT * dx;
+                    float qy = p1.y + segT * dy;
+                    float diffX = cx - qx, diffY = cy - qy;
+                    float distSq = diffX * diffX + diffY * diffY;
+                    if (distSq < r * r)
+                    {
+                        float dist = Mathf.Sqrt(distSq);
+                        float pen = r - dist;
+                        float invL = 1f / Mathf.Sqrt(l2);
+                        float nx = -dy * invL, ny = dx * invL;
+                        if (nx * diffX + ny * diffY < 0f) { nx = -nx; ny = -ny; }
+                        if (pen > bestPen)
+                        {
+                            bestPen = pen;
+                            bestN = new Vector2(nx, ny);
+                        }
+                    }
+                }
+            }
+            return bestPen > 0f;
+        }
+
+        static bool PolygonTouch(Entry a, Entry b)
+        {
+            var pEntry = a.c is PolygonCollider2D ? a : b;
+            var oEntry = ReferenceEquals(pEntry, a) ? b : a;
+            var poly = (PolygonCollider2D)pEntry.c;
+            UpdatePolygonWorldPaths(poly);
+            var paths = poly.m_WorldPaths;
+            if (paths == null || paths.Length == 0) return false;
+
+            var oPoly = oEntry.c as PolygonCollider2D;
+            if (oPoly != null)
+            {
+                UpdatePolygonWorldPaths(oPoly);
+                var oPaths = oPoly.m_WorldPaths;
+                if (oPaths != null)
+                {
+                    for (int pi = 0; pi < oPaths.Length; pi++)
+                    {
+                        var opt = oPaths[pi];
+                        for (int i = 0; i < opt.Length; i++)
+                            if (PointInPolygon(opt[i], paths)) return true;
+                    }
+                    for (int pi = 0; pi < paths.Length; pi++)
+                    {
+                        var pt = paths[pi];
+                        for (int i = 0; i < pt.Length; i++)
+                            if (PointInPolygon(pt[i], oPaths)) return true;
+                    }
+                }
+            }
+
+            float cx = (oEntry.box.x0 + oEntry.box.x1) * 0.5f;
+            float cy = (oEntry.box.y0 + oEntry.box.y1) * 0.5f;
+            if (PointInPolygon(new Vector2(cx, cy), paths)) return true;
+
+            float r = Mathf.Min(oEntry.box.x1 - oEntry.box.x0, oEntry.box.y1 - oEntry.box.y0) * 0.5f;
+            float rSq = r * r;
+            for (int pi = 0; pi < paths.Length; pi++)
+            {
+                var wpts = paths[pi];
+                int len = wpts.Length;
+                if (len < 2) continue;
+                for (int i = 0; i < len; i++)
+                {
+                    var p1 = wpts[i];
+                    var p2 = wpts[(i + 1) % len];
+                    float dx = p2.x - p1.x, dy = p2.y - p1.y;
+                    float l2 = dx * dx + dy * dy;
+                    if (l2 < 1e-6f) continue;
+                    float segT = Mathf.Clamp01(((cx - p1.x) * dx + (cy - p1.y) * dy) / l2);
+                    float qx = p1.x + segT * dx - cx;
+                    float qy = p1.y + segT * dy - cy;
+                    if (qx * qx + qy * qy <= rSq) return true;
+                }
+            }
+            return false;
+        }
+
+        static bool PointInPolygon(Vector2 p, Vector2[][] paths)
+        {
+            if (paths == null) return false;
+            for (int pi = 0; pi < paths.Length; pi++)
+            {
+                var v = paths[pi];
+                if (v == null || v.Length < 3) continue;
+                bool inside = false;
+                for (int i = 0, j = v.Length - 1; i < v.Length; j = i++)
+                {
+                    if (((v[i].y > p.y) != (v[j].y > p.y)) &&
+                        (p.x < (v[j].x - v[i].x) * (p.y - v[i].y) / (v[j].y - v[i].y) + v[i].x))
+                        inside = !inside;
+                }
+                if (inside) return true;
+            }
+            return false;
+        }
+
         static void Resolve(Entry A, Entry B)
         {
             bool aDyn = A.rb != null && A.rb.m_BodyType == 0, bDyn = B.rb != null && B.rb.m_BodyType == 0;
@@ -490,6 +641,33 @@ namespace KNL
                 var cc = new Collision2D { m_RelVel = A.rb.m_Velocity - B.rb.m_Velocity };
                 cc.m_Contacts = new[] { new ContactPoint2D { m_Point = new Vector2(cx, cy), m_Normal = (A.box.x0 + A.box.x1) < (B.box.x0 + B.box.x1) ? Vector2.left : Vector2.right } };
                 contactInfo[kk] = cc;
+
+                // Debris / bag coins stacking
+                float rA = Mathf.Min(A.box.x1 - A.box.x0, A.box.y1 - A.box.y0) * 0.5f;
+                float rB = Mathf.Min(B.box.x1 - B.box.x0, B.box.y1 - B.box.y0) * 0.5f;
+                if (rA < 0.25f && rB < 0.25f)
+                {
+                    float ax = (A.box.x0 + A.box.x1) * 0.5f, ay = (A.box.y0 + A.box.y1) * 0.5f;
+                    float bx = (B.box.x0 + B.box.x1) * 0.5f, by = (B.box.y0 + B.box.y1) * 0.5f;
+                    float ddx = bx - ax, ddy = by - ay;
+                    float dsq = ddx * ddx + ddy * ddy;
+                    float req = rA + rB;
+                    if (dsq < req * req && dsq > 1e-6f)
+                    {
+                        float dist = Mathf.Sqrt(dsq);
+                        float dpen = (req - dist) * 0.5f;
+                        float dnx = ddx / dist, dny = ddy / dist;
+                        var tA = A.rb.transform; var pA = tA.position;
+                        tA.position = new Vector3(pA.x - dnx * dpen, pA.y - dny * dpen, pA.z);
+                        A.box.x0 -= dnx * dpen; A.box.x1 -= dnx * dpen; A.box.y0 -= dny * dpen; A.box.y1 -= dny * dpen;
+                        A.rb.m_Velocity *= 0.8f;
+
+                        var tB = B.rb.transform; var pB = tB.position;
+                        tB.position = new Vector3(pB.x + dnx * dpen, pB.y + dny * dpen, pB.z);
+                        B.box.x0 += dnx * dpen; B.box.x1 += dnx * dpen; B.box.y0 += dny * dpen; B.box.y1 += dny * dpen;
+                        B.rb.m_Velocity *= 0.8f;
+                    }
+                }
                 return;
             }
             Vector2 n; float pen;
@@ -499,6 +677,10 @@ namespace KNL
                 if (float.IsNaN(y) || dyn.box.y0 > y || dyn.box.y1 < y) return;
                 n = Vector2.up; pen = y - dyn.box.y0;
                 if (pen > (dyn.box.y1 - dyn.box.y0) * 0.75f + 0.25f) return;  // deep: started below the ground
+            }
+            else if (other.c is PolygonCollider2D)
+            {
+                if (!PolygonResolve((PolygonCollider2D)other.c, dyn, out n, out pen)) return;
             }
             else
             {
