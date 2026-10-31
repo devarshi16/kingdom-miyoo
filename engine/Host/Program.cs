@@ -233,6 +233,19 @@ static class Program
                     if (!Equals(v, lastWatch)) { Console.Error.WriteLine("[watch] frame " + f + ": " + watch + " = " + v + " (obj " + watchObj.GetInstanceID() + ")"); lastWatch = v; }
                 }
             }
+            if (a.Has("test-coins") && f == 180)
+            {
+                var plObj = World.SceneObjects.FirstOrDefault(g => g.m_Tag == "Player" && g.activeInHierarchy);
+                if (plObj != null)
+                {
+                    var w = plObj.m_Components.FirstOrDefault(c => c.GetType().Name == "Wallet");
+                    if (w != null)
+                    {
+                        var bf = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+                        w.GetType().GetProperty("coins", bf).SetValue(w, 6, null);
+                    }
+                }
+            }
             float dt = 1f / 30f;
             if (window && !a.Has("fixed-dt")) { uint now = Native.knl_ticks_ms(); dt = Mathf.Clamp((now - lastTicks) / 1000f, 0.001f, maxDt); lastTicks = now; }
             var t0 = sw.Elapsed.TotalMilliseconds;

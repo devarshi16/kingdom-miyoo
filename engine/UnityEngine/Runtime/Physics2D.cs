@@ -117,6 +117,7 @@ namespace UnityEngine
     {
         internal List<Vector2[]> m_Paths = new List<Vector2[]>();
         internal Vector2[][] m_WorldPaths;
+        internal float[] m_WorldPathSigns;
         internal int m_WorldPathsStamp = -1;
         public int pathCount { get { return m_Paths.Count; } set { while (m_Paths.Count < value) m_Paths.Add(new Vector2[0]); while (m_Paths.Count > value) m_Paths.RemoveAt(m_Paths.Count - 1); m_AabbStamp = -1; m_WorldPathsStamp = -1; } }
         public Vector2[] GetPath(int i) { return i < m_Paths.Count ? (Vector2[])m_Paths[i].Clone() : new Vector2[0]; }
@@ -492,14 +493,27 @@ namespace KNL
                 var m = t != null ? t.localToWorldMatrix : Matrix4x4.identity;
                 int pCount = poly.m_Paths.Count;
                 if (poly.m_WorldPaths == null || poly.m_WorldPaths.Length != pCount)
+                {
                     poly.m_WorldPaths = new Vector2[pCount][];
+                    poly.m_WorldPathSigns = new float[pCount];
+                }
                 for (int pi = 0; pi < pCount; pi++)
                 {
                     var lp = poly.m_Paths[pi];
-                    if (poly.m_WorldPaths[pi] == null || poly.m_WorldPaths[pi].Length != lp.Length)
-                        poly.m_WorldPaths[pi] = new Vector2[lp.Length];
-                    for (int i = 0; i < lp.Length; i++)
+                    int len = lp.Length;
+                    if (poly.m_WorldPaths[pi] == null || poly.m_WorldPaths[pi].Length != len)
+                        poly.m_WorldPaths[pi] = new Vector2[len];
+                    for (int i = 0; i < len; i++)
                         poly.m_WorldPaths[pi][i] = m.MultiplyPoint3x4(lp[i] + poly.m_Offset);
+
+                    float area = 0f;
+                    for (int i = 0; i < len; i++)
+                    {
+                        var a = poly.m_WorldPaths[pi][i];
+                        var b = poly.m_WorldPaths[pi][(i + 1) % len];
+                        area += a.x * b.y - b.x * a.y;
+                    }
+                    poly.m_WorldPathSigns[pi] = area < 0f ? 1f : -1f;
                 }
                 poly.m_WorldPathsStamp = stamp;
             }
@@ -522,6 +536,7 @@ namespace KNL
                 var wpts = paths[pi];
                 int len = wpts.Length;
                 if (len < 2) continue;
+                float sign = (poly.m_WorldPathSigns != null && pi < poly.m_WorldPathSigns.Length) ? poly.m_WorldPathSigns[pi] : 1f;
                 for (int i = 0; i < len; i++)
                 {
                     var p1 = wpts[i];
@@ -534,13 +549,14 @@ namespace KNL
                     float qy = p1.y + segT * dy;
                     float diffX = cx - qx, diffY = cy - qy;
                     float distSq = diffX * diffX + diffY * diffY;
-                    if (distSq < r * r)
+                    if (distSq > (r * 1.5f) * (r * 1.5f)) continue;
+
+                    float invL = 1f / Mathf.Sqrt(l2);
+                    float nx = -dy * invL * sign, ny = dx * invL * sign;
+                    float s = diffX * nx + diffY * ny;
+                    if (s < r && s >= -0.2f)
                     {
-                        float dist = Mathf.Sqrt(distSq);
-                        float pen = r - dist;
-                        float invL = 1f / Mathf.Sqrt(l2);
-                        float nx = -dy * invL, ny = dx * invL;
-                        if (nx * diffX + ny * diffY < 0f) { nx = -nx; ny = -ny; }
+                        float pen = r - s;
                         if (pen > bestPen)
                         {
                             bestPen = pen;

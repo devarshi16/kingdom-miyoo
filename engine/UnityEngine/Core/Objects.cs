@@ -557,7 +557,12 @@ namespace UnityEngine
         public Material[] materials { get { if (m_Materials.Length > 0) { var x = material; } return m_Materials; } set { m_Materials = value ?? new Material[0]; } }
         public Material[] sharedMaterials { get { return m_Materials; } set { m_Materials = value ?? new Material[0]; } }
         internal MaterialPropertyBlock m_PropertyBlock;
-        public void SetPropertyBlock(MaterialPropertyBlock p) { m_PropertyBlock = p; }
+        public void SetPropertyBlock(MaterialPropertyBlock p)
+        {
+            if (p == null) { m_PropertyBlock = null; return; }
+            if (m_PropertyBlock == null) m_PropertyBlock = new MaterialPropertyBlock();
+            p.CopyTo(m_PropertyBlock);
+        }
         public void GetPropertyBlock(MaterialPropertyBlock p) { if (m_PropertyBlock != null) m_PropertyBlock.CopyTo(p); else p.Clear(); }
         public Bounds bounds { get { return KNL.RenderSystem.BoundsOf(this); } }
     }
