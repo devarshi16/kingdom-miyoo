@@ -146,19 +146,34 @@ namespace KNL
         {
             if (s_TaggedFrame == Time.frameCount && s_TaggedCache != null && !s_TaggedCache.m_Destroyed) return s_TaggedCache;
             s_TaggedCache = null;
-            foreach (var g in World.SceneObjects)
-                if (!g.m_Destroyed && g.m_Tag == "MainCamera" && g.activeInHierarchy)
-                { var c = g.GetComponent<Camera>(); if (c != null && c.m_Enabled) { s_TaggedCache = c; break; } }
+            var cams = Camera.s_All;
+            int count = cams.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var c = cams[i];
+                if (c != null && !c.m_Destroyed && c.m_Enabled && c.m_GameObject != null && !c.m_GameObject.m_Destroyed && c.m_GameObject.m_Tag == "MainCamera" && c.m_GameObject.activeInHierarchy)
+                { s_TaggedCache = c; break; }
+            }
             s_TaggedFrame = Time.frameCount;
             return s_TaggedCache;
         }
 
         public static Camera FindMainCamera()
         {
-            foreach (var g in World.SceneObjects)
-                if (g.activeInHierarchy && g.m_Tag == "MainCamera") { var c = g.GetComponent<Camera>(); if (c != null) return c; }
-            foreach (var g in World.SceneObjects)
-                if (g.activeInHierarchy) { var c = g.GetComponent<Camera>(); if (c != null && c.orthographic) return c; }
+            var cams = Camera.s_All;
+            int count = cams.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var c = cams[i];
+                if (c != null && !c.m_Destroyed && c.m_GameObject != null && !c.m_GameObject.m_Destroyed && c.m_GameObject.activeInHierarchy && c.m_GameObject.m_Tag == "MainCamera")
+                    return c;
+            }
+            for (int i = 0; i < count; i++)
+            {
+                var c = cams[i];
+                if (c != null && !c.m_Destroyed && c.m_GameObject != null && !c.m_GameObject.m_Destroyed && c.m_GameObject.activeInHierarchy && c.orthographic)
+                    return c;
+            }
             return null;
         }
 
@@ -206,27 +221,29 @@ namespace KNL
             items.Clear();
             LastCandidates = 0;
             int pass = GameObject.NewPass();
-            foreach (var g in World.SceneObjects)
+            var all = Renderer.s_All;
+            int count = all.Count;
+            for (int i = 0; i < count; i++)
             {
-                if (g.m_Destroyed || !g.ActiveInPass(pass)) continue;
-                foreach (var c in g.m_Components)
+                var r = all[i];
+                if (r == null || r.m_Destroyed || !r.m_RendererEnabled) continue;
+                var g = r.m_GameObject;
+                if (g == null || g.m_Destroyed || !g.ActiveInPass(pass)) continue;
+
+                var mr = r as MeshRenderer;
+                if (mr != null)
                 {
-                    var mr = c as MeshRenderer;
-                    if (mr != null)
-                    {
-                        if (!mr.m_RendererEnabled) continue;
-                        var mm = mr.transform.localToWorldMatrix;
-                        items.Add(new Item { mr = mr, m = mm, dist = mm.m23 - cp.z, order = mr.m_SortingOrder, id = mr.m_InstanceID });
-                        continue;
-                    }
-                    var sr = c as SpriteRenderer;
-                    if (sr == null || !sr.m_RendererEnabled || sr.m_Sprite == null || sr.m_Sprite.data == null) continue;
-                    LastCandidates++;
-                    var m = sr.transform.localToWorldMatrix;
-                    float wx = m.m03, wy = m.m13;
-                    if (Mathf.Abs(wx - cp.x) > halfW + 8f || Mathf.Abs(wy - cp.y) > halfH + 8f) continue;
-                    items.Add(new Item { sr = sr, m = m, dist = m.m23 - cp.z, order = sr.m_SortingOrder, id = sr.m_InstanceID });
+                    var mm = mr.transform.localToWorldMatrix;
+                    items.Add(new Item { mr = mr, m = mm, dist = mm.m23 - cp.z, order = mr.m_SortingOrder, id = mr.m_InstanceID });
+                    continue;
                 }
+                var sr = r as SpriteRenderer;
+                if (sr == null || sr.m_Sprite == null || sr.m_Sprite.data == null) continue;
+                LastCandidates++;
+                var m = sr.transform.localToWorldMatrix;
+                float wx = m.m03, wy = m.m13;
+                if (Mathf.Abs(wx - cp.x) > halfW + 8f || Mathf.Abs(wy - cp.y) > halfH + 8f) continue;
+                items.Add(new Item { sr = sr, m = m, dist = m.m23 - cp.z, order = sr.m_SortingOrder, id = sr.m_InstanceID });
             }
             pt = Prof.Add("render: collect + cull", pt);
             // Unity transparent queue: sorting layer (single 'Default' here), order in layer, then
@@ -414,9 +431,10 @@ namespace KNL
             if (m.m_Shading != null) return m.m_Shading;
             var si = new ShadeInfo();
             string sh = m.m_Shader != null ? m.m_Shader.name : "";
-            si.power = sh == "Custom/PowerSprite2";
+            si.power = sh == "Custom/PowerSprite2" || sh == "Custom/AutoAnimate" || sh == "Custom/Lit Particle Cutout";
             float dst; bool hasDst = m.m_FloatProps.TryGetValue("DstBlend", out dst);
-            si.additive = si.power ? (hasDst && dst == 1f) : m.name.IndexOf("Additive", StringComparison.OrdinalIgnoreCase) >= 0;
+            si.additive = (hasDst && dst == 1f) || m.name.IndexOf("Additive", StringComparison.OrdinalIgnoreCase) >= 0
+                || sh == "Custom/Reflected Light" || sh == "Custom/Directional" || sh == "Mobile/Particles/Additive";
             si.recolor = m.m_Keywords.Contains("RECOLOR_ON");
             Color c; float f;
             if (m.m_FloatProps.TryGetValue("_AmbientResponse", out f)) si.response = f;
@@ -433,23 +451,31 @@ namespace KNL
         public static bool Enabled = true;
         public static float OriginalHalfWidth = 7.1f;      // 8 units tall at 16:9 -> 14.2 wide
         public static Color Purple = new Color(0.56f, 0.25f, 0.66f, 1f);
+        internal static readonly List<Component> s_Enemies = new List<Component>();
         static Type s_Enemy; static bool s_Looked;
         public static int LastLeft, LastRight;
+
+        public static bool IsEnemy(Component c)
+        {
+            if (c == null) return false;
+            if (!s_Looked) { s_Looked = true; var asm = World.GameAssembly("Assembly-CSharp"); s_Enemy = asm != null ? asm.GetType("Enemy") : null; }
+            return s_Enemy != null && s_Enemy.IsInstanceOfType(c);
+        }
 
         public static void Draw(Vector3 cp, float k)
         {
             LastLeft = LastRight = 0;
             if (!Enabled) return;
-            if (!s_Looked) { s_Looked = true; var asm = World.GameAssembly("Assembly-CSharp"); s_Enemy = asm != null ? asm.GetType("Enemy") : null; }
-            if (s_Enemy == null) return;
+            int count = s_Enemies.Count;
+            if (count == 0) return;
             float halfView = RenderSystem.Width / 2f / k;
             float leftY = 0, rightY = 0;
-            foreach (var g in World.SceneObjects)
+            for (int i = 0; i < count; i++)
             {
-                if (g.m_Destroyed || !g.activeInHierarchy) continue;
-                bool isEnemy = false;
-                foreach (var c in g.m_Components) if (s_Enemy.IsInstanceOfType(c) && !c.m_Destroyed) { isEnemy = true; break; }
-                if (!isEnemy) continue;
+                var c = s_Enemies[i];
+                if (c == null || c.m_Destroyed) continue;
+                var g = c.m_GameObject;
+                if (g == null || g.m_Destroyed || !g.activeInHierarchy) continue;
                 var p = g.m_Transform.position; float dx = p.x - cp.x;
                 if (Mathf.Abs(dx) <= halfView || Mathf.Abs(dx) > OriginalHalfWidth) continue;
                 if (dx < 0) { LastLeft++; leftY = p.y; } else { LastRight++; rightY = p.y; }

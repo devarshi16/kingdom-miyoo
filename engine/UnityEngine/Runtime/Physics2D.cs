@@ -17,6 +17,7 @@ namespace UnityEngine
 {
     public partial class Rigidbody2D
     {
+        internal static readonly List<Rigidbody2D> s_All = new List<Rigidbody2D>();
         internal int m_BodyType;   // 0 dynamic, 1 kinematic, 2 static
         internal Vector2 m_Velocity; internal float m_AngularVelocity;
         internal float m_Mass = 1f, m_Drag, m_AngularDrag = 0.05f, m_GravityScale = 1f;
@@ -64,11 +65,23 @@ namespace UnityEngine
 
     public partial class Collider2D
     {
+        internal static readonly List<Collider2D> s_All = new List<Collider2D>();
         internal bool m_IsTrigger; internal Vector2 m_Offset; internal PhysicsMaterial2D m_Material;
+        internal Rigidbody2D m_CachedRb;
+        internal bool m_RbCached;
         public bool isTrigger { get { return m_IsTrigger; } set { m_IsTrigger = value; } }
         public Vector2 offset { get { return m_Offset; } set { m_Offset = value; } }
         public PhysicsMaterial2D sharedMaterial { get { return m_Material; } set { m_Material = value; } }
-        public Rigidbody2D attachedRigidbody { get { return gameObject.GetComponentInParent<Rigidbody2D>(); } }
+        public Rigidbody2D attachedRigidbody
+        {
+            get
+            {
+                if (m_RbCached && (m_CachedRb == null || !m_CachedRb.m_Destroyed)) return m_CachedRb;
+                m_CachedRb = gameObject != null ? gameObject.GetComponentInParent<Rigidbody2D>() : null;
+                m_RbCached = true;
+                return m_CachedRb;
+            }
+        }
         public Bounds bounds { get { var a = KNL.Physics2DSystem.AabbOf(this); return new Bounds(new Vector3((a.x0 + a.x1) / 2, (a.y0 + a.y1) / 2, transform.position.z), new Vector3(a.x1 - a.x0, a.y1 - a.y0, 0)); } }
         public bool OverlapPoint(Vector2 p) { return KNL.Physics2DSystem.ContainsPoint(this, p); }
         public bool IsTouching(Collider2D other) { return KNL.Physics2DSystem.Overlaps(this, other); }
@@ -236,13 +249,29 @@ namespace KNL
         static readonly List<Vector2> tmp = new List<Vector2>();
         public static Aabb AabbOf(Collider2D c)
         {
+            var box = c as BoxCollider2D;
+            if (box != null)
+            {
+                var t = c.transform;
+                if (t != null && t.m_LocalRotation.z == 0f && t.m_LocalRotation.w == 1f && (t.m_Parent == null || t.m_Parent.m_LocalRotation.z == 0f))
+                {
+                    var pos = t.position;
+                    var scale = t.lossyScale;
+                    float cx = pos.x + box.m_Offset.x * scale.x;
+                    float cy = pos.y + box.m_Offset.y * scale.y;
+                    float hx = Mathf.Abs(box.m_Size.x * 0.5f * scale.x);
+                    float hy = Mathf.Abs(box.m_Size.y * 0.5f * scale.y);
+                    return new Aabb { x0 = cx - hx, x1 = cx + hx, y0 = cy - hy, y1 = cy + hy };
+                }
+            }
             tmp.Clear(); c.LocalPoints(tmp);
             var m = c.transform.localToWorldMatrix;
             var a = new Aabb { x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue };
             if (tmp.Count == 0) { var p = m.MultiplyPoint3x4(Vector3.zero); a.x0 = a.x1 = p.x; a.y0 = a.y1 = p.y; return a; }
-            foreach (var lp in tmp)
+            int count = tmp.Count;
+            for (int i = 0; i < count; i++)
             {
-                var p = m.MultiplyPoint3x4(lp);
+                var p = m.MultiplyPoint3x4(tmp[i]);
                 if (p.x < a.x0) a.x0 = p.x; if (p.x > a.x1) a.x1 = p.x;
                 if (p.y < a.y0) a.y0 = p.y; if (p.y > a.y1) a.y1 = p.y;
             }
@@ -284,39 +313,42 @@ namespace KNL
         static readonly List<Entry> entryPool = new List<Entry>();   // reused every step (M5: no per-step garbage)
         static readonly List<Rigidbody2D> bodies = new List<Rigidbody2D>();
 
+        static readonly Comparison<Entry> s_EntryComparison = (a, b) => a.box.x0.CompareTo(b.box.x0);
+
         static void Gather()
         {
             entries.Clear(); bodies.Clear();
             int pass = GameObject.NewPass();
-            foreach (var g in World.SceneObjects)
+            var cols = Collider2D.s_All;
+            int colCount = cols.Count;
+            for (int i = 0; i < colCount; i++)
             {
-                if (g.m_Destroyed || !g.ActiveInPass(pass)) continue;
-                foreach (var comp in g.m_Components)
-                {
-                    var c = comp as Collider2D;
-                    if (c != null && c.m_Enabled)
-                    {
-                        if (entryPool.Count == entries.Count) entryPool.Add(new Entry());
-                        var e = entryPool[entries.Count];
-                        e.c = c; e.rb = BodyOf(g, pass); e.box = AabbOf(c); e.layer = g.m_Layer;
-                        entries.Add(e);
-                    }
-                    var rb = comp as Rigidbody2D;
-                    if (rb != null && rb.m_Simulated) bodies.Add(rb);
-                }
+                var c = cols[i];
+                if (c == null || c.m_Destroyed || !c.m_Enabled) continue;
+                var g = c.m_GameObject;
+                if (g == null || g.m_Destroyed || !g.ActiveInPass(pass)) continue;
+                if (entryPool.Count == entries.Count) entryPool.Add(new Entry());
+                var e = entryPool[entries.Count];
+                e.c = c; e.rb = BodyOf(c, pass); e.box = AabbOf(c); e.layer = g.m_Layer;
+                entries.Add(e);
             }
-            entries.Sort((a, b) => a.box.x0.CompareTo(b.box.x0));
+            var bds = Rigidbody2D.s_All;
+            int bdCount = bds.Count;
+            for (int i = 0; i < bdCount; i++)
+            {
+                var rb = bds[i];
+                if (rb == null || rb.m_Destroyed || !rb.m_Simulated) continue;
+                var g = rb.m_GameObject;
+                if (g == null || g.m_Destroyed || !g.ActiveInPass(pass)) continue;
+                bodies.Add(rb);
+            }
+            entries.Sort(s_EntryComparison);
         }
 
-        /// attachedRigidbody (GetComponentInParent<Rigidbody2D>) using the pass' active memo
-        static Rigidbody2D BodyOf(GameObject g, int pass)
+        static Rigidbody2D BodyOf(Collider2D c, int pass)
         {
-            for (var tr = g.m_Transform; tr != null; tr = tr.m_Parent)
-            {
-                var go = tr.m_GameObject;
-                if (!go.ActiveInPass(pass)) continue;
-                foreach (var c in go.m_Components) { var rb = c as Rigidbody2D; if (rb != null) return rb; }
-            }
+            var rb = c.attachedRigidbody;
+            if (rb != null && rb.gameObject.ActiveInPass(pass)) return rb;
             return null;
         }
 
@@ -337,9 +369,11 @@ namespace KNL
             float dt = Time.fixedDeltaTime;
             long pt = Prof.Level > 1 ? Prof.Now() : 0;
             // integrate
-            foreach (var rb in bodies.ToArray())
+            int bCount = bodies.Count;
+            for (int i = 0; i < bCount; i++)
             {
-                if (rb.m_Destroyed || rb.m_BodyType == 2) continue;
+                var rb = bodies[i];
+                if (rb == null || rb.m_Destroyed || rb.m_BodyType == 2) continue;
                 if (rb.m_BodyType == 0)
                 {
                     rb.m_Velocity += Gravity * rb.m_GravityScale * dt;
@@ -518,7 +552,11 @@ namespace KNL
         static void Notify(GameObject go, string msg, object arg)
         {
             if (go == null || go.m_Destroyed) return;
-            foreach (var comp in go.m_Components.ToArray())
+            var comps = go.m_Components;
+            int count = comps.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var comp = comps[i];
                 if (comp is MonoBehaviour && !comp.m_Destroyed)
                 {
                     var m = Reflect.FindMethod(comp.GetType(), msg);
@@ -526,6 +564,7 @@ namespace KNL
                     try { Reflect.Call(m, comp, arg); }
                     catch (Exception e) { Lifecycle.Fail(comp, msg, e); }
                 }
+            }
         }
 
         public static void OnDestroyed(GameObject go) { }

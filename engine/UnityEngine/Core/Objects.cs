@@ -510,6 +510,7 @@ namespace UnityEngine
 
     public partial class Renderer
     {
+        internal static readonly List<Renderer> s_All = new List<Renderer>();
         internal bool m_RendererEnabled = true;
         internal Material[] m_Materials = new Material[0];
         internal int m_SortingOrder, m_SortingLayerID;
@@ -688,6 +689,7 @@ namespace UnityEngine
 
     public sealed partial class Camera
     {
+        internal static readonly List<Camera> s_All = new List<Camera>();
         internal float m_OrthographicSize = 5f;
         internal bool m_Orthographic = true;
         internal Color m_BackgroundColor = Color.black;

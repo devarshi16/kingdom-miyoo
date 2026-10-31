@@ -307,8 +307,11 @@ namespace KNL
                 if (Prof.Level > 1) Prof.Add("  Update " + s.info.name, t1);
             }
             pt = Prof.Add("logic: Update scripts", pt);
+            long tInv = Prof.Level > 0 ? Prof.Now() : 0;
             Invokes.Tick();
+            if (Prof.Level > 0) tInv = Prof.Add("  logic: invokes", tInv);
             Coroutines.Tick();
+            if (Prof.Level > 0) Prof.Add("  logic: coroutines", tInv);
             pt = Prof.Add("logic: invokes + coroutines", pt);
             if (AnimatorStep != null) AnimatorStep();
             pt = Prof.Add("logic: animator", pt);
@@ -370,6 +373,7 @@ namespace KNL
                 foreach (var g in World.SceneObjects.ToArray())
                     if (!g.m_Destroyed && g.m_Scene != null && !World.IsPersistent(g) && g.m_Transform.m_Parent == null) World.DestroyNow(g);
                 World.SceneObjects.RemoveAll(g => g.m_Destroyed);
+                World.FlushDestroyed();
                 Loaded.RemoveAll(t => !t.persistent);
             }
             var tag = World.LoadScene("level" + idx, BuildScenes.Length > idx ? BuildScenes[idx] : name);
@@ -389,6 +393,7 @@ namespace KNL
             foreach (var g in World.SceneObjects.ToArray())
                 if (!g.m_Destroyed && g.m_Scene == tag && g.m_Transform.m_Parent == null) World.DestroyNow(g);
             World.SceneObjects.RemoveAll(g => g.m_Destroyed);
+            World.FlushDestroyed();
             Loaded.Remove(tag);
             if (World.ActiveScene == tag) World.ActiveScene = Loaded.FirstOrDefault();
             return true;

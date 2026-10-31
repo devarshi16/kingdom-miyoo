@@ -7,6 +7,7 @@ namespace UnityEngine
 {
     public sealed partial class Canvas
     {
+        internal static readonly List<Canvas> s_All = new List<Canvas>();
         internal RenderMode m_RenderMode; internal Camera m_Camera; internal float m_ScaleFactor = 1f, m_RefPPU = 100f;
         internal bool m_OverrideSorting, m_PixelPerfect; internal int m_SortingOrder, m_SortingLayerID;
         public RenderMode renderMode { get { return m_RenderMode; } set { m_RenderMode = value; } }

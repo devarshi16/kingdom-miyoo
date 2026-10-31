@@ -65,6 +65,7 @@ namespace UnityEngine
 
     public partial class Animator
     {
+        internal static readonly List<Animator> s_All = new List<Animator>();
         internal RuntimeAnimatorController m_Controller;
         internal float m_Speed = 1f;
         internal AnimatorCullingMode m_CullingMode; internal AnimatorUpdateMode m_UpdateMode;
@@ -720,16 +721,16 @@ namespace KNL
         public static void Step()
         {
             float dt = Time.deltaTime;
-            foreach (var g in World.SceneObjects.ToArray())
+            var all = Animator.s_All;
+            int count = all.Count;
+            for (int i = 0; i < count; i++)
             {
-                if (g.m_Destroyed || !g.activeInHierarchy) continue;
-                foreach (var comp in g.m_Components)
-                {
-                    var a = comp as Animator;
-                    if (a == null || !a.m_Enabled || a.m_Controller == null) continue;
-                    var rt = a.Rt;
-                    if (rt != null) { try { rt.Step(a.m_UpdateMode == AnimatorUpdateMode.UnscaledTime ? Time.unscaledDeltaTime : dt); } catch (Exception e) { Lifecycle.Fail(a, "Animator", e); } }
-                }
+                var a = all[i];
+                if (a == null || a.m_Destroyed || !a.m_Enabled || a.m_Controller == null) continue;
+                var g = a.m_GameObject;
+                if (g == null || g.m_Destroyed || !g.activeInHierarchy) continue;
+                var rt = a.Rt;
+                if (rt != null) { try { rt.Step(a.m_UpdateMode == AnimatorUpdateMode.UnscaledTime ? Time.unscaledDeltaTime : dt); } catch (Exception e) { Lifecycle.Fail(a, "Animator", e); } }
             }
         }
     }

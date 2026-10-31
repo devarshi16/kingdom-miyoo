@@ -19,21 +19,21 @@ namespace KNL
         public static void Prepare()
         {
             roots.Clear();
-            foreach (var g in World.SceneObjects)
+            var all = Canvas.s_All;
+            int count = all.Count;
+            for (int i = 0; i < count; i++)
             {
-                if (g.m_Destroyed || !g.activeInHierarchy) continue;
-                foreach (var c in g.m_Components)
+                var cv = all[i];
+                if (cv == null || cv.m_Destroyed || !cv.enabled || !cv.isRootCanvas) continue;
+                var g = cv.m_GameObject;
+                if (g == null || g.m_Destroyed || !g.activeInHierarchy) continue;
+                roots.Add(cv);
+                if (cv.m_RenderMode != RenderMode.WorldSpace)
                 {
-                    var cv = c as Canvas;
-                    if (cv == null || !cv.enabled || !cv.isRootCanvas) continue;
-                    roots.Add(cv);
-                    if (cv.m_RenderMode != RenderMode.WorldSpace)
-                    {
-                        var rt = cv.transform as RectTransform;
-                        float s = cv.m_ScaleFactor <= 0 ? 1f : cv.m_ScaleFactor;
-                        var want = new Vector2(RenderSystem.Width / s, RenderSystem.Height / s);
-                        if (rt != null && (rt.m_SizeDelta - want).sqrMagnitude > 1e-6f) rt.sizeDelta = want;
-                    }
+                    var rt = cv.transform as RectTransform;
+                    float s = cv.m_ScaleFactor <= 0 ? 1f : cv.m_ScaleFactor;
+                    var want = new Vector2(RenderSystem.Width / s, RenderSystem.Height / s);
+                    if (rt != null && (rt.m_SizeDelta - want).sqrMagnitude > 1e-6f) rt.sizeDelta = want;
                 }
             }
             try { Canvas.SendWillRender(); }

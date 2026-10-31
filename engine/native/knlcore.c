@@ -770,19 +770,19 @@ static void fb_flip(void)
     /* back page when the fb is double height, then pan to it; RGBA -> BGRA, 2x, rotated 180 */
     int pages = g_vinfo.yres_virtual >= 2 * g_vinfo.yres ? 2 : 1;
     int page = pages == 2 ? g_page ^ 1 : 0;
-    int W = g_w * 2;
     uint32_t *dst = g_fbmem + (size_t)page * g_vinfo.yres * g_vinfo.xres;
     for (int y = 0; y < g_h; y++) {
         const uint32_t *src = g_fb + (size_t)y * g_w;
         uint32_t *r0 = dst + (size_t)(g_vinfo.yres - 1 - 2 * y) * g_vinfo.xres;
         uint32_t *r1 = r0 - g_vinfo.xres;
+        uint64_t *dst0 = (uint64_t *)r0;
+        uint64_t *dst1 = (uint64_t *)r1;
         for (int x = 0; x < g_w; x++) {
             uint32_t c = src[g_w - 1 - x];
             c = 0xFF000000u | (c & 0x0000FF00u) | ((c & 0xFFu) << 16) | ((c >> 16) & 0xFFu);
-            r0[2 * x] = c;
-            r0[2 * x + 1] = c;
-            r1[2 * x] = c;
-            r1[2 * x + 1] = c;
+            uint64_t pair = (uint64_t)c | ((uint64_t)c << 32);
+            dst0[x] = pair;
+            dst1[x] = pair;
         }
     }
     if (pages == 2) {

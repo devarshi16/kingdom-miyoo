@@ -448,6 +448,7 @@ namespace KNL
                     comp.m_GameObject = go;
                     comp.name = go.name;
                     go.m_Components.Add(comp);
+                    if (scene != null) RegisterSceneComponent(comp);
                     var tr = comp as Transform;
                     if (tr != null) go.m_Transform = tr;
                     f.instances[cpid] = comp;
@@ -769,8 +770,22 @@ namespace KNL
             var c = (Component)CreateScriptInstance(t);
             c.m_GameObject = go; c.name = go.name;
             go.m_Components.Add(c);
+            if (go.m_Scene != null) RegisterSceneComponent(c);
             Lifecycle.OnComponentAdded(c);
             return c;
+        }
+
+        public static void RegisterSceneComponent(Component c)
+        {
+            if (c == null) return;
+            var r = c as Renderer; if (r != null) { Renderer.s_All.Add(r); return; }
+            var a = c as Animator; if (a != null) { Animator.s_All.Add(a); return; }
+            var col = c as Collider2D; if (col != null) { Collider2D.s_All.Add(col); return; }
+            var rb = c as Rigidbody2D; if (rb != null) { Rigidbody2D.s_All.Add(rb); return; }
+            var cam = c as Camera; if (cam != null) { Camera.s_All.Add(cam); return; }
+            var cv = c as Canvas; if (cv != null) { Canvas.s_All.Add(cv); return; }
+            var al = c as AudioListener; if (al != null) { AudioListener.s_All.Add(al); return; }
+            if (EdgeIndicators.IsEnemy(c)) EdgeIndicators.s_Enemies.Add(c);
         }
 
         public static void ScheduleDestroy(UnityEngine.Object o, float t)
@@ -810,6 +825,14 @@ namespace KNL
             foreach (var o in pendingDestroy.ToArray()) DestroyNow(o);
             pendingDestroy.Clear();
             SceneObjects.RemoveAll(g => g.m_Destroyed);
+            Renderer.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
+            Animator.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
+            Collider2D.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
+            Rigidbody2D.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
+            Camera.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
+            Canvas.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
+            AudioListener.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
+            EdgeIndicators.s_Enemies.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
         }
         public static SceneTag PersistentScene = new SceneTag("DontDestroyOnLoad") { displayName = "DontDestroyOnLoad", persistent = true, buildIndex = -1 };
         public static void MarkPersistent(UnityEngine.Object o)

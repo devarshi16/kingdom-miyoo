@@ -52,6 +52,7 @@ namespace KNL
                     nc.m_Destroyed = false; nc.m_InstanceID = 0; nc.EnsureId();
                     nc.m_GameObject = ng; nc.name = ng.name;
                     ng.m_Components.Add(nc);
+                    RegisterSceneComponent(nc);
                     var tr = nc as Transform;
                     if (tr != null) { ng.m_Transform = tr; tr.m_Children = new List<Transform>(); tr.m_Parent = null; }
                     map[c] = nc;

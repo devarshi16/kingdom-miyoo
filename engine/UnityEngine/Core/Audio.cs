@@ -63,6 +63,7 @@ namespace UnityEngine
 
     public sealed partial class AudioListener
     {
+        internal static readonly List<AudioListener> s_All = new List<AudioListener>();
         static bool s_Pause; static float s_Volume = 1f;
         public static bool pause { get { return s_Pause; } set { s_Pause = value; } }
         public static float volume { get { return s_Volume; } set { s_Volume = Mathf.Clamp01(value); } }
@@ -303,8 +304,12 @@ namespace KNL
                 if (listener == null || listener.m_Destroyed || !listener.isActiveAndEnabled)
                 {
                     listener = null;
-                    foreach (var g in World.SceneObjects)
-                        if (g.activeInHierarchy) { var al = g.GetComponent<UnityEngine.AudioListener>(); if (al != null && al.enabled) { listener = al; break; } }
+                    var all = AudioListener.s_All;
+                    for (int i = 0; i < all.Count; i++)
+                    {
+                        var al = all[i];
+                        if (al != null && !al.m_Destroyed && al.isActiveAndEnabled) { listener = al; break; }
+                    }
                 }
             }
             if (listener != null) return listener.transform.position;

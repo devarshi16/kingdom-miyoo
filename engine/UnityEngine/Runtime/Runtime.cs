@@ -226,7 +226,9 @@ namespace KNL
                 if (st.waitFor != null && !st.waitFor.done) continue;
                 if (st.waitOp != null && !st.waitOp.isDone) continue;
                 if (st.custom != null && st.custom.keepWaiting) continue;
+                long tC = Prof.Level > 1 ? Prof.Now() : 0;
                 Step(st);
+                if (Prof.Level > 1) Prof.Add("    coroutine " + (st.owner != null ? st.owner.GetType().Name : "?") + "." + (st.methodName ?? st.routine.GetType().Name), tC);
             }
             int write = 0;
             for (int i = 0; i < active.Count; i++)
@@ -262,7 +264,9 @@ namespace KNL
                 var e = list[i];
                 if (e.dead || Time.time < e.at) continue;
                 if (e.o == null) { e.dead = true; continue; }
+                long tI = Prof.Level > 1 ? Prof.Now() : 0;
                 Reflect.InvokeMessage(e.o, e.m, null);
+                if (Prof.Level > 1) Prof.Add("    invoke " + e.o.GetType().Name + "." + e.m, tI);
                 if (e.repeat > 0f) e.at += e.repeat; else e.dead = true;
             }
             int write = 0;
