@@ -133,7 +133,6 @@ namespace KNL
         }
         static readonly KeyOrder keyOrder = new KeyOrder();
         static Key[] keys = new Key[256];
-        static Vector4[] s_Lights;   // _Light_PositionArray for this frame
 
         public static void Init(bool window)
         {
@@ -236,7 +235,7 @@ namespace KNL
             if (keys.Length < n) keys = new Key[n * 2];
             for (int i = 0; i < n; i++) { var it = items[i]; keys[i] = new Key { order = it.order, dist = it.dist, id = it.id, idx = i }; }
             Array.Sort(keys, 0, n, keyOrder);
-            if (!Shader.s_VectorArrays.TryGetValue("_Light_PositionArray", out s_Lights)) s_Lights = null;
+            PrepareLights(cp, halfW);
             pt = Prof.Add("render: sort", pt);
             for (int i = 0; i < n; i++)
             {
@@ -313,22 +312,42 @@ namespace KNL
         }
         static readonly int[] mul12 = new int[12], add3 = new int[3];
 
+        struct ActiveLight { public float x, y, z, w; }
+        static readonly ActiveLight[] s_ActiveLights = new ActiveLight[32];
+        static int s_ActiveLightCount;
+
+        static void PrepareLights(Vector3 cp, float halfW)
+        {
+            s_ActiveLightCount = 0;
+            Vector4[] lights;
+            if (!Shader.s_VectorArrays.TryGetValue("_Light_PositionArray", out lights) || lights == null) return;
+            float minX = cp.x - halfW - 4f, maxX = cp.x + halfW + 4f;
+            for (int i = 0; i < lights.Length; i++)
+            {
+                float w = lights[i].w;
+                if (w <= 0f) continue;
+                float lx = lights[i].x;
+                if (lx < minX || lx > maxX) continue;
+                if (s_ActiveLightCount < s_ActiveLights.Length)
+                    s_ActiveLights[s_ActiveLightCount++] = new ActiveLight { x = lx, y = lights[i].y, z = lights[i].z, w = w };
+            }
+        }
+
         /// ShadeSH9 with flat ambient (= RenderSettings.ambientSkyColor in gamma space) plus the
         /// LightFaker point lights: (1 - min(d / 3, 1)) * intensity * (0.49, 0.425, 0.34).
         static Color VertexLight(Vector3 p)
         {
             var amb = RenderSettings.s_AmbientSky;
             float r = amb.r, g = amb.g, b = amb.b;
-            var lights = s_Lights;
-            if (lights != null)
-                for (int i = 0; i < lights.Length; i++)
-                {
-                    float w = lights[i].w;
-                    if (w == 0f) continue;
-                    float dx = p.x - lights[i].x, dy = p.y - lights[i].y, dz = p.z - lights[i].z;
-                    float f = (1f - Mathf.Min(Mathf.Sqrt(dx * dx + dy * dy + dz * dz) / 3f, 1f)) * w;
-                    r += f * 0.49f; g += f * 0.425f; b += f * 0.34f;
-                }
+            int n = s_ActiveLightCount;
+            for (int i = 0; i < n; i++)
+            {
+                float dx = p.x - s_ActiveLights[i].x, dy = p.y - s_ActiveLights[i].y, dz = p.z - s_ActiveLights[i].z;
+                float d2 = dx * dx + dy * dy + dz * dz;
+                if (d2 >= 9f) continue;
+                float f = (1f - Mathf.Sqrt(d2) * (1f / 3f)) * s_ActiveLights[i].w;
+                r += f * 0.49f; g += f * 0.425f; b += f * 0.34f;
+            }
             return new Color(r, g, b, 1f);
         }
 

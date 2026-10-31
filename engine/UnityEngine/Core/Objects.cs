@@ -160,33 +160,28 @@ namespace UnityEngine
         public string tag { get { return m_Tag; } set { m_Tag = value; } }
         public bool CompareTag(string t) { return m_Tag == t; }
         public bool activeSelf { get { return m_IsActive; } }
+
+        internal static int s_ActiveTopologyVersion = 1;
+        internal static int NewPass() { return ++s_ActiveTopologyVersion; }
+        int c_ActivePass; bool c_Active;
         public bool activeInHierarchy
         {
             get
             {
-                if (!m_IsActive || m_Scene == null) return false;
-                var p = m_Transform != null ? m_Transform.parent : null;
-                return p == null || p.m_GameObject.activeInHierarchy;
+                if (c_ActivePass == s_ActiveTopologyVersion) return c_Active;
+                bool a = m_IsActive && m_Scene != null;
+                if (a) { var p = m_Transform != null ? m_Transform.m_Parent : null; a = p == null || p.m_GameObject.activeInHierarchy; }
+                c_ActivePass = s_ActiveTopologyVersion; c_Active = a;
+                return a;
             }
         }
-        // activeInHierarchy memoised for one engine pass (physics gather, render collect) during which no
-        // object changes activity or parent; a new pass id invalidates every memo at once (M5).
-        int c_ActivePass; bool c_Active;
-        static int s_Pass;
-        internal static int NewPass() { return ++s_Pass; }
-        internal bool ActiveInPass(int pass)
-        {
-            if (c_ActivePass == pass) return c_Active;
-            bool a = m_IsActive && m_Scene != null;
-            if (a) { var p = m_Transform != null ? m_Transform.m_Parent : null; a = p == null || p.m_GameObject.ActiveInPass(pass); }
-            c_ActivePass = pass; c_Active = a;
-            return a;
-        }
+        internal bool ActiveInPass(int pass) { return activeInHierarchy; }
         public bool isStatic { get; set; }
         public void SetActive(bool value)
         {
             if (m_IsActive == value) return;
             m_IsActive = value;
+            s_ActiveTopologyVersion++;
             KNL.World.OnActiveChanged(this);
         }
         public UnityEngine.SceneManagement.Scene scene { get { return default(UnityEngine.SceneManagement.Scene); } }
@@ -365,6 +360,7 @@ namespace UnityEngine
         public void SetParent(Transform p, bool worldPositionStays)
         {
             if (p == m_Parent) return;
+            GameObject.s_ActiveTopologyVersion++;
             Vector3 wp = position; Quaternion wr = rotation; Vector3 ws = lossyScale;
             if (m_Parent != null) m_Parent.m_Children.Remove(this);
             m_Parent = p;

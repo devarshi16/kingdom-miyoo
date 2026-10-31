@@ -216,9 +216,10 @@ namespace KNL
 
         public static void Tick()
         {
-            var snapshot = active.ToArray();
-            foreach (var st in snapshot)
+            int count = active.Count;
+            for (int i = 0; i < count; i++)
             {
+                var st = active[i];
                 if (st.done) continue;
                 if (st.owner == null || !st.owner.gameObject.activeInHierarchy) continue;
                 if (st.waitUntil >= 0f && Time.time < st.waitUntil) continue;
@@ -227,7 +228,17 @@ namespace KNL
                 if (st.custom != null && st.custom.keepWaiting) continue;
                 Step(st);
             }
-            active.RemoveAll(s => s.done || (object)s.owner == null || s.owner.m_Destroyed);
+            int write = 0;
+            for (int i = 0; i < active.Count; i++)
+            {
+                var s = active[i];
+                if (!s.done && (object)s.owner != null && !s.owner.m_Destroyed)
+                {
+                    if (write != i) active[write] = s;
+                    write++;
+                }
+            }
+            if (write < active.Count) active.RemoveRange(write, active.Count - write);
         }
 
         public static void Stop(MonoBehaviour o, IEnumerator r) { foreach (var s in active) if (s.owner == o && s.routine == r) s.done = true; }
@@ -245,14 +256,26 @@ namespace KNL
         public static bool IsInvoking(MonoBehaviour o, string m) { foreach (var e in list) if (!e.dead && e.o == o && e.m == m) return true; return false; }
         public static void Tick()
         {
-            foreach (var e in list.ToArray())
+            int count = list.Count;
+            for (int i = 0; i < count; i++)
             {
+                var e = list[i];
                 if (e.dead || Time.time < e.at) continue;
                 if (e.o == null) { e.dead = true; continue; }
                 Reflect.InvokeMessage(e.o, e.m, null);
                 if (e.repeat > 0f) e.at += e.repeat; else e.dead = true;
             }
-            list.RemoveAll(e => e.dead);
+            int write = 0;
+            for (int i = 0; i < list.Count; i++)
+            {
+                var e = list[i];
+                if (!e.dead)
+                {
+                    if (write != i) list[write] = e;
+                    write++;
+                }
+            }
+            if (write < list.Count) list.RemoveRange(write, list.Count - write);
         }
     }
 

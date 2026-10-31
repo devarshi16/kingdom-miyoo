@@ -102,6 +102,7 @@ namespace UnityEngine
         public static Vector2 Min(Vector2 a, Vector2 b) { return new Vector2(Mathf.Min(a.x, b.x), Mathf.Min(a.y, b.y)); }
         public static Vector2 Max(Vector2 a, Vector2 b) { return new Vector2(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y)); }
         public static float Angle(Vector2 a, Vector2 b) { return Mathf.Acos(Mathf.Clamp(Dot(a.normalized, b.normalized), -1f, 1f)) * Mathf.Rad2Deg; }
+        public static Vector2 ClampMagnitude(Vector2 v, float max) { return v.sqrMagnitude > max * max ? v.normalized * max : v; }
         public static Vector2 operator +(Vector2 a, Vector2 b) { return new Vector2(a.x + b.x, a.y + b.y); }
         public static Vector2 operator -(Vector2 a, Vector2 b) { return new Vector2(a.x - b.x, a.y - b.y); }
         public static Vector2 operator -(Vector2 a) { return new Vector2(-a.x, -a.y); }

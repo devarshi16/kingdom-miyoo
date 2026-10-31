@@ -29,7 +29,7 @@ B="$HERE/build"; GAME="$OUT/Roms/PORTS/Games/KingdomNewLands"
 echo "== libknlcore.so (armhf, Cortex-A7 NEON hard-float)"
 mkdir -p "$GAME/lib" "$GAME/managed" "$GAME/mono/bin" "$GAME/mono/lib/mono/4.5" "$GAME/mono/etc/mono" "$GAME/data" "$GAME/save" "$GAME/logs" \
          "$OUT/Roms/PORTS/Shortcuts/Strategy"
-F="-O2 -std=gnu99 -fPIC -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -marm"
+F="-O3 -std=gnu99 -fPIC -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -marm"
 T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT
 "$CC" $F -DKNL_MIYOO -c "$HERE/native/knlcore.c" -o "$T/knlcore.o"
 "$CC" $F -DKNL_MIYOO -I"$MI_INC" -c "$HERE/native/knlaudio.c" -o "$T/knlaudio.o"

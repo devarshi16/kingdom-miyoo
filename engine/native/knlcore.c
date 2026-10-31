@@ -233,6 +233,7 @@ static int aa_columns(const Tex *T, float ia, float ic, float tx, int *x0, int *
 
 static inline uint32_t blend(uint32_t dst, uint32_t r, uint32_t g, uint32_t b, uint32_t a, int mode)
 {
+    if (mode == 0 && a >= 255) return (r & 255) | ((g & 255) << 8) | ((b & 255) << 16) | 0xFF000000u;
     uint32_t dr = dst & 255, dg = (dst >> 8) & 255, db = (dst >> 16) & 255;
     if (mode == 1) {                    /* additive (src * a + dst) */
         dr += DIV255(r * a); dg += DIV255(g * a); db += DIV255(b * a);
@@ -373,24 +374,46 @@ static void do_draw_lit(int t, float a, float b, float c, float d, float tx, flo
         uint32_t *row = g_fb + (size_t)y * g_w;
         float vrow = aa ? ib * (x0 + 0.5f - tx) + id * sy : 0;
         if (aa && (vrow < 0 || (int)vrow >= T->h)) continue;
+        int iv = (int)vrow;
+        size_t row_base = aa ? (size_t)iv * T->w : 0;
+
+        int cur_mr = 0, step_mr = 0, cur_mg = 0, step_mg = 0, cur_mb = 0, step_mb = 0;
+        if (aa && !flat) {
+            float fv = vrow * invh, w0 = 1.0f - fv, w1 = fv;
+            float lr0 = cm[0] * w0 + cm[6] * w1, lr1 = cm[3] * w0 + cm[9] * w1;
+            float lg0 = cm[1] * w0 + cm[7] * w1, lg1 = cm[4] * w0 + cm[10] * w1;
+            float lb0 = cm[2] * w0 + cm[8] * w1, lb1 = cm[5] * w0 + cm[11] * w1;
+            float d_u = ia * invw;
+            float u0 = g_ucol[x0] * invw;
+            cur_mr = (int)((lr0 + (lr1 - lr0) * u0) * 65536.0f); step_mr = (int)(((lr1 - lr0) * d_u) * 65536.0f);
+            cur_mg = (int)((lg0 + (lg1 - lg0) * u0) * 65536.0f); step_mg = (int)(((lg1 - lg0) * d_u) * 65536.0f);
+            cur_mb = (int)((lb0 + (lb1 - lb0) * u0) * 65536.0f); step_mb = (int)(((lb1 - lb0) * d_u) * 65536.0f);
+        }
+
         for (int x = x0; x < x1; x++) {
-            float u, v; int iu, iv;
+            float u, v; int iu;
             if (aa) {
                 iu = g_iucol[x];
-                if (iu < 0) continue;
-                u = g_ucol[x]; v = vrow; iv = (int)v;
+                if (iu < 0) {
+                    if (!flat) { cur_mr += step_mr; cur_mg += step_mg; cur_mb += step_mb; }
+                    continue;
+                }
             } else {
                 float sx = x + 0.5f - tx;
                 u = ia * sx + ic * sy; v = ib * sx + id * sy;
                 if (u < 0 || v < 0) continue;
                 iu = (int)u; iv = (int)v;
                 if (iu >= T->w || iv >= T->h) continue;
+                row_base = (size_t)iv * T->w;
             }
-            uint32_t p = TEXEL(T, (size_t)iv * T->w + iu);
+            uint32_t p = TEXEL(T, row_base + iu);
             int pa = p >> 24, pr = p & 255, pg = (p >> 8) & 255, pb = (p >> 16) & 255;
             int oa;
             if (recolor) {
-                if (pa < 128) continue;
+                if (pa < 128) {
+                    if (aa && !flat) { cur_mr += step_mr; cur_mg += step_mg; cur_mb += step_mb; }
+                    continue;
+                }
                 if (pa < 224) {
                     if (pa >= 192) { pg = DIV255(pr * Ag); pb = DIV255(pr * Ab); pr = DIV255(pr * Ar); }
                     else           { pg = DIV255(pr * Bg); pb = DIV255(pr * Bb); pr = DIV255(pr * Br); }
@@ -398,15 +421,27 @@ static void do_draw_lit(int t, float a, float b, float c, float d, float tx, flo
                 oa = ta;
             } else {
                 oa = DIV255(pa * ta);
-                if (oa < 3) continue;           /* shader: texkill(a - 0.01) */
+                if (oa < 3) {
+                    if (aa && !flat) { cur_mr += step_mr; cur_mg += step_mg; cur_mb += step_mb; }
+                    continue;           /* shader: texkill(a - 0.01) */
+                }
             }
-            if (!oa) continue;
+            if (!oa) {
+                if (aa && !flat) { cur_mr += step_mr; cur_mg += step_mg; cur_mb += step_mb; }
+                continue;
+            }
             if (!flat) {
-                float fu = u * invw, fv = v * invh;
-                float w00 = (1 - fu) * (1 - fv), w10 = fu * (1 - fv), w01 = (1 - fu) * fv, w11 = fu * fv;
-                mr = (int)(cm[0] * w00 + cm[3] * w10 + cm[6] * w01 + cm[9] * w11);
-                mg = (int)(cm[1] * w00 + cm[4] * w10 + cm[7] * w01 + cm[10] * w11);
-                mb = (int)(cm[2] * w00 + cm[5] * w10 + cm[8] * w01 + cm[11] * w11);
+                if (aa) {
+                    mr = cur_mr >> 16; cur_mr += step_mr;
+                    mg = cur_mg >> 16; cur_mg += step_mg;
+                    mb = cur_mb >> 16; cur_mb += step_mb;
+                } else {
+                    float fu = u * invw, fv = v * invh;
+                    float w00 = (1 - fu) * (1 - fv), w10 = fu * (1 - fv), w01 = (1 - fu) * fv, w11 = fu * fv;
+                    mr = (int)(cm[0] * w00 + cm[3] * w10 + cm[6] * w01 + cm[9] * w11);
+                    mg = (int)(cm[1] * w00 + cm[4] * w10 + cm[7] * w01 + cm[10] * w11);
+                    mb = (int)(cm[2] * w00 + cm[5] * w10 + cm[8] * w01 + cm[11] * w11);
+                }
             }
             int r = ((pr * mr) >> 8) + ar, g = ((pg * mg) >> 8) + ag, bl = ((pb * mb) >> 8) + ab;
             if (r > 255) r = 255;
@@ -739,13 +774,15 @@ static void fb_flip(void)
     uint32_t *dst = g_fbmem + (size_t)page * g_vinfo.yres * g_vinfo.xres;
     for (int y = 0; y < g_h; y++) {
         const uint32_t *src = g_fb + (size_t)y * g_w;
-        uint32_t *r0 = dst + (size_t)(g_vinfo.yres - 1 - 2 * y) * g_vinfo.xres + W - 1;
+        uint32_t *r0 = dst + (size_t)(g_vinfo.yres - 1 - 2 * y) * g_vinfo.xres;
         uint32_t *r1 = r0 - g_vinfo.xres;
         for (int x = 0; x < g_w; x++) {
-            uint32_t c = src[x];
+            uint32_t c = src[g_w - 1 - x];
             c = 0xFF000000u | (c & 0x0000FF00u) | ((c & 0xFFu) << 16) | ((c >> 16) & 0xFFu);
-            r0[-2 * x] = r0[-2 * x - 1] = c;
-            r1[-2 * x] = r1[-2 * x - 1] = c;
+            r0[2 * x] = c;
+            r0[2 * x + 1] = c;
+            r1[2 * x] = c;
+            r1[2 * x + 1] = c;
         }
     }
     if (pages == 2) {
