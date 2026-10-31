@@ -1,0 +1,21 @@
+# converted game data — derived from the user's copy, never commit
+extracted/
+*.assets
+*.resS
+*.resource
+Kingdom_Data/
+
+tools/.venv/
+__pycache__/
+*.pyc
+
+# engine build outputs (derived from the user's DLLs)
+engine/build/
+engine/build-miyoo/
+engine/UnityEngine/Generated/
+shots/
+engine/Rewired/Generated/
+pack/
+
+.m2_drop/
+*.log

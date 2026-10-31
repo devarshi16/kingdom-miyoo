@@ -1,0 +1,12 @@
+Wheel-Version: 1.0
+Generator: setuptools (75.3.4)
+Root-Is-Purelib: true
+Tag: cp38-abi3-manylinux_2_5_x86_64
+Tag: cp38-abi3-manylinux1_x86_64
+Tag: cp38-abi3-manylinux_2_17_x86_64
+Tag: cp38-abi3-manylinux2014_x86_64
+Tag: cp38-abi3t-manylinux_2_5_x86_64
+Tag: cp38-abi3t-manylinux1_x86_64
+Tag: cp38-abi3t-manylinux_2_17_x86_64
+Tag: cp38-abi3t-manylinux2014_x86_64
+
