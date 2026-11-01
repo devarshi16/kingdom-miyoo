@@ -66,6 +66,7 @@ python3 -m unittest discover -s tests -v
 ./tests/run_native.sh
 ./tests/run_visual.sh
 ./tests/run_coin_counter.sh
+./tests/run_occlusion.sh
 ./tools/package_release.sh
 ```
 

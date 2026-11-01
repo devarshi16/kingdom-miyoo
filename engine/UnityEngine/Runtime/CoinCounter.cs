@@ -141,26 +141,61 @@ public static class CoinCounter {
         "111101101101111", "010110010010111", "111001111100111", "111001111001111", "101101111001001",
         "111100111001111", "111100111101111", "111001001001001", "111101111101111", "111101111001111"
     };
+    const int AtlasWidth = 42, AtlasHeight = 11;
+    static int atlas = -1;
+    static void AtlasRect(byte[] pixels, int x, int y, int w, int h, uint color) {
+        for (int row = y; row < y+h; row++) for (int col = x; col < x+w; col++) {
+            int p = (row*AtlasWidth+col)*4;
+            pixels[p] = (byte)color; pixels[p+1] = (byte)(color>>8);
+            pixels[p+2] = (byte)(color>>16); pixels[p+3] = (byte)(color>>24);
+        }
+    }
+    static void PrepareAtlas() {
+        if (atlas >= 0) return;
+        var pixels = new byte[AtlasWidth*AtlasHeight*4];
+        for (int digit = 0; digit < 10; digit++)
+            for (int row = 0; row < 5; row++) for (int col = 0; col < 3; col++)
+                if (Digits[digit][row*3+col] == '1') AtlasRect(pixels, digit*3+col, row, 1, 1, 0xFFFFFFFFu);
+        // The same hand-authored nine by eleven icon, composed once rather than five native
+        // gradient calls per frame. The adjacent white dash supports negative diagnostic values.
+        AtlasRect(pixels, 32, 0, 5, 11, 0xFF25466Bu); AtlasRect(pixels, 30, 2, 9, 7, 0xFF25466Bu);
+        AtlasRect(pixels, 32, 1, 5, 9, 0xFF47BCEAu); AtlasRect(pixels, 31, 3, 7, 5, 0xFF47BCEAu);
+        AtlasRect(pixels, 33, 2, 1, 7, 0xFFB5EFFFu); AtlasRect(pixels, 39, 0, 3, 1, 0xFFFFFFFFu);
+        atlas = Native.knl_tex_create(AtlasWidth, AtlasHeight, pixels);
+    }
+    static void Glyph(int x, int y, int w, int h, int u, int v, int tw, int th, uint color) {
+        Native.knl_draw_quad(atlas, x, y, x+w, y, x, y+h,
+            u, v, u+tw, v, u, v+th, color, 0, 0, 0, RenderSystem.Width, RenderSystem.Height);
+    }
     static void Rect(int x, int y, int w, int h, uint c) {
         Native.knl_quad_gradient(x, y, x+w, y+h, c, c, c, c, 0);
     }
-    public static void Draw() {
-        int count;
-        if (!TryRead(out count)) return;
-        if (shownText == null || shownCount != count) { shownCount = count; shownText = count.ToString(System.Globalization.CultureInfo.InvariantCulture); }
-        int width = 19 + shownText.Length * 8, left = RenderSystem.Width - 5 - width, top = 5;
-        Rect(left, top, width, 19, 0xB8201B16u);
-        // Seven-pixel gold icon, with a bright center and dark edge, readable at native resolution.
+    static void DrawWithoutAtlas(int left, int top) {
+        // Keep the wallet readable even if the tiny native texture allocation fails.
         Rect(left+5, top+4, 5, 11, 0xFF25466Bu); Rect(left+3, top+6, 9, 7, 0xFF25466Bu);
         Rect(left+5, top+5, 5, 9, 0xFF47BCEAu); Rect(left+4, top+7, 7, 5, 0xFF47BCEAu);
         Rect(left+6, top+6, 1, 7, 0xFFB5EFFFu);
         for (int i = 0; i < shownText.Length; i++) {
+            int x = left+16+i*8; char c = shownText[i];
+            if (c == '-') { Rect(x, top+9, 6, 2, 0xFFE7F1FFu); continue; }
+            for (int row = 0; row < 5; row++) for (int col = 0; col < 3; col++)
+                if (Digits[c-'0'][row*3+col] == '1') Rect(x+col*2, top+4+row*2, 2, 2, 0xFFE7F1FFu);
+        }
+    }
+    public static void Draw() {
+        int count;
+        if (!TryRead(out count)) return;
+        PrepareAtlas();
+        if (shownText == null || shownCount != count) { shownCount = count; shownText = count.ToString(System.Globalization.CultureInfo.InvariantCulture); }
+        int width = 19 + shownText.Length * 8, left = RenderSystem.Width - 5 - width, top = 5;
+        Rect(left, top, width, 19, 0xB8201B16u);
+        if (atlas < 0) { DrawWithoutAtlas(left, top); return; }
+        Glyph(left+3, top+4, 9, 11, 30, 0, 9, 11, 0xFFFFFFFFu);
+        for (int i = 0; i < shownText.Length; i++) {
             int x = left+16+i*8;
             char c = shownText[i];
-            if (c == '-') { Rect(x, top+9, 6, 2, 0xFFE7F1FFu); continue; }
-            string bitmap = Digits[c-'0'];
-            for (int row = 0; row < 5; row++) for (int col = 0; col < 3; col++)
-                if (bitmap[row*3+col] == '1') Rect(x+col*2, top+4+row*2, 2, 2, 0xFFE7F1FFu);
+            if (c == '-') Glyph(x, top+9, 6, 2, 39, 0, 3, 1, 0xFFE7F1FFu);
+            else Glyph(x, top+4, 6, 10, (c-'0')*3, 0, 3, 5, 0xFFE7F1FFu);
         }
     }
 }

@@ -166,6 +166,7 @@ namespace KNL
             foreach (var s in list.OrderBy(x => x.info.order).ThenBy(x => x.seq))
             {
                 if (!s.awoken) CoinCounter.BeforeAwake(s.mb);
+                if (!s.awoken) VisualQuality.BeforeAwake(s.mb);
                 if (s.mb.m_Destroyed || !s.mb.gameObject.activeInHierarchy) continue;
                 if (!s.awoken) { s.awoken = true; Call(s, s.info.Awake, "Awake"); }
                 if (s.mb.m_Destroyed || !s.mb.gameObject.activeInHierarchy) continue;
@@ -211,6 +212,7 @@ namespace KNL
             if (mb == null || mb.gameObject == null || mb.gameObject.m_Scene == null) return;
             var s = State(mb);
             if (!s.awoken) CoinCounter.BeforeAwake(mb);
+            if (!s.awoken) VisualQuality.BeforeAwake(mb);
             if (!mb.gameObject.activeInHierarchy) return;
             if (mb.m_Enabled && !s.enabledCalled)
             {

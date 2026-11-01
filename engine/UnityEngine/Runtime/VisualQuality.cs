@@ -12,6 +12,27 @@ namespace KNL
     {
         public static bool Lite { get { return string.Equals(Environment.GetEnvironmentVariable("KNL_VISUALS"), "lite", StringComparison.OrdinalIgnoreCase); } }
 
+        // The shipped main scene has dedicated decorative cloud controllers (160
+        // cumulii, 30 fog sheets, 25 mists, 10 stratus at maximum weather density).
+        // Budget before their first Awake/Update creates any pooled cloud objects.
+        // World weather/density/time still advance; only these named decorations shrink.
+        public static void BeforeAwake(MonoBehaviour mb)
+        {
+            if (!Lite || mb == null || mb.GetType().FullName != "CloudController") return;
+            var max = mb.GetType().GetField("maxClouds", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            if (max == null || max.FieldType != typeof(int) || mb.gameObject == null) return;
+            int cap;
+            switch (mb.gameObject.name)
+            {
+                case "CloudsCumulus": cap = 12; break;
+                case "Fogs": cap = 0; break;
+                case "Mists": cap = 0; break;
+                case "CloudsStratus": cap = 4; break;
+                default: return;
+            }
+            max.SetValue(mb, Math.Min((int)max.GetValue(mb), cap));
+        }
+
         // ParticleSystemRenderer is not drawn by this port. The shipped game only writes
         // emitter settings; it never reads the resulting particles for gameplay. Keep
         // Awake/Start/OnEnable and all emitter APIs intact, but avoid computing invisible

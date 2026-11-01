@@ -17,6 +17,7 @@ namespace KNL
         [DllImport(Lib)] public static extern int knl_has_window();
         [DllImport(Lib)] public static extern void knl_shutdown();
         [DllImport(Lib)] public static extern int knl_tex_load_png(string path, out int w, out int h);
+        [DllImport(Lib)] public static extern int knl_tex_create(int w, int h, byte[] rgba);
         [DllImport(Lib)] public static extern void knl_clear(uint rgba);
         [DllImport(Lib)] public static extern void knl_draw(int tex, float a, float b, float c, float d, float tx, float ty, uint tint, int mode);
         [DllImport(Lib)] public static extern int knl_tex_from_pack_indexed(long off, int w, int h, int npal);

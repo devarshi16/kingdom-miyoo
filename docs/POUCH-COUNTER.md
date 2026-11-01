@@ -4,6 +4,8 @@ The Miyoo launcher now defaults to `KNL_WALLET=counter` and `KNL_VISUALS=lite`. 
 
 The counter reads the original player's actual Wallet.coins. Physical UI bag objects stay inactive before Awake; no BagCoin objects, contact solver or bag animation coroutines are needed. Gameplay world coins, other characters' wallets, pickup/payment, taxes, upgrades and saving continue through the original game code. The inactive tagged bag remains available to the original Player's initialization and selection references.
 
+The hand-authored counter icon/digits use one cached 1,848-byte atlas. A two-digit balance needs four native drawing calls. Seven regression cases, including negative values and integer extremes, match the previous counter pixels exactly and verify stable texture memory.
+
 ## Original measurements
 
 Twenty completed, error-free trials ran in an instrumented private copy of the original **Windows x86 Unity 2017.1.2p1 player**, using its native Physics2D implementation. The installed original files were not modified. REA managed evidence identified the original assembly and call relationships; independent CIL inspection and runtime hooks established the measured spill path. REA static evidence IDs and artifact hashes are retained in [provenance](evidence/original-pouch-20.json).

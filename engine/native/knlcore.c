@@ -50,6 +50,9 @@ static int g_w, g_h, g_scale;
 static uint32_t *g_fb;            /* framebuffer, RGBA (R low byte), alpha ignored */
 static Tex *g_tex; static int g_ntex, g_captex;
 static int g_stats_sprites, g_stats_pixels;
+/* Worker-local raster bound: pixels hidden by a later opaque bottom fill need
+   no sprite shading. -1 leaves immediate draws and lists without that fill intact. */
+static int g_sprite_clip_bottom = -1;
 
 #ifdef KNL_SDL
 static SDL_Window *g_win; static SDL_Renderer *g_ren; static SDL_Texture *g_sdltex;
@@ -325,6 +328,7 @@ static void do_draw(int t, float a, float b, float c, float d, float tx, float t
     if (y0 < 0) y0 = 0;
     if (x1 > g_w) x1 = g_w;
     if (y1 > g_h) y1 = g_h;
+    if (g_sprite_clip_bottom >= 0 && y1 > g_sprite_clip_bottom) y1 = g_sprite_clip_bottom;
     if (x0 >= x1 || y0 >= y1) return;
 
     uint32_t tr = tint & 255, tg = (tint >> 8) & 255, tb = (tint >> 16) & 255, ta = tint >> 24;
@@ -408,6 +412,7 @@ static void do_draw_lit(int t, float a, float b, float c, float d, float tx, flo
     if (y0 < 0) y0 = 0;
     if (x1 > g_w) x1 = g_w;
     if (y1 > g_h) y1 = g_h;
+    if (g_sprite_clip_bottom >= 0 && y1 > g_sprite_clip_bottom) y1 = g_sprite_clip_bottom;
     if (x0 >= x1 || y0 >= y1) return;
 
     int tr = tint & 255, tg = (tint >> 8) & 255, tb = (tint >> 16) & 255, ta = tint >> 24;
@@ -761,15 +766,35 @@ static void capture_list(const CmdList *L)
     fwrite(L->c, sizeof(Cmd), L->n, f);
     fclose(f);
 }
+/* Lite water is an opaque full-width vertical gradient to the bottom. Only
+   recognize that exact coverage/blend shape; translucent, additive, partial
+   width and bounded panels are never occluders. Clip sprites before the last
+   such fill, then restore their full bounds, preserving foreground/HUD draws. */
+static int bottom_occluder(const CmdList *L, int *bottom)
+{
+    for (int k = L->n - 1; k >= 0; k--) {
+        const Cmd *c = &L->c[k]; const float *f = c->f;
+        if (c->op == C_GRAD && c->i[0] == 0 && f[0] <= 0.f && f[2] >= g_w &&
+            f[1] >= 0.f && f[1] < g_h && f[3] >= g_h && f[3] > f[1] &&
+            c->u[0] == c->u[1] && c->u[2] == c->u[3] &&
+            (c->u[0] >> 24) == 255 && (c->u[2] >> 24) == 255) {
+            *bottom = (int)floorf(f[1] + 0.5f); return k;
+        }
+    }
+    *bottom = -1; return -1;
+}
+
 static void run_list(CmdList *L)
 {
     capture_list(L);
+    int clip_bottom, occluder = bottom_occluder(L, &clip_bottom);
 #ifdef KNL_MIYOO
     static int prof = -1, frames, counts[6]; static double totals[6];
     if (prof < 0) { const char *p = getenv("KNL_PROF"); prof = p && atoi(p) > 0; }
 #endif
     for (int k = 0; k < L->n; k++) {
         const Cmd *c = &L->c[k]; const float *f = c->f;
+        g_sprite_clip_bottom = k < occluder ? clip_bottom : -1;
 #ifdef KNL_MIYOO
         struct timespec before, after;
         if (prof) clock_gettime(CLOCK_MONOTONIC, &before);
@@ -791,6 +816,7 @@ static void run_list(CmdList *L)
         }
 #endif
     }
+    g_sprite_clip_bottom = -1;
 #ifdef KNL_MIYOO
     if (prof && ++frames == 300) {
         fprintf(stderr, "[raster] clear/draw/lit/UI/gradient/reflect ms and calls per frame:");
