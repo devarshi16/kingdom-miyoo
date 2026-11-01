@@ -64,6 +64,7 @@ static class Program
         {
             try { Lifecycle.ApplicationQuit(); } catch (Exception e) { Console.Error.WriteLine("[shutdown] " + e); }
             try { AudioNative.knl_audio_shutdown(); } catch (Exception e) { Console.Error.WriteLine("[shutdown] audio: " + e.Message); }
+            try { PouchPhysics.Reset(); } catch (Exception e) { Console.Error.WriteLine("[shutdown] pouch: " + e.Message); }
             try { Native.knl_shutdown(); } catch (Exception e) { Console.Error.WriteLine("[shutdown] video: " + e.Message); }
         }
     }
@@ -217,6 +218,7 @@ static class Program
         SceneLoader.LoadNow(SceneLoader.BuildScenes.Length > 0 ? SceneLoader.BuildScenes[0] : "level0", false);
         Console.Error.WriteLine("[knl] booted scene 0 in " + sw.ElapsedMilliseconds + " ms");
         double logicMs = 0, renderMs = 0, presentMs = 0, perfLogic = 0, perfRender = 0;
+        double perfWall = sw.Elapsed.TotalMilliseconds;
         uint lastTicks = Native.knl_ticks_ms();
         // longest frame step: below 1/maxDt fps the game slows down instead of running extra 50 Hz physics
         // steps to catch up (each costs ~15 ms on the Miyoo, which made slow frames slower; D22)
@@ -245,7 +247,7 @@ static class Program
                     if (!Equals(v, lastWatch)) { Console.Error.WriteLine("[watch] frame " + f + ": " + watch + " = " + v + " (obj " + watchObj.GetInstanceID() + ")"); lastWatch = v; }
                 }
             }
-            if (a.Has("test-coins") && f == 180)
+            if (a.Has("test-coins") && f == int.Parse(a.Get("coin-frame", "450")))
             {
                 var plObj = World.SceneObjects.FirstOrDefault(g => g.m_Tag == "Player" && g.activeInHierarchy);
                 if (plObj != null)
@@ -254,7 +256,7 @@ static class Program
                     if (w != null)
                     {
                         var bf = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
-                        w.GetType().GetProperty("coins", bf).SetValue(w, 6, null);
+                        w.GetType().GetProperty("coins", bf).SetValue(w, int.Parse(a.Get("test-coins", "6")), null);
                     }
                 }
             }
@@ -278,11 +280,14 @@ static class Program
             presentMs += sw.Elapsed.TotalMilliseconds - t2;
             if (window && f % 300 == 299)
             {   // the windowed run only ends on quit, so report as it goes (device: logs/knl.log)
+                double elapsed = sw.Elapsed.TotalMilliseconds - perfWall;
+                Console.Error.WriteLine(string.Format("[fps] f{0} fps={1:F2} frame_ms={2:F2}", f + 1, 300000.0 / elapsed, elapsed / 300));
                 Console.Error.WriteLine(string.Format("[perf] f{0} logic={1:F1} render={2:F1} present={3:F1} ms/frame (raster thread {5:F1} ms last frame) managed={4:F1} MB",
                     f + 1, (logicMs - perfLogic) / 300, (renderMs - perfRender) / 300, presentMs / 300, GC.GetTotalMemory(false) / 1048576.0, Native.knl_raster_ms()));
                 perfLogic = logicMs; perfRender = renderMs; presentMs = 0;
                 Console.Error.WriteLine(string.Format("[worker] last_draw_ms={0:F1} last_flip_ms={1:F1}", Native.knl_draw_ms(), Native.knl_flip_ms()));
                 KNL.Prof.Report(300, 25);
+                perfWall = sw.Elapsed.TotalMilliseconds;
             }
             if (KNL.Engine.QuitRequested) break;
             if (a.Has("trace-scenes") && f % 30 == 0)

@@ -335,8 +335,6 @@ namespace KNL
         static void DrawSprite(SpriteRenderer sr, Matrix4x4 m, Vector3 cp, float k)
         {
             var sd = sr.m_Sprite.data;
-            int tex = sd.Texture;
-            if (tex < 0) return;
             // local sprite space (units) of texel (u, v), v counted from the image top:
             //   x = (offX + u - pivot.x*rect.w) / ppu ,  y = (offY + imgH - v - pivot.y*rect.h) / ppu
             float px = sd.pivot.x * sd.rect.width, py = sd.pivot.y * sd.rect.height;
@@ -352,6 +350,14 @@ namespace KNL
             // world -> framebuffer pixels (y down)
             float tx = (wo.x - cp.x) * k + Width / 2f, ty = Height / 2f - (wo.y - cp.y) * k;
             float a = wu.x * k, b = -wu.y * k, c = wv.x * k, d = -wv.y * k;
+            // Reject the actual transformed image before texture loading, material/light work and
+            // P/Invoke. The broad collection margin intentionally includes many off-screen trees.
+            float ax = a * sd.imgW, cy = c * sd.imgH, by = b * sd.imgW, dy = d * sd.imgH;
+            float minX = tx + Mathf.Min(0f, ax) + Mathf.Min(0f, cy), maxX = tx + Mathf.Max(0f, ax) + Mathf.Max(0f, cy);
+            float minY = ty + Mathf.Min(0f, by) + Mathf.Min(0f, dy), maxY = ty + Mathf.Max(0f, by) + Mathf.Max(0f, dy);
+            if (maxX <= 0 || minX >= Width || maxY <= 0 || minY >= Height) return;
+            int tex = sd.Texture;
+            if (tex < 0) return;
             uint tint = sr.m_Color.ToRGBA32();
             var mat = sr.m_Materials.Length > 0 ? sr.m_Materials[0] : null;
             var si = ShadeInfo.Of(mat);

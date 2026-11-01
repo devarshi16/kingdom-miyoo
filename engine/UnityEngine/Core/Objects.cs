@@ -2,6 +2,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace UnityEngine
 {
@@ -20,6 +21,7 @@ namespace UnityEngine
         public int GetInstanceID() { return m_InstanceID; }
 
         // Unity semantics: a destroyed object compares equal to null.
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static bool CompareBaseObjects(Object a, Object b)
         {
             bool an = ReferenceEquals(a, null) || a.m_Destroyed;
@@ -162,19 +164,24 @@ namespace UnityEngine
         public bool activeSelf { get { return m_IsActive; } }
 
         internal static int s_ActiveTopologyVersion = 1;
-        internal static int NewPass() { return ++s_ActiveTopologyVersion; }
+        internal static int NewPass() { return s_ActiveTopologyVersion; }
         int c_ActivePass; bool c_Active;
         public bool activeInHierarchy
         {
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
                 if (c_ActivePass == s_ActiveTopologyVersion) return c_Active;
-                if (!m_IsActive || m_Scene == null) { c_Active = false; c_ActivePass = s_ActiveTopologyVersion; return false; }
-                var p = m_Transform != null ? m_Transform.m_Parent : null;
-                bool a = p == null || p.m_GameObject.activeInHierarchy;
-                c_ActivePass = s_ActiveTopologyVersion; c_Active = a;
-                return a;
+                return RefreshActiveHierarchy();
             }
+        }
+        bool RefreshActiveHierarchy()
+        {
+            if (!m_IsActive || m_Scene == null) { c_Active = false; c_ActivePass = s_ActiveTopologyVersion; return false; }
+            var p = m_Transform != null ? m_Transform.m_Parent : null;
+            c_Active = p == null || p.m_GameObject.activeInHierarchy;
+            c_ActivePass = s_ActiveTopologyVersion;
+            return c_Active;
         }
         internal bool ActiveInPass(int pass) { return activeInHierarchy; }
 
@@ -303,9 +310,26 @@ namespace UnityEngine
     // -------------------------------------------------------------- Transform
     public partial class Transform : IEnumerable
     {
-        internal Vector3 m_LocalPosition;
-        internal Quaternion m_LocalRotation = Quaternion.identity;
-        internal Vector3 m_LocalScale = Vector3.one;
+        Vector3 m_PositionValue;
+        Quaternion m_RotationValue = Quaternion.identity;
+        Vector3 m_ScaleValue = Vector3.one;
+        static uint s_MatrixVersion = 1;
+        uint c_CheckedVersion;
+        internal Vector3 m_LocalPosition
+        {
+            get { return m_PositionValue; }
+            set { if (m_PositionValue.x == value.x && m_PositionValue.y == value.y && m_PositionValue.z == value.z) return; m_PositionValue = value; s_MatrixVersion++; }
+        }
+        internal Quaternion m_LocalRotation
+        {
+            get { return m_RotationValue; }
+            set { if (m_RotationValue.x == value.x && m_RotationValue.y == value.y && m_RotationValue.z == value.z && m_RotationValue.w == value.w) return; m_RotationValue = value; s_MatrixVersion++; }
+        }
+        internal Vector3 m_LocalScale
+        {
+            get { return m_ScaleValue; }
+            set { if (m_ScaleValue.x == value.x && m_ScaleValue.y == value.y && m_ScaleValue.z == value.z) return; m_ScaleValue = value; s_MatrixVersion++; }
+        }
         internal Transform m_Parent;
         internal List<Transform> m_Children = new List<Transform>();
 
@@ -325,26 +349,34 @@ namespace UnityEngine
             }
         }
 
-        // World matrix cache (M5). The local fields are written directly in many places (loader, animator,
-        // Instantiate), so instead of dirty flags the cache is validated by exact comparison of the local
-        // values, the parent reference and the parent's stamp; on any difference it is recomputed with the
-        // same expression as before (TRS, then parent * local), so results are unchanged.
+        // Local writes advance an epoch. Repeated reads between writes return immediately, avoiding
+        // recursive hierarchy validation for every sprite/collider/property access. After a write,
+        // validate exact local values and the parent's stamp before reusing the same matrix.
         Vector3 c_Pos, c_Scale; Quaternion c_Rot; Transform c_Parent; int c_ParentStamp; bool c_Valid, c_InvValid;
         Matrix4x4 c_World, c_Inv;
         internal int m_Stamp;
         static int s_Stamp;
+        internal void ResetMatrixCache() { c_Valid = c_InvValid = false; c_CheckedVersion = 0; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void UpdateWorld()
+        {
+            if (c_Valid && c_CheckedVersion == s_MatrixVersion) return;
+            RefreshWorld();
+        }
+        void RefreshWorld()
         {
             var p = m_Parent; int ps = 0;
             if (p != null) { p.UpdateWorld(); ps = p.m_Stamp; }
             if (c_Valid && ReferenceEquals(p, c_Parent) && ps == c_ParentStamp
                 && m_LocalPosition.x == c_Pos.x && m_LocalPosition.y == c_Pos.y && m_LocalPosition.z == c_Pos.z
                 && m_LocalRotation.x == c_Rot.x && m_LocalRotation.y == c_Rot.y && m_LocalRotation.z == c_Rot.z && m_LocalRotation.w == c_Rot.w
-                && m_LocalScale.x == c_Scale.x && m_LocalScale.y == c_Scale.y && m_LocalScale.z == c_Scale.z) return;
+                && m_LocalScale.x == c_Scale.x && m_LocalScale.y == c_Scale.y && m_LocalScale.z == c_Scale.z)
+            { c_CheckedVersion = s_MatrixVersion; return; }
             var m = Matrix4x4.TRS(m_LocalPosition, m_LocalRotation, m_LocalScale);
             c_World = p != null ? p.c_World * m : m;
             c_Pos = m_LocalPosition; c_Rot = m_LocalRotation; c_Scale = m_LocalScale;
             c_Parent = p; c_ParentStamp = ps; c_Valid = true; c_InvValid = false;
+            c_CheckedVersion = s_MatrixVersion;
             m_Stamp = ++s_Stamp;
         }
 
@@ -383,6 +415,7 @@ namespace UnityEngine
         public void SetParent(Transform p, bool worldPositionStays)
         {
             if (p == m_Parent) return;
+            s_MatrixVersion++;
             GameObject.s_ActiveTopologyVersion++;
             Vector3 wp = position; Quaternion wr = rotation; Vector3 ws = lossyScale;
             if (m_Parent != null) m_Parent.m_Children.Remove(this);

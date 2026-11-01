@@ -798,6 +798,7 @@ namespace KNL
         public static void DestroyNow(UnityEngine.Object o)
         {
             if (ReferenceEquals(o, null) || o.m_Destroyed) return;
+            pruneNeeded = true;
             if (o is GameObject || o is Rigidbody2D) PhysicsTopologyVersion++;
             var go = o as GameObject;
             if (go != null)
@@ -821,11 +822,14 @@ namespace KNL
             }
             o.m_Destroyed = true;
         }
+        static bool pruneNeeded;
         public static void FlushDestroyed()
         {
             Timed.Tick();
-            foreach (var o in pendingDestroy.ToArray()) DestroyNow(o);
+            if (pendingDestroy.Count > 0) foreach (var o in pendingDestroy.ToArray()) DestroyNow(o);
             pendingDestroy.Clear();
+            if (!pruneNeeded) return;
+            pruneNeeded = false;
             SceneObjects.RemoveAll(g => g.m_Destroyed);
             Renderer.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
             Animator.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);

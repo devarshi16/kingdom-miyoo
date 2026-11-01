@@ -43,7 +43,7 @@ static uint32_t g_keys;
 /* ------------------------------------------------------------------ state */
 /* textures: straight RGBA (px, R in low byte) or 8-bit indexed with an RGBA palette (idx + pal),
    the device pack's format (D19): ~4x less memory for sprites. */
-typedef struct { int w, h; uint32_t *px; uint8_t *idx; uint32_t *pal; } Tex;
+typedef struct { int w, h; uint32_t *px; uint8_t *idx; uint32_t *pal; uint32_t *litpal; int litkey[10], litvalid; } Tex;
 #define TEXEL(T, i) ((T)->idx ? (T)->pal[(T)->idx[i]] : (T)->px[i])
 
 static int g_w, g_h, g_scale;
@@ -134,7 +134,7 @@ KNL_API void knl_shutdown(void)
     if (g_evfd >= 0) close(g_evfd);
     g_fbfd = g_evfd = -1;
 #endif
-    for (int i = 0; i < g_ntex; i++) { free(g_tex[i].px); free(g_tex[i].idx); free(g_tex[i].pal); }
+    for (int i = 0; i < g_ntex; i++) { free(g_tex[i].px); free(g_tex[i].idx); free(g_tex[i].pal); free(g_tex[i].litpal); }
     free(g_tex); g_tex = NULL; g_ntex = g_captex = 0;
     free(g_fb); g_fb = NULL;
 }
@@ -148,6 +148,7 @@ static int add_tex(int w, int h, uint32_t *px)
         g_tex = (Tex *)realloc(g_tex, sizeof(Tex) * g_captex);
     }
     g_tex[g_ntex].w = w; g_tex[g_ntex].h = h; g_tex[g_ntex].px = px; g_tex[g_ntex].idx = NULL; g_tex[g_ntex].pal = NULL;
+    g_tex[g_ntex].litpal = NULL; g_tex[g_ntex].litvalid = 0;
     return g_ntex++;
 }
 
@@ -191,8 +192,9 @@ int knl_pack_read(long long off, void *dst, int len)
 /* memory used by textures (bytes) */
 KNL_API long long knl_tex_bytes(void)
 {
+    wait_idle(); // the worker may be allocating a cached lit palette
     long long b = 0;
-    for (int i = 0; i < g_ntex; i++) b += g_tex[i].idx ? (long long)g_tex[i].w * g_tex[i].h + 1024 : (long long)g_tex[i].w * g_tex[i].h * 4;
+    for (int i = 0; i < g_ntex; i++) { b += g_tex[i].idx ? (long long)g_tex[i].w * g_tex[i].h + 1024 : (long long)g_tex[i].w * g_tex[i].h * 4; if (g_tex[i].litpal) b += 1024; }
     return b;
 }
 
@@ -270,6 +272,28 @@ static inline uint32_t blend(uint32_t dst, uint32_t r, uint32_t g, uint32_t b, u
     }
 }
 
+/* Indexed, axis-aligned sprites share the same shading for every occurrence of a palette
+   entry. Shade the small palette once, then sample it without repeating shader arithmetic. */
+static void draw_palette(const Tex *T, float ib, float id, float tx, float ty,
+                         int x0, int x1, int y0, int y1, const uint32_t *pal, int mode)
+{
+    int pixels = 0;
+    for (int y = y0; y < y1; y++) {
+        float v = ib * (x0 + 0.5f - tx) + id * (y + 0.5f - ty);
+        if (v < 0 || (int)v >= T->h) continue;
+        const uint8_t *src = T->idx + (size_t)(int)v * T->w;
+        uint32_t *dst = g_fb + (size_t)y * g_w;
+        for (int x = x0; x < x1; x++) {
+            int u = g_iucol[x]; if (u < 0) continue;
+            uint32_t p = pal[src[u]], a = p >> 24;
+            if (!a) continue;
+            dst[x] = mode == 0 && a == 255 ? p : blend(dst[x], p & 255, (p >> 8) & 255, (p >> 16) & 255, a, mode);
+            pixels++;
+        }
+    }
+    g_stats_pixels += pixels;
+}
+
 /*
  * Draw texture `t` with an affine map from texel space to framebuffer pixels:
  *   screen.x = a*u + c*v + tx ,  screen.y = b*u + d*v + ty
@@ -307,6 +331,16 @@ static void do_draw(int t, float a, float b, float c, float d, float tx, float t
     int aa = b == 0 && c == 0;
     if (aa && !aa_columns(T, ia, ic, tx, &x0, &x1)) return;
     g_stats_sprites++;
+    if (aa && T->idx) {
+        uint32_t pal[256];
+        for (int i = 0; i < 256; i++) {
+            uint32_t p = T->pal[i], pa = DIV255((p >> 24) * ta);
+            pal[i] = pa ? DIV255((p & 255) * tr) | (DIV255(((p >> 8) & 255) * tg) << 8) |
+                (DIV255(((p >> 16) & 255) * tb) << 16) | (pa << 24) : 0;
+        }
+        draw_palette(T, ib, id, tx, ty, x0, x1, y0, y1, pal, mode);
+        return;
+    }
     for (int y = y0; y < y1; y++) {
         float sy = y + 0.5f - ty;
         uint32_t *row = g_fb + (size_t)y * g_w;
@@ -392,6 +426,36 @@ static void do_draw_lit(int t, float a, float b, float c, float d, float tx, flo
     int aa = b == 0 && c == 0;
     if (aa && !aa_columns(T, ia, ic, tx, &x0, &x1)) return;
     g_stats_sprites++;
+    if (aa && flat && T->idx) {
+        Tex *cache = &g_tex[t];
+        uint32_t fallback[256];
+        if (mr < 0) mr = 0; if (mg < 0) mg = 0; if (mb < 0) mb = 0;
+        int key[10] = { mr, mg, mb, ar, ag, ab, ta, (int)recA, (int)recB, flags & 3 };
+        if (cache->litvalid && !memcmp(cache->litkey, key, sizeof(key))) {
+            draw_palette(T, ib, id, tx, ty, x0, x1, y0, y1, cache->litpal, mode);
+            return;
+        }
+        if (!cache->litpal) cache->litpal = (uint32_t *)malloc(1024);
+        uint32_t *pal = cache->litpal ? cache->litpal : fallback;
+        for (int i = 0; i < 256; i++) {
+            uint32_t p = T->pal[i];
+            int pa = p >> 24, pr = p & 255, pg = (p >> 8) & 255, pb = (p >> 16) & 255;
+            int oa = recolor ? (pa < 128 ? 0 : ta) : DIV255(pa * ta);
+            if (!oa || (!recolor && oa < 3)) { pal[i] = 0; continue; }
+            if (recolor && pa < 224) {
+                if (pa >= 192) { pg = DIV255(pr * Ag); pb = DIV255(pr * Ab); pr = DIV255(pr * Ar); }
+                else { pg = DIV255(pr * Bg); pb = DIV255(pr * Bb); pr = DIV255(pr * Br); }
+            }
+            int r = ((pr * mr) >> 8) + ar, g = ((pg * mg) >> 8) + ag, bl = ((pb * mb) >> 8) + ab;
+            if (r < 0) r = 0; else if (r > 255) r = 255;
+            if (g < 0) g = 0; else if (g > 255) g = 255;
+            if (bl < 0) bl = 0; else if (bl > 255) bl = 255;
+            pal[i] = (uint32_t)r | ((uint32_t)g << 8) | ((uint32_t)bl << 16) | ((uint32_t)oa << 24);
+        }
+        if (cache->litpal) { memcpy(cache->litkey, key, sizeof(key)); cache->litvalid = 1; }
+        draw_palette(T, ib, id, tx, ty, x0, x1, y0, y1, pal, mode);
+        return;
+    }
     for (int y = y0; y < y1; y++) {
         float sy = y + 0.5f - ty;
         uint32_t *row = g_fb + (size_t)y * g_w;
@@ -516,6 +580,35 @@ static void do_draw_quad(int t, float x0, float y0, float x1, float y1, float x3
     float du1 = u1 - u0, dv1 = v1 - v0, du3 = u3 - u0, dv3 = v3 - v0;
     int mode = (flags & 2) ? 1 : 0;
     g_stats_sprites++;
+    if (ey1 == 0 && ex2 == 0 && dv1 == 0 && du3 == 0) {
+        for (int x = bx0; x < bx1; x++) {
+            float a = i11 * (x + 0.5f - x0) + i12 * 0.0f;
+            int u = T ? (int)(u0 + a * du1 + 0.0f * du3) : 0;
+            if (T) { if (u < 0) u = 0; if (u >= T->w) u = T->w - 1; }
+            g_iucol[x] = a < 0 || a >= 1 ? -1 : u;
+        }
+        int pixels = 0;
+        for (int y = by0; y < by1; y++) {
+            float b = i21 * (bx0 + 0.5f - x0) + i22 * (y + 0.5f - y0);
+            if (b < 0 || b >= 1) continue;
+            int v = T ? (int)(v0 + 0.0f * dv1 + b * dv3) : 0;
+            if (T) { if (v < 0) v = 0; if (v >= T->h) v = T->h - 1; }
+            uint32_t *dst = g_fb + (size_t)y * g_w;
+            for (int x = bx0; x < bx1; x++) {
+                int u = g_iucol[x]; if (u < 0) continue;
+                uint32_t r = cr, g = cg, bl = cb, al = ca;
+                if (T) {
+                    uint32_t p = TEXEL(T, (size_t)v * T->w + u);
+                    al = DIV255((p >> 24) * ca);
+                    if (!(flags & 1)) { r = DIV255((p & 255) * cr); g = DIV255(((p >> 8) & 255) * cg); bl = DIV255(((p >> 16) & 255) * cb); }
+                }
+                if (!al) continue;
+                dst[x] = blend(dst[x], r, g, bl, al, mode); pixels++;
+            }
+        }
+        g_stats_pixels += pixels;
+        return;
+    }
     for (int y = by0; y < by1; y++) {
         float py = y + 0.5f - y0;
         uint32_t *row = g_fb + (size_t)y * g_w;
@@ -563,6 +656,20 @@ static void do_quad_gradient(float x0f, float y0f, float x1f, float y1f,
     uint32_t cs[4] = { c00, c10, c01, c11 };
     for (int i = 0; i < 4; i++)
         for (int k = 0; k < 4; k++) C[i][k] = (float)((cs[i] >> (8 * k)) & 255);
+    if (c00 == c10 && c01 == c11) {
+        for (int y = y0; y < y1; y++) {
+            float fy = (y + 0.5f - y0f) / H;
+            uint32_t r = (uint32_t)(C[0][0] + (C[2][0] - C[0][0]) * fy);
+            uint32_t g = (uint32_t)(C[0][1] + (C[2][1] - C[0][1]) * fy);
+            uint32_t b = (uint32_t)(C[0][2] + (C[2][2] - C[0][2]) * fy);
+            uint32_t a = (uint32_t)(C[0][3] + (C[2][3] - C[0][3]) * fy);
+            uint32_t p = r | (g << 8) | (b << 16) | 0xFF000000u;
+            uint32_t *row = g_fb + (size_t)y * g_w;
+            if (a == 255 && mode == 0) for (int x = x0; x < x1; x++) row[x] = p;
+            else for (int x = x0; x < x1; x++) row[x] = blend(row[x], r, g, b, a, mode);
+        }
+        return;
+    }
     /* the top/bottom edge colours depend on x only: one table per column instead of per pixel
        (same float expressions, same result). Opaque alpha-blended pixels are plain stores. */
     static float top[4096][4], bot[4096][4];
@@ -633,10 +740,40 @@ static Cmd *push_cmd(int op)
     if (g_rec.n == g_rec.cap) { g_rec.cap = g_rec.cap ? g_rec.cap * 2 : 512; g_rec.c = (Cmd *)realloc(g_rec.c, sizeof(Cmd) * g_rec.cap); }
     Cmd *c = &g_rec.c[g_rec.n++]; c->op = op; return c;
 }
+/* Local diagnostics only: capture one frame for deterministic pixel/performance replay.
+   The capture contains owned game pixels and must never be included in releases. */
+static void capture_list(const CmdList *L)
+{
+    static int frame;
+    const char *path = getenv("KNL_CAPTURE");
+    if (!path || !*path || ++frame != 450) return;
+    FILE *f = fopen(path, "wb");
+    if (!f) return;
+    int header[] = { 0x314c4e4b, g_w, g_h, g_ntex, L->n, sizeof(Cmd) };
+    fwrite(header, sizeof(header), 1, f);
+    for (int i = 0; i < g_ntex; i++) {
+        const Tex *t = &g_tex[i];
+        int th[] = { t->w, t->h, t->idx != NULL };
+        fwrite(th, sizeof(th), 1, f);
+        if (t->idx) { fwrite(t->pal, 4, 256, f); fwrite(t->idx, 1, (size_t)t->w * t->h, f); }
+        else fwrite(t->px, 4, (size_t)t->w * t->h, f);
+    }
+    fwrite(L->c, sizeof(Cmd), L->n, f);
+    fclose(f);
+}
 static void run_list(CmdList *L)
 {
+    capture_list(L);
+#ifdef KNL_MIYOO
+    static int prof = -1, frames, counts[6]; static double totals[6];
+    if (prof < 0) { const char *p = getenv("KNL_PROF"); prof = p && atoi(p) > 0; }
+#endif
     for (int k = 0; k < L->n; k++) {
         const Cmd *c = &L->c[k]; const float *f = c->f;
+#ifdef KNL_MIYOO
+        struct timespec before, after;
+        if (prof) clock_gettime(CLOCK_MONOTONIC, &before);
+#endif
         switch (c->op) {
         case C_CLEAR: do_clear(c->u[0]); break;
         case C_DRAW: do_draw(c->t, f[0], f[1], f[2], f[3], f[4], f[5], c->u[0], c->i[0]); break;
@@ -646,7 +783,21 @@ static void run_list(CmdList *L)
         case C_GRAD: do_quad_gradient(f[0], f[1], f[2], f[3], c->u[0], c->u[1], c->u[2], c->u[3], c->i[0]); break;
         case C_REFLECT: do_reflect(c->i[0], c->i[1], f[0], c->u[0], f[1], f[2]); break;
         }
+#ifdef KNL_MIYOO
+        if (prof) {
+            clock_gettime(CLOCK_MONOTONIC, &after);
+            totals[c->op] += (after.tv_sec - before.tv_sec) * 1e3 + (after.tv_nsec - before.tv_nsec) / 1e6;
+            counts[c->op]++;
+        }
+#endif
     }
+#ifdef KNL_MIYOO
+    if (prof && ++frames == 300) {
+        fprintf(stderr, "[raster] clear/draw/lit/UI/gradient/reflect ms and calls per frame:");
+        for (int i = 0; i < 6; i++) { fprintf(stderr, " %.2f/%d", totals[i] / frames, counts[i] / frames); totals[i] = 0; counts[i] = 0; }
+        fprintf(stderr, "\n"); frames = 0;
+    }
+#endif
     L->n = 0;
 }
 

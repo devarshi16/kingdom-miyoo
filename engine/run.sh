@@ -16,6 +16,7 @@
 #   --input "520-2300:right,2750-3300:down"   scripted buttons per frame range
 #   --shot-every N --shots DIR   PNG every N frames;  --out f.png  last frame;  --wide-out f.png  2x wider view
 #   --trace-scenes               every 30 frames: enemies, edge-indicator counts, king x, coins, day/time
+#   --test-coins N --coin-frame F   inject a wallet amount for local pouch QA (default frame 450)
 #   --watch Type.field           print when a field changes;  --dump Type[,Type]  fields at the end
 #   --inspect Name[,Tag]         objects, components, colliders at the end
 #   --top N                      length of the exception / "needs" lists

@@ -1,5 +1,6 @@
 // Clean-room implementations of Unity's math value types (public API semantics).
 using System;
+using System.Runtime.CompilerServices;
 
 namespace UnityEngine
 {
@@ -79,6 +80,7 @@ namespace UnityEngine
     public partial struct Vector2
     {
         public float x, y;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector2(float x, float y) { this.x = x; this.y = y; }
         public float this[int i] { get { return i == 0 ? x : y; } set { if (i == 0) x = value; else y = value; } }
         public static Vector2 zero { get { return new Vector2(0, 0); } }
@@ -103,15 +105,25 @@ namespace UnityEngine
         public static Vector2 Max(Vector2 a, Vector2 b) { return new Vector2(Mathf.Max(a.x, b.x), Mathf.Max(a.y, b.y)); }
         public static float Angle(Vector2 a, Vector2 b) { return Mathf.Acos(Mathf.Clamp(Dot(a.normalized, b.normalized), -1f, 1f)) * Mathf.Rad2Deg; }
         public static Vector2 ClampMagnitude(Vector2 v, float max) { return v.sqrMagnitude > max * max ? v.normalized * max : v; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 operator +(Vector2 a, Vector2 b) { return new Vector2(a.x + b.x, a.y + b.y); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 operator -(Vector2 a, Vector2 b) { return new Vector2(a.x - b.x, a.y - b.y); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 operator -(Vector2 a) { return new Vector2(-a.x, -a.y); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 operator *(Vector2 a, float d) { return new Vector2(a.x * d, a.y * d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 operator *(float d, Vector2 a) { return new Vector2(a.x * d, a.y * d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector2 operator /(Vector2 a, float d) { return new Vector2(a.x / d, a.y / d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Vector2 a, Vector2 b) { return (a - b).sqrMagnitude < 9.99999944E-11f; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Vector2 a, Vector2 b) { return !(a == b); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Vector2(Vector3 v) { return new Vector2(v.x, v.y); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Vector3(Vector2 v) { return new Vector3(v.x, v.y, 0f); }
         public override bool Equals(object o) { return o is Vector2 && x.Equals(((Vector2)o).x) && y.Equals(((Vector2)o).y); }
         public override int GetHashCode() { return x.GetHashCode() ^ (y.GetHashCode() << 2); }
@@ -122,7 +134,9 @@ namespace UnityEngine
     public partial struct Vector3
     {
         public float x, y, z;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3(float x, float y, float z) { this.x = x; this.y = y; this.z = z; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3(float x, float y) { this.x = x; this.y = y; z = 0f; }
         public float this[int i] { get { return i == 0 ? x : (i == 1 ? y : z); } set { if (i == 0) x = value; else if (i == 1) y = value; else z = value; } }
         public static Vector3 zero { get { return new Vector3(0, 0, 0); } }
@@ -165,13 +179,21 @@ namespace UnityEngine
         }
         public static Vector3 SmoothDamp(Vector3 c, Vector3 t, ref Vector3 v, float s) { return SmoothDamp(c, t, ref v, s, Mathf.Infinity, Time.deltaTime); }
         public static Vector3 SmoothDamp(Vector3 c, Vector3 t, ref Vector3 v, float s, float m) { return SmoothDamp(c, t, ref v, s, m, Time.deltaTime); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator +(Vector3 a, Vector3 b) { return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator -(Vector3 a, Vector3 b) { return new Vector3(a.x - b.x, a.y - b.y, a.z - b.z); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator -(Vector3 a) { return new Vector3(-a.x, -a.y, -a.z); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator *(Vector3 a, float d) { return new Vector3(a.x * d, a.y * d, a.z * d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator *(float d, Vector3 a) { return new Vector3(a.x * d, a.y * d, a.z * d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator /(Vector3 a, float d) { return new Vector3(a.x / d, a.y / d, a.z / d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Vector3 a, Vector3 b) { return (a - b).sqrMagnitude < 9.99999944E-11f; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Vector3 a, Vector3 b) { return !(a == b); }
         public override bool Equals(object o) { if (!(o is Vector3)) return false; var v = (Vector3)o; return x.Equals(v.x) && y.Equals(v.y) && z.Equals(v.z); }
         public override int GetHashCode() { return x.GetHashCode() ^ (y.GetHashCode() << 2) ^ (z.GetHashCode() >> 2); }
@@ -182,6 +204,7 @@ namespace UnityEngine
     public partial struct Vector4
     {
         public float sqrMagnitude { get { return x * x + y * y + z * z + w * w; } }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator /(Vector4 a, float d) { return new Vector4(a.x / d, a.y / d, a.z / d, a.w / d); }
         public float x, y, z, w;
         public Vector4(float x, float y, float z, float w) { this.x = x; this.y = y; this.z = z; this.w = w; }
@@ -189,13 +212,21 @@ namespace UnityEngine
         public float this[int i] { get { switch (i) { case 0: return x; case 1: return y; case 2: return z; default: return w; } } set { switch (i) { case 0: x = value; break; case 1: y = value; break; case 2: z = value; break; default: w = value; break; } } }
         public static Vector4 zero { get { return new Vector4(0, 0, 0, 0); } }
         public static Vector4 one { get { return new Vector4(1, 1, 1, 1); } }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator +(Vector4 a, Vector4 b) { return new Vector4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator -(Vector4 a, Vector4 b) { return new Vector4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector4 operator *(Vector4 a, float d) { return new Vector4(a.x * d, a.y * d, a.z * d, a.w * d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Vector4(Vector3 v) { return new Vector4(v.x, v.y, v.z, 0f); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Vector3(Vector4 v) { return new Vector3(v.x, v.y, v.z); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Vector4(Vector2 v) { return new Vector4(v.x, v.y, 0f, 0f); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Vector4 a, Vector4 b) { var d = a - b; return d.x * d.x + d.y * d.y + d.z * d.z + d.w * d.w < 9.99999944E-11f; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Vector4 a, Vector4 b) { return !(a == b); }
         public override bool Equals(object o) { return o is Vector4 && this == (Vector4)o; }
         public override int GetHashCode() { return x.GetHashCode() ^ (y.GetHashCode() << 2) ^ (z.GetHashCode() >> 2) ^ (w.GetHashCode() >> 1); }
@@ -207,6 +238,7 @@ namespace UnityEngine
         public float x, y, z, w;
         public Quaternion(float x, float y, float z, float w) { this.x = x; this.y = y; this.z = z; this.w = w; }
         public static Quaternion identity { get { return new Quaternion(0, 0, 0, 1); } }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Quaternion operator *(Quaternion l, Quaternion r)
         {
             return new Quaternion(l.w * r.x + l.x * r.w + l.y * r.z - l.z * r.y,
@@ -214,6 +246,7 @@ namespace UnityEngine
                                   l.w * r.z + l.z * r.w + l.x * r.y - l.y * r.x,
                                   l.w * r.w - l.x * r.x - l.y * r.y - l.z * r.z);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 operator *(Quaternion q, Vector3 p)
         {
             float x2 = q.x * 2f, y2 = q.y * 2f, z2 = q.z * 2f;
@@ -223,7 +256,9 @@ namespace UnityEngine
                                (xy + wz) * p.x + (1f - (xx + zz)) * p.y + (yz - wx) * p.z,
                                (xz - wy) * p.x + (yz + wx) * p.y + (1f - (xx + yy)) * p.z);
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Quaternion a, Quaternion b) { return Dot(a, b) > 0.999999f; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Quaternion a, Quaternion b) { return !(a == b); }
         public static float Dot(Quaternion a, Quaternion b) { return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w; }
         public static Quaternion Inverse(Quaternion q) { float n = Dot(q, q); return n > 0 ? new Quaternion(-q.x / n, -q.y / n, -q.z / n, q.w / n) : q; }
@@ -313,15 +348,25 @@ namespace UnityEngine
         public float grayscale { get { return 0.299f * r + 0.587f * g + 0.114f * b; } }
         public static Color Lerp(Color a, Color b, float t) { t = Mathf.Clamp01(t); return LerpUnclamped(a, b, t); }
         public static Color LerpUnclamped(Color a, Color b, float t) { return new Color(a.r + (b.r - a.r) * t, a.g + (b.g - a.g) * t, a.b + (b.b - a.b) * t, a.a + (b.a - a.a) * t); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color operator +(Color a, Color b) { return new Color(a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color operator -(Color a, Color b) { return new Color(a.r - b.r, a.g - b.g, a.b - b.b, a.a - b.a); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color operator *(Color a, Color b) { return new Color(a.r * b.r, a.g * b.g, a.b * b.b, a.a * b.a); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color operator *(Color a, float d) { return new Color(a.r * d, a.g * d, a.b * d, a.a * d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color operator *(float d, Color a) { return new Color(a.r * d, a.g * d, a.b * d, a.a * d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Color operator /(Color a, float d) { return new Color(a.r / d, a.g / d, a.b / d, a.a / d); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Color a, Color b) { return (Vector4)a == (Vector4)b; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Color a, Color b) { return !(a == b); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Vector4(Color c) { return new Vector4(c.r, c.g, c.b, c.a); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Color(Vector4 v) { return new Color(v.x, v.y, v.z, v.w); }
         public static void RGBToHSV(Color c, out float H, out float S, out float V)
         {
@@ -341,6 +386,7 @@ namespace UnityEngine
         public override bool Equals(object o) { return o is Color && this == (Color)o; }
         public override int GetHashCode() { return ((Vector4)this).GetHashCode(); }
         public override string ToString() { return string.Format("RGBA({0:F3}, {1:F3}, {2:F3}, {3:F3})", r, g, b, a); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal uint ToRGBA32()
         {
             uint R = (uint)(Mathf.Clamp01(r) * 255f + 0.5f), G = (uint)(Mathf.Clamp01(g) * 255f + 0.5f);
@@ -353,7 +399,9 @@ namespace UnityEngine
     {
         public byte r, g, b, a;
         public Color32(byte r, byte g, byte b, byte a) { this.r = r; this.g = g; this.b = b; this.a = a; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Color32(Color c) { return new Color32((byte)(Mathf.Clamp01(c.r) * 255f), (byte)(Mathf.Clamp01(c.g) * 255f), (byte)(Mathf.Clamp01(c.b) * 255f), (byte)(Mathf.Clamp01(c.a) * 255f)); }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator Color(Color32 c) { return new Color(c.r / 255f, c.g / 255f, c.b / 255f, c.a / 255f); }
         public static Color32 Lerp(Color32 a, Color32 b, float t) { t = Mathf.Clamp01(t); return new Color32((byte)(a.r + (b.r - a.r) * t), (byte)(a.g + (b.g - a.g) * t), (byte)(a.b + (b.b - a.b) * t), (byte)(a.a + (b.a - a.a) * t)); }
         public override string ToString() { return string.Format("RGBA({0}, {1}, {2}, {3})", r, g, b, a); }
@@ -382,7 +430,9 @@ namespace UnityEngine
         public bool Contains(Vector2 p) { return p.x >= xMin && p.x < xMax && p.y >= yMin && p.y < yMax; }
         public bool Contains(Vector3 p) { return Contains((Vector2)p); }
         public bool Overlaps(Rect o) { return o.xMax > xMin && o.xMin < xMax && o.yMax > yMin && o.yMin < yMax; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator ==(Rect a, Rect b) { return a.x == b.x && a.y == b.y && a.width == b.width && a.height == b.height; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool operator !=(Rect a, Rect b) { return !(a == b); }
         public override bool Equals(object o) { return o is Rect && this == (Rect)o; }
         public override int GetHashCode() { return x.GetHashCode() ^ (width.GetHashCode() << 2) ^ (y.GetHashCode() >> 2) ^ (height.GetHashCode() >> 1); }
@@ -423,20 +473,36 @@ namespace UnityEngine
             get { switch (i) { case 0: return m00; case 1: return m10; case 2: return m20; case 3: return m30; case 4: return m01; case 5: return m11; case 6: return m21; case 7: return m31; case 8: return m02; case 9: return m12; case 10: return m22; case 11: return m32; case 12: return m03; case 13: return m13; case 14: return m23; default: return m33; } }
             set { switch (i) { case 0: m00 = value; break; case 1: m10 = value; break; case 2: m20 = value; break; case 3: m30 = value; break; case 4: m01 = value; break; case 5: m11 = value; break; case 6: m21 = value; break; case 7: m31 = value; break; case 8: m02 = value; break; case 9: m12 = value; break; case 10: m22 = value; break; case 11: m32 = value; break; case 12: m03 = value; break; case 13: m13 = value; break; case 14: m23 = value; break; default: m33 = value; break; } }
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Matrix4x4 operator *(Matrix4x4 a, Matrix4x4 b)
         {
-            var r = new Matrix4x4();
-            for (int i = 0; i < 4; i++)
-                for (int j = 0; j < 4; j++)
-                    r[i, j] = a[i, 0] * b[0, j] + a[i, 1] * b[1, j] + a[i, 2] * b[2, j] + a[i, 3] * b[3, j];
-            return r;
+            return new Matrix4x4 {
+                m00 = a.m00 * b.m00 + a.m01 * b.m10 + a.m02 * b.m20 + a.m03 * b.m30,
+                m10 = a.m10 * b.m00 + a.m11 * b.m10 + a.m12 * b.m20 + a.m13 * b.m30,
+                m20 = a.m20 * b.m00 + a.m21 * b.m10 + a.m22 * b.m20 + a.m23 * b.m30,
+                m30 = a.m30 * b.m00 + a.m31 * b.m10 + a.m32 * b.m20 + a.m33 * b.m30,
+                m01 = a.m00 * b.m01 + a.m01 * b.m11 + a.m02 * b.m21 + a.m03 * b.m31,
+                m11 = a.m10 * b.m01 + a.m11 * b.m11 + a.m12 * b.m21 + a.m13 * b.m31,
+                m21 = a.m20 * b.m01 + a.m21 * b.m11 + a.m22 * b.m21 + a.m23 * b.m31,
+                m31 = a.m30 * b.m01 + a.m31 * b.m11 + a.m32 * b.m21 + a.m33 * b.m31,
+                m02 = a.m00 * b.m02 + a.m01 * b.m12 + a.m02 * b.m22 + a.m03 * b.m32,
+                m12 = a.m10 * b.m02 + a.m11 * b.m12 + a.m12 * b.m22 + a.m13 * b.m32,
+                m22 = a.m20 * b.m02 + a.m21 * b.m12 + a.m22 * b.m22 + a.m23 * b.m32,
+                m32 = a.m30 * b.m02 + a.m31 * b.m12 + a.m32 * b.m22 + a.m33 * b.m32,
+                m03 = a.m00 * b.m03 + a.m01 * b.m13 + a.m02 * b.m23 + a.m03 * b.m33,
+                m13 = a.m10 * b.m03 + a.m11 * b.m13 + a.m12 * b.m23 + a.m13 * b.m33,
+                m23 = a.m20 * b.m03 + a.m21 * b.m13 + a.m22 * b.m23 + a.m23 * b.m33,
+                m33 = a.m30 * b.m03 + a.m31 * b.m13 + a.m32 * b.m23 + a.m33 * b.m33,
+            };
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 MultiplyPoint3x4(Vector3 p) { return new Vector3(m00 * p.x + m01 * p.y + m02 * p.z + m03, m10 * p.x + m11 * p.y + m12 * p.z + m13, m20 * p.x + m21 * p.y + m22 * p.z + m23); }
         public Vector3 MultiplyPoint(Vector3 p)
         {
             var r = MultiplyPoint3x4(p); float w = m30 * p.x + m31 * p.y + m32 * p.z + m33;
             return w != 0f && w != 1f ? r / w : r;
         }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Vector3 MultiplyVector(Vector3 v) { return new Vector3(m00 * v.x + m01 * v.y + m02 * v.z, m10 * v.x + m11 * v.y + m12 * v.z, m20 * v.x + m21 * v.y + m22 * v.z); }
         public Vector4 GetColumn(int i) { return new Vector4(this[0, i], this[1, i], this[2, i], this[3, i]); }
         public void SetColumn(int i, Vector4 c) { this[0, i] = c.x; this[1, i] = c.y; this[2, i] = c.z; this[3, i] = c.w; }
@@ -492,7 +558,9 @@ namespace UnityEngine
     {
         int m_Mask;
         public int value { get { return m_Mask; } set { m_Mask = value; } }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator int(LayerMask m) { return m.m_Mask; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static implicit operator LayerMask(int i) { LayerMask m; m.m_Mask = i; return m; }
         public static int NameToLayer(string n) { return KNL.EngineSettings.LayerIndex(n); }
         public static string LayerToName(int i) { return KNL.EngineSettings.LayerName(i); }

@@ -1,6 +1,6 @@
 # Kingdom: New Lands on Miyoo Mini / Mini Plus
 
-**Experimental candidate: 1.1.0-rc1. Full gameplay validation is pending.**
+**Experimental candidate: 1.1.0-rc2. Full gameplay validation is pending.**
 
 Please wait before buying the PC game specifically for this port. Tutorial, menu/save navigation, upgrades, coin-pouch physics and long-session stability still need a complete playthrough. The previous v1.0 release had installation and runtime defects. A successful boot does not establish that the full game works.
 
@@ -55,12 +55,13 @@ Please report tutorial completion, menu/save navigation and upgrades even if the
 
 ## Developer build and checks
 
-Linux prerequisites: Mono development tools (`mcs`, `mono`), GCC, SDL2 development files, Python dependencies, and FFmpeg. The Miyoo build additionally needs the compatible ARM toolchain, SigmaStar MI headers/libraries and Mono ARM runtime described in `engine/build_miyoo.sh`; a desktop build is not a device build.
+Linux prerequisites: Mono development tools (`mcs`, `mono`), GCC/G++, SDL2 development files, Python dependencies, and FFmpeg. The Miyoo build additionally needs the compatible ARM toolchain, SigmaStar MI headers/libraries and Mono ARM runtime described in `engine/build_miyoo.sh`; a desktop build is not a device build.
 
 ```bash
 ./compile.sh "/path/to/Kingdom_Data"
 python3 -m unittest discover -s tests -v
 ./tests/run_runtime.sh
+./tests/run_native.sh
 ./tools/package_release.sh
 ```
 

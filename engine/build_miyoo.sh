@@ -17,6 +17,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(dirname "$HERE")"
 TC="${MIYOO_TOOLCHAIN_ROOT:-$HOME/Recompilation/tools}"
 CC="${MIYOO_CC:-$TC/prebuilt/bin/arm-linux-gnueabihf-gcc}"
+CXX="${MIYOO_CXX:-${CC%gcc}g++}"
 MI_INC="${MIYOO_MI_INC:-$TC/sdl2-miyoo/mini/inc}"
 MI_LIB="${MIYOO_MI_LIB:-$TC/sdl2-miyoo/mini/lib}"
 MONO_ROOT="${MONO_ROOT:-$TC/mono-armhf-6.8.0.105/root}"
@@ -34,9 +35,10 @@ F="-O3 -std=gnu99 -fPIC -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -marm"
 T="$(mktemp -d)"; trap 'rm -rf "$T"' EXIT
 "$CC" $F -DKNL_MIYOO -c "$HERE/native/knlcore.c" -o "$T/knlcore.o"
 "$CC" $F -DKNL_MIYOO -I"$MI_INC" -c "$HERE/native/knlaudio.c" -o "$T/knlaudio.o"
+bash "$HERE/build_pouch.sh" "$CXX" "$T/pouch.o" -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard -marm
 "$CC" -shared -s -Wl,-soname,libgssapi_krb5.so.2 -Wl,--version-script,"$HERE/miyoo/gssapi_stub.map" \
      "$HERE/miyoo/gssapi_stub.c" -o "$GAME/lib/libgssapi_krb5.so.2"
-"$CC" -shared -s "$T/knlcore.o" "$T/knlaudio.o" -o "$GAME/lib/libknlcore.so" -L"$MI_LIB" -lmi_ao -lmi_sys -lpthread -lm
+"$CXX" -shared -s -static-libstdc++ -static-libgcc "$T/knlcore.o" "$T/knlaudio.o" "$T/pouch.o" -o "$GAME/lib/libknlcore.so" -L"$MI_LIB" -lmi_ao -lmi_sys -lpthread -lm
 
 echo "== Mono runtime + the BCL assemblies the game loads"
 # mono finds lib/ and etc/ next to bin/ ($mono_libdir in etc/mono/config); FAT32 has no symlinks, so real names

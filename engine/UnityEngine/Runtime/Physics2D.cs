@@ -172,8 +172,8 @@ namespace UnityEngine
         public Collider2D collider { get { return m_Collider; } }
         public Collider2D otherCollider { get { return m_OtherCollider; } }
         public Rigidbody2D rigidbody { get { return m_Rigidbody; } }
-        public GameObject gameObject { get { return m_Collider != null ? m_Collider.gameObject : null; } }
-        public Transform transform { get { return m_Collider != null ? m_Collider.transform : null; } }
+        public GameObject gameObject { get { return m_Rigidbody != null ? m_Rigidbody.gameObject : m_Collider != null ? m_Collider.gameObject : null; } }
+        public Transform transform { get { return m_Rigidbody != null ? m_Rigidbody.transform : m_Collider != null ? m_Collider.transform : null; } }
         public ContactPoint2D[] contacts { get { return m_Contacts; } }
         public Vector2 relativeVelocity { get { return m_RelVel; } }
     }
@@ -253,6 +253,7 @@ namespace KNL
             }
         }
         public static bool LayersCollide(int a, int b) { return (layerMatrix[a & 31] & (1u << (b & 31))) != 0; }
+        internal static uint CollisionMask(int layer) { return layerMatrix[layer & 31]; }
 
         // ---------------------------------------------------------------- shapes
         static readonly List<Vector2> tmp = new List<Vector2>();
@@ -392,11 +393,14 @@ namespace KNL
             float dt = Time.fixedDeltaTime;
             long pt = Prof.Level > 1 ? Prof.Now() : 0;
             // integrate
+            PouchPhysics.Prepare(bodies);
+            PouchPhysics.Step(dt);
             int bCount = bodies.Count;
             for (int i = 0; i < bCount; i++)
             {
                 var rb = bodies[i];
                 if (rb == null || rb.m_Destroyed || rb.m_BodyType == 2) continue;
+                if (PouchPhysics.Owns(rb)) continue;
                 if (rb.m_BodyType == 0)
                 {
                     rb.m_Velocity += Gravity * rb.m_GravityScale * dt;
@@ -419,6 +423,7 @@ namespace KNL
             Gather();
             if (Prof.Level > 1) pt = Prof.Add("  physics gather", pt);
             triggersNow.Clear(); contactsNow.Clear();
+            PouchPhysics.Contacts();
             // sweep-and-prune on x
             for (int i = 0; i < entries.Count; i++)
             {
@@ -431,6 +436,7 @@ namespace KNL
                     if (!LayersCollide(A.layer, B.layer)) continue;
                     if (!A.box.Overlaps(B.box)) continue;
                     if (A.rb != null && ReferenceEquals(A.rb, B.rb)) continue;   // same body
+                    if (PouchPhysics.Handles(A.c, B.c)) continue;
                     if (A.c.m_IsTrigger || B.c.m_IsTrigger)
                     {
                         if (A.c is EdgeCollider2D || B.c is EdgeCollider2D)
@@ -452,6 +458,15 @@ namespace KNL
         {
             return System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(a) <= System.Runtime.CompilerServices.RuntimeHelpers.GetHashCode(b)
                 ? new PairKey { a = a, b = b } : new PairKey { a = b, b = a };
+        }
+
+        internal static void PouchContact(Collider2D a, Collider2D b, Vector2 p, Vector2 normal)
+        {
+            if (a.isTrigger || b.isTrigger) { triggersNow.Add(Key(a,b)); return; }
+            var key = Key(a, b); contactsNow.Add(key);
+            var ar = a.attachedRigidbody; var br = b.attachedRigidbody;
+            contactInfo[key] = new Collision2D { m_RelVel = (ar != null ? ar.velocity : Vector2.zero) - (br != null ? br.velocity : Vector2.zero),
+                m_Contacts = new[] { new ContactPoint2D { m_Point = p, m_Normal = normal } } };
         }
 
         static bool EdgeTouch(Entry A, Entry B)
@@ -598,7 +613,14 @@ namespace KNL
                         for (int i = 0; i < pt.Length; i++)
                             if (PointInPolygon(pt[i], oPaths)) return true;
                     }
+                    // Thin, rotated polygons can have overlapping bounding circles while their
+                    // actual outlines are disjoint. Test crossing edges, then stop; do not fall
+                    // through to the circle approximation used for non-polygon shapes.
+                    foreach (var ap in paths) foreach (var bp in oPaths)
+                        for (int i = 0; i < ap.Length; i++) for (int j = 0; j < bp.Length; j++)
+                            if (SegmentsTouch(ap[i], ap[(i + 1) % ap.Length], bp[j], bp[(j + 1) % bp.Length])) return true;
                 }
+                return false;
             }
 
             float cx = (oEntry.box.x0 + oEntry.box.x1) * 0.5f;
@@ -626,6 +648,15 @@ namespace KNL
                 }
             }
             return false;
+        }
+
+        static bool SegmentsTouch(Vector2 a, Vector2 b, Vector2 c, Vector2 d)
+        {
+            if (Mathf.Max(a.x,b.x) < Mathf.Min(c.x,d.x) || Mathf.Max(c.x,d.x) < Mathf.Min(a.x,b.x) ||
+                Mathf.Max(a.y,b.y) < Mathf.Min(c.y,d.y) || Mathf.Max(c.y,d.y) < Mathf.Min(a.y,b.y)) return false;
+            float ac = (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x), ad = (b.x-a.x)*(d.y-a.y)-(b.y-a.y)*(d.x-a.x);
+            float ca = (d.x-c.x)*(a.y-c.y)-(d.y-c.y)*(a.x-c.x), cb = (d.x-c.x)*(b.y-c.y)-(d.y-c.y)*(b.x-c.x);
+            return ((ac <= 0 && ad >= 0) || (ad <= 0 && ac >= 0)) && ((ca <= 0 && cb >= 0) || (cb <= 0 && ca >= 0));
         }
 
         static bool PointInPolygon(Vector2 p, Vector2[][] paths)
@@ -812,7 +843,7 @@ namespace KNL
             }
         }
 
-        public static void OnDestroyed(GameObject go) { }
+        public static void OnDestroyed(GameObject go) { PouchPhysics.OnDestroyed(go); }
 
         // ---------------------------------------------------------------- queries
         static IEnumerable<Entry> Live(int mask)

@@ -658,10 +658,10 @@ namespace KNL
                     else if (a == H("m_AnchorMax.y")) { var q = rt.m_AnchorMax; q.y = v; rt.anchorMax = q; }
                     else if (a == H("m_Pivot.x")) { var q = rt.m_Pivot; q.x = v; rt.pivot = q; }
                     else if (a == H("m_Pivot.y")) { var q = rt.m_Pivot; q.y = v; rt.pivot = q; }
-                    else if (a == H("m_LocalScale.x")) rt.m_LocalScale.x = v;
-                    else if (a == H("m_LocalScale.y")) rt.m_LocalScale.y = v;
-                    else if (a == H("m_LocalScale.z")) rt.m_LocalScale.z = v;
-                    else if (a == H("m_LocalPosition.z")) rt.m_LocalPosition.z = v;
+                    else if (a == H("m_LocalScale.x")) { var q = rt.m_LocalScale; q.x = v; rt.m_LocalScale = q; }
+                    else if (a == H("m_LocalScale.y")) { var q = rt.m_LocalScale; q.y = v; rt.m_LocalScale = q; }
+                    else if (a == H("m_LocalScale.z")) { var q = rt.m_LocalScale; q.z = v; rt.m_LocalScale = q; }
+                    else if (a == H("m_LocalPosition.z")) { var q = rt.m_LocalPosition; q.z = v; rt.m_LocalPosition = q; }
                     else if (a == 1 || a == 3) { float x = sample[b.curveIndex], y = sample[b.curveIndex + 1], z = sample[b.curveIndex + 2]; if (a == 1) rt.m_LocalPosition = new Vector3(x, y, z); else rt.m_LocalScale = new Vector3(x, y, z); }
                     else Warn("RectTransform attr " + a);
                     return;
