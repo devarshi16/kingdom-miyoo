@@ -1,4 +1,4 @@
-/* Pouch physics bridge. Box2D 2.3.1 (vendored, unmodified) solves the original
+/* Pouch physics bridge. Box2D 2.3.1 (vendored, motion-limit hook documented in README.knl.md) solves the original
  * serialized coin polygons and concave bag wall; no coin capacity or spawn rules live here.
  * This isolated world does not replace the rest of the port's physics engine. */
 #include <Box2D/Box2D.h>
@@ -6,6 +6,8 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+float32 knl_pouch_linear_limit=100.0f;
+float32 knl_pouch_angular_limit=2*b2_pi;
 #define API extern "C" __attribute__((visibility("default")))
 API void *knl_pouch_create(float gx,float gy) { return new b2World(b2Vec2(gx,gy)); }
 API void knl_pouch_destroy(void *w) { delete (b2World*)w; }
@@ -101,7 +103,7 @@ API void knl_pouch_get(void *body,float *v)
     b2Body *b=(b2Body*)body;b2Vec2 p=b->GetPosition(),vel=b->GetLinearVelocity();
     v[0]=p.x;v[1]=p.y;v[2]=b->GetAngle();v[3]=vel.x;v[4]=vel.y;v[5]=b->GetAngularVelocity();
 }
-API void knl_pouch_step(void *w,float dt) { ((b2World*)w)->Step(dt,8,3); }
+API void knl_pouch_step(void *w,float dt,float linearLimit,float angularLimit) { knl_pouch_linear_limit=linearLimit;knl_pouch_angular_limit=angularLimit;((b2World*)w)->Step(dt,8,3); }
 API int knl_pouch_contacts(void *world,int *ids,float *points,int cap)
 {
     int n=0;

@@ -7,7 +7,7 @@
 
 The original game's assemblies and assets are supplied by the player and excluded from release archives.
 
-Box2D 2.3.1 is used for the pouch's polygon contacts. Source: https://github.com/erincatto/box2d/tree/v2.3.1 (commit 7e633c4fb86a68bf072fb8ae67ea2c060114750e). The bridge is separate from the unmodified upstream library.
+Box2D 2.3.1 is used for the pouch's polygon contacts. Source: https://github.com/erincatto/box2d/tree/v2.3.1 (commit 7e633c4fb86a68bf072fb8ae67ea2c060114750e). The bridge is separate; the explicitly marked change to `Dynamics/b2Island.cpp` applies the game's serialized motion limits. Other upstream library files are unchanged.
 
 Copyright (c) 2006-2013 Erin Catto http://www.gphysics.com
 

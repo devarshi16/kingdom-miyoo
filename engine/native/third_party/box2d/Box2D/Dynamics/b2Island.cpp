@@ -17,6 +17,11 @@
 */
 
 #include <Box2D/Collision/b2Distance.h>
+
+// KNL alteration: apply the owned game's serialized motion limits during integration.
+// Upstream Box2D defaults remain an upper safety bound; the rest of this solver is unchanged.
+extern float32 knl_pouch_linear_limit;
+extern float32 knl_pouch_angular_limit;
 #include <Box2D/Dynamics/b2Island.h>
 #include <Box2D/Dynamics/b2Body.h>
 #include <Box2D/Dynamics/b2Fixture.h>
@@ -280,17 +285,19 @@ void b2Island::Solve(b2Profile* profile, const b2TimeStep& step, const b2Vec2& g
 		float32 w = m_velocities[i].w;
 
 		// Check for large velocities
+		const float32 linearLimit = b2Min(b2_maxTranslation, h * knl_pouch_linear_limit);
+		const float32 angularLimit = b2Min(b2_maxRotation, h * knl_pouch_angular_limit);
 		b2Vec2 translation = h * v;
-		if (b2Dot(translation, translation) > b2_maxTranslationSquared)
+		if (b2Dot(translation, translation) > linearLimit * linearLimit)
 		{
-			float32 ratio = b2_maxTranslation / translation.Length();
+			float32 ratio = linearLimit / translation.Length();
 			v *= ratio;
 		}
 
 		float32 rotation = h * w;
-		if (rotation * rotation > b2_maxRotationSquared)
+		if (rotation * rotation > angularLimit * angularLimit)
 		{
-			float32 ratio = b2_maxRotation / b2Abs(rotation);
+			float32 ratio = angularLimit / b2Abs(rotation);
 			w *= ratio;
 		}
 
@@ -478,17 +485,19 @@ void b2Island::SolveTOI(const b2TimeStep& subStep, int32 toiIndexA, int32 toiInd
 		float32 w = m_velocities[i].w;
 
 		// Check for large velocities
+		const float32 linearLimit = b2Min(b2_maxTranslation, h * knl_pouch_linear_limit);
+		const float32 angularLimit = b2Min(b2_maxRotation, h * knl_pouch_angular_limit);
 		b2Vec2 translation = h * v;
-		if (b2Dot(translation, translation) > b2_maxTranslationSquared)
+		if (b2Dot(translation, translation) > linearLimit * linearLimit)
 		{
-			float32 ratio = b2_maxTranslation / translation.Length();
+			float32 ratio = linearLimit / translation.Length();
 			v *= ratio;
 		}
 
 		float32 rotation = h * w;
-		if (rotation * rotation > b2_maxRotationSquared)
+		if (rotation * rotation > angularLimit * angularLimit)
 		{
-			float32 ratio = b2_maxRotation / b2Abs(rotation);
+			float32 ratio = angularLimit / b2Abs(rotation);
 			w *= ratio;
 		}
 

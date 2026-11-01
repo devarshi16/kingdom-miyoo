@@ -18,7 +18,7 @@ public static class PouchPhysics {
     [DllImport(Lib)] static extern void knl_pouch_layer(IntPtr filter,IntPtr body,int id,int layer,uint mask);
     [DllImport(Lib)] static extern void knl_pouch_set(IntPtr body,int active,int type,float x,float y,float angle,float vx,float vy,float av);
     [DllImport(Lib)] static extern void knl_pouch_get(IntPtr body,float[] values);
-    [DllImport(Lib)] static extern void knl_pouch_step(IntPtr world,float dt);
+    [DllImport(Lib)] static extern void knl_pouch_step(IntPtr world,float dt,float linearLimit,float angularLimit);
     [DllImport(Lib)] static extern int knl_pouch_contacts(IntPtr world,int[] ids,float[] points,int capacity);
     sealed class Body { public Rigidbody2D rb;public PolygonCollider2D col;public IntPtr handle; }
     static IntPtr world,filter,wall;
@@ -88,7 +88,7 @@ public static class PouchPhysics {
             knl_pouch_set(b.handle,1,rb.m_BodyType,p.x,p.y,Angle(rb.transform),v.x,v.y,rb.angularVelocity*Mathf.Deg2Rad);
             knl_pouch_mass(b.handle,rb.mass); // reactivation/type changes recompute native fixture mass
         }
-        knl_pouch_step(world,dt);
+        knl_pouch_step(world,dt,Physics2DSystem.MaxTranslationSpeed,Physics2DSystem.MaxRotationSpeed*Mathf.Deg2Rad);
         foreach(var b in owned.Values)if(b.rb!=null&&b.rb.simulated&&b.rb.gameObject.activeInHierarchy&&b.col!=null&&b.col.enabled) {
             knl_pouch_get(b.handle,values);b.rb.position=new Vector2(values[0],values[1]);b.rb.rotation=values[2]*Mathf.Rad2Deg;
             b.rb.m_Velocity=new Vector2(values[3],values[4]);b.rb.m_AngularVelocity=values[5]*Mathf.Rad2Deg;

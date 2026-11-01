@@ -247,6 +247,7 @@ namespace KNL
         public static Vector2 Gravity = new Vector2(0, -9.81f);
         static readonly uint[] layerMatrix = Enumerable.Repeat(0xFFFFFFFFu, 32).ToArray();
         public static int Steps;
+        internal static float MaxTranslationSpeed=100f, MaxRotationSpeed=360f;
 
         public static void LoadSettings()
         {
@@ -255,6 +256,7 @@ namespace KNL
                 if ((string)e["type"] != "Physics2DSettings" || !e.ContainsKey("data")) continue;
                 var d = (JObj)e["data"];
                 Gravity = Json.V2(d["m_Gravity"]);
+                MaxTranslationSpeed=Json.F(d,"m_MaxTranslationSpeed",100f);MaxRotationSpeed=Json.F(d,"m_MaxRotationSpeed",360f);
                 var m = (List<object>)d["m_LayerCollisionMatrix"];
                 for (int i = 0; i < 32 && i < m.Count; i++) layerMatrix[i] = (uint)(double)m[i];
             }
