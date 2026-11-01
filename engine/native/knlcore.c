@@ -949,28 +949,16 @@ KNL_API int knl_save_png(const char *path, int scale)
 KNL_API uint32_t knl_buttons(void);
 
 #ifdef KNL_MIYOO
+#include "framebuffer_copy.h"
 static void fb_flip(void)
 {
     /* back page when the fb is double height, then pan to it; RGBA -> BGRA, 2x, rotated 180 */
     int pages = g_vinfo.yres_virtual / g_vinfo.yres;
     int page = (g_page + 1) % pages;
     uint8_t *dst = (uint8_t *)g_fbmem + (size_t)page * g_vinfo.yres * g_finfo.line_length;
-    for (int y = 0; y < g_h; y++) {
-        const uint32_t *src = g_fb + (size_t)y * g_w;
-        uint8_t *r0 = dst + (size_t)(g_vinfo.yres - 1 - 2 * y) * g_finfo.line_length;
-        uint8_t *r1 = r0 - g_finfo.line_length;
-        uint64_t *dst0 = (uint64_t *)r0;
-        uint64_t *dst1 = (uint64_t *)r1;
-        for (int x = 0; x < g_w; x++) {
-            uint32_t c = src[g_w - 1 - x];
-            c = ((c & 255u) << g_vinfo.red.offset) | (((c >> 8) & 255u) << g_vinfo.green.offset) |
-                (((c >> 16) & 255u) << g_vinfo.blue.offset) |
-                (g_vinfo.transp.length == 8 ? 255u << g_vinfo.transp.offset : 0u);
-            uint64_t pair = (uint64_t)c | ((uint64_t)c << 32);
-            dst0[x] = pair;
-            dst1[x] = pair;
-        }
-    }
+    knl_copy_display(dst, g_finfo.line_length, g_fb, g_w, g_h,
+                     g_vinfo.red.offset, g_vinfo.green.offset, g_vinfo.blue.offset,
+                     g_vinfo.transp.length, g_vinfo.transp.offset);
     if (pages > 1) {
         g_vinfo.yoffset = page * g_vinfo.yres;
         ioctl(g_fbfd, FBIOPAN_DISPLAY, &g_vinfo);
