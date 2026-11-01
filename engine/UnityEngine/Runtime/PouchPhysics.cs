@@ -27,7 +27,10 @@ public static class PouchPhysics {
     static readonly Dictionary<int,Collider2D> shapes=new Dictionary<int,Collider2D>();
     static readonly HashSet<Rigidbody2D> checkedBodies=new HashSet<Rigidbody2D>();
     static readonly int[] ids=new int[2048];static readonly float[] points=new float[4096],values=new float[6];
-    static float Angle(Transform t) { return t.eulerAngles.z*Mathf.Deg2Rad; }
+    static float Angle(Transform t) {
+        var q=t.rotation;
+        return Mathf.Atan2(2f*(q.w*q.z+q.x*q.y),1f-2f*(q.x*q.x+q.z*q.z));
+    }
     static bool IsBagCoin(GameObject g) { foreach(var c in g.m_Components)if(c!=null&&c.GetType().Name=="BagCoin")return true;return false; }
     static Transform FindBag(Transform t) {
         for(var p=t.parent;p!=null;p=p.parent)foreach(var c in p.gameObject.m_Components)if(c!=null&&c.GetType().Name=="CoinBag")return p;

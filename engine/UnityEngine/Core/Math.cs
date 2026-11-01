@@ -270,6 +270,12 @@ namespace UnityEngine
         // Unity convention: rotation applied Z, then X, then Y (q = qy * qx * qz)
         public static Quaternion Euler(float ex, float ey, float ez)
         {
+            // The overwhelmingly common 2D case needs only the Z rotation. The general
+            // expression multiplies two identity quaternions and computes four unused trig values.
+            if (ex == 0f && ey == 0f) {
+                float h = ez * Mathf.Deg2Rad * 0.5f;
+                return new Quaternion(0f, 0f, Mathf.Sin(h), Mathf.Cos(h));
+            }
             return AngleAxis(ey, Vector3.up) * AngleAxis(ex, Vector3.right) * AngleAxis(ez, Vector3.forward);
         }
         public static Quaternion Euler(Vector3 e) { return Euler(e.x, e.y, e.z); }

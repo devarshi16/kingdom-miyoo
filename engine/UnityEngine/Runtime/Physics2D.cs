@@ -33,7 +33,14 @@ namespace UnityEngine
         public float gravityScale { get { return m_GravityScale; } set { m_GravityScale = value; } }
         public RigidbodyConstraints2D constraints { get { return m_Constraints; } set { m_Constraints = value; } }
         public Vector2 position { get { return transform.position; } set { var p = transform.position; transform.position = new Vector3(value.x, value.y, p.z); } }
-        public float rotation { get { return transform.eulerAngles.z; } set { var e = transform.eulerAngles; transform.eulerAngles = new Vector3(e.x, e.y, value); } }
+        public float rotation {
+            get { return transform.eulerAngles.z; }
+            set {
+                var t = transform; var q = t.rotation;
+                if (q.x == 0f && q.y == 0f) t.rotation = Quaternion.Euler(0f,0f,value);
+                else { var e = t.eulerAngles; t.eulerAngles = new Vector3(e.x,e.y,value); }
+            }
+        }
         public Vector2 centerOfMass { get { return m_CenterOfMass; } set { m_CenterOfMass = value; } }
         public Vector2 worldCenterOfMass { get { return transform.TransformPoint(m_CenterOfMass); } }
         public void MovePosition(Vector2 p) { position = p; }
