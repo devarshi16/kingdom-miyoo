@@ -35,10 +35,12 @@ echo "=== 1. Setting up Python environment ==="
 "$HERE/tools/setup.sh"
 
 echo "=== 2. Extracting game assets from $DATA_DIR ==="
-"$HERE/tools/run.sh" convert.py "$DATA_DIR"
+WORK="$(mktemp -d "$HERE/.build-data.XXXXXX")"
+export KNL_EXTRACTED="$WORK/extracted" KNL_PACK="$WORK/pack"
+"$HERE/tools/run.sh" convert.py "$DATA_DIR" --out "$KNL_EXTRACTED"
 
 echo "=== 3. Packing assets for device ==="
-"$HERE/tools/run.sh" pack.py
+"$HERE/tools/run.sh" pack.py "$KNL_EXTRACTED" --out "$KNL_PACK"
 
 echo "=== 4. Building game engine ==="
 "$HERE/engine/build.sh" "$DATA_DIR"

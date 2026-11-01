@@ -1,118 +1,71 @@
-# Kingdom: New Lands — Miyoo Mini / Mini Plus Port
+# Kingdom: New Lands on Miyoo Mini / Mini Plus
 
-<p align="center">
-  <img src="media/gameplay.gif" alt="Kingdom: New Lands on Miyoo Mini Plus" width="360" />
-</p>
+**Experimental candidate: 1.1.0-rc1. Full gameplay validation is pending.**
 
-A native, clean-room port of **Kingdom: New Lands** for the **Miyoo Mini** and **Miyoo Mini Plus** running OnionOS.
+Please wait before buying the PC game specifically for this port. Tutorial, menu/save navigation, upgrades, coin-pouch physics and long-session stability still need a complete playthrough. The previous v1.0 release had installation and runtime defects. A successful boot does not establish that the full game works.
 
-This is a **Bring Your Own Data (BYOD)** port. You must provide game files from your own legally purchased copy of *Kingdom: New Lands* (Steam, Epic Games Store, or GOG). **No game assets or proprietary code are distributed here.**
+This port runs the player's original game logic under a replacement engine. You must supply files from your own PC copy. Release archives contain no original game assemblies or assets.
 
----
+## Player installation
 
-## 🚀 Easy Installation (No Compilation Needed)
+1. Download the **complete candidate ZIP** from the project's release assets when a candidate is published. Extract it into a writable folder on your computer. Do not mix files from different releases.
+2. On Windows, install **64-bit Python 3.11** from [python.org](https://www.python.org/downloads/windows/) if needed. Enable the launcher and PATH options. Double-click `setup_windows.bat`.
+3. On Linux/macOS, run `./setup.sh` using Python 3.10–3.12. The folder picker requires Tkinter; on Ubuntu install `python3-venv` and `python3-tk` if missing. This route has been exercised on Linux; Windows/macOS still require validation on those systems.
+4. Select your **Kingdom_Data** folder, then the **root of the SD card** (or a local output folder). Setup installs Python dependencies in its own `.player-venv`; an internet connection is needed for the first setup.
+5. For sound, install **FFmpeg** and make it available on PATH before setup. The Windows launcher also checks `tools/ffmpeg/ffmpeg.exe` if you provide a trusted portable copy there. When FFmpeg is absent, setup offers an explicitly **silent** test installation. It does not silently claim that sound was installed.
+6. Wait for validation to finish. Existing installations and saves are retained in `Roms/PORTS/Games/KingdomNewLands.backup-<timestamp>`. Keep this backup until save/reload and gameplay checks pass.
+7. Safely eject the card, insert it in the Miyoo, refresh Ports and launch **Kingdom New Lands**. If you selected a local output folder, first copy its `Roms` folder onto the SD card root.
 
-**You do NOT need to compile anything or use Linux/WSL.** All required ARM binaries and the clean-room engine runtime are pre-compiled in the release zip.
+The ZIP includes the runtime and preparer. Players do not need Git, WSL, a compiler, or a separate source download. This folder-picker setup still requires Python and installs dependencies; it is **not yet a standalone Windows installer**. A raw-data, first-launch importer on the Miyoo has not been implemented or benchmarked.
 
-### Step 1: Download Release
-1. Download [`KingdomNewLands-MiyooMini-v1.0.zip`](https://github.com/devarshi16/kingdom-miyoo/releases) from Releases.
-2. Extract the `Roms/` folder directly to the root of your Miyoo SD card.
+### Supported data
 
-### Step 2: Prepare Your Game Data
+The verified input is Kingdom: New Lands **1.2.8**, Unity **2017.1.2p1**, identified by the fingerprints in `tools/supported_build.json`. Store names alone do not establish compatibility. Other builds stop with an explanation; developers may explicitly try `--allow-unsupported`, which marks the installation unverified. Do not recommend unverified data combinations to players.
 
-#### 🪟 On Windows (Easiest — Automated):
-1. Download or clone this repository to your PC.
-2. Double-click **`setup_windows.bat`**.
-   * It will automatically verify Python, install dependencies, auto-detect your Steam/GOG/Epic install, and stage files directly to your SD card!
+Typical Windows paths:
 
-#### 🐧 On macOS / Linux (or Manual Windows):
+- Steam: `C:\Program Files (x86)\Steam\steamapps\common\Kingdom New Lands\Kingdom_Data`
+- GOG: `C:\GOG Games\Kingdom New Lands\Kingdom_Data`
+- Epic: `C:\Program Files\Epic Games\KingdomNewLands\Kingdom_Data`
+
+Other Steam libraries and storefront paths can be selected manually.
+
+### Command-line alternative
+
+Inside an isolated Python environment, install `tools/requirements.txt`, then:
+
 ```bash
-# 1. Install dependencies (ffmpeg is recommended for soundtrack & sound effects)
-pip install UnityPy Pillow dnfile TypeTreeGeneratorAPI
-
-# 2. Run data preparer (point it to your game's Kingdom_Data and your SD card)
-python prepare_data.py "/path/to/Kingdom New Lands/Kingdom_Data" --out "/media/$USER/SDCARD"
-```
-*(On Windows manual CLI, replace with e.g. `python prepare_data.py "C:\GOG Games\Kingdom New Lands\Kingdom_Data" --out "E:\"`).*
-*(Add `--skip-audio` if you do not have `ffmpeg` installed and wish to test without audio).*
-
-> [!TIP]
-> **WSL Users**: 
-> 1. Always clone this repository inside your WSL home directory (`~`, e.g. `~/kingdom-miyoo`), **not** under `/mnt/c/`, as Windows-WSL filesystem bridging (`drvfs`) is drastically slower and can break Python packages.
-> 2. Your SD card (e.g. drive `E:`) is accessible in WSL under `/mnt/e` (e.g. `--out /mnt/e`).
-
-### Step 3: Play!
-Insert the SD card into your Miyoo Mini, go to **Games › Ports › Refresh ROMs**, and launch **Kingdom New Lands**!
-
----
-
-## 🪵 Troubleshooting & Sharing Logs
-
-If the game crashes back to the menu or shows a black screen, the port writes an execution log every time it starts:
-
-### Finding Your Log File:
-On your SD card, open:
-📁 `Roms/PORTS/Games/KingdomNewLands/logs/knl.log`
-
-### Reporting an Issue:
-If you encounter any crash or bug, please **open an issue on GitHub and attach or paste your `knl.log` file**. It contains the exact Mono stack trace and error message, which makes diagnosing and fixing your issue fast!
-
-> [!NOTE]
-> **Windows Defender Notice**: The release zip contains **zero `.exe` files** (the launcher uses `knl.dll` executed directly by Mono on the device). If generic heuristics flag the archive because of unfamiliar Linux ARM binaries or shell scripts, it is a false positive. All source code is completely open in this repository.
-
----
-
-## 📦 Game Data Locations (BYOD)
-
-Locate the `Kingdom_Data` directory from your PC installation:
-
-| Platform | Default Path |
-| :--- | :--- |
-| **Steam (Windows)** | `C:\Program Files (x86)\Steam\steamapps\common\Kingdom New Lands\Kingdom_Data` |
-| **Steam (Linux)** | `~/.local/share/Steam/steamapps/common/Kingdom New Lands/Kingdom_Data` |
-| **Steam (macOS)** | `~/Library/Application Support/Steam/steamapps/common/Kingdom New Lands/Kingdom_Data` |
-| **Epic Games (Windows)** | `C:\Program Files\Epic Games\KingdomNewLands\Kingdom_Data` |
-| **Epic Games (Linux - Native / Heroic)** | `~/Games/KingdomNewLands/Kingdom_Data` |
-| **Epic Games (Linux - Lutris)** | `~/Games/epic-games-store/drive_c/Program Files/Epic Games/KingdomNewLands/Kingdom_Data` |
-| **Epic Games (macOS)** | `/Users/Shared/Epic Games/KingdomNewLands/Kingdom_Data` |
-| **GOG (Windows)** | `C:\GOG Games\Kingdom New Lands\Kingdom_Data` |
-| **GOG (Linux)** | `~/GOG Games/Kingdom New Lands/Kingdom_Data` |
-
----
-
-## 🤖 Install using an AI Agent
-
-If you use an AI coding agent (Antigravity, Cursor, Claude Code, Aider), you can give it this prompt to set up everything automatically:
-
-```text
-Install the Kingdom: New Lands port from github.com/devarshi16/kingdom-miyoo on my Miyoo Mini Plus at IP [your_miyoo_ip].
-Locate the Kingdom_Data folder from my PC game installation (Steam/Epic/GOG).
-Run python prepare_data.py to extract and pack the game data, sync the Roms folder to /mnt/SDCARD/ over SSH, and verify the game boots cleanly.
+python prepare_data.py "/path/to/Kingdom_Data" --out "/path/to/SD-root"
 ```
 
----
+Use `--skip-audio` only for a silent test. Each conversion uses a fresh temporary directory. Invalid data and incomplete conversions fail before replacing the installation. The preparer writes `prepare.log`; the completed game folder contains `installation.json` with source and installed-file fingerprints. Do not run setup against an installation while the game is running.
 
-## 🛠️ Building Engine from Source (Developers Only)
+## Controls and saves
 
-> [!IMPORTANT]
-> **Players do NOT need to build from source.** `compile.sh` compiles the desktop engine test harness unless you have the Miyoo cross-compiler toolchain installed. To play on your Miyoo Mini, follow the **Easy Installation (Steps 1 & 2)** above using the pre-compiled release package.
+- D-pad: move; Down/A/X: pay; B/L/R: gallop.
+- Start: game menu; A: confirm; B/Select: cancel.
+- **Menu + Start: emergency exit to Onion. It does not request a game save.** Use the game's save option first. Menu/save navigation is part of the pending gameplay validation.
+- Save files live in `Roms/PORTS/Games/KingdomNewLands/save/`. Back them up before testing or updating.
 
-If you are modifying the clean-room C blitter or C# UnityEngine replacement:
+## Reporting a failure
 
-### Prerequisites (Linux / WSL)
+For setup failures, attach `prepare.log` from beside the preparer. For game failures, attach `Roms/PORTS/Games/KingdomNewLands/logs/knl.log` and describe the steps leading to the failure. Include candidate version, Onion version, game source/build, whether the save is new or existing, and whether sound was enabled. Logs may contain local paths; review them before posting.
+
+Please report tutorial completion, menu/save navigation and upgrades even if there is no crash. No exception in a log does not prove correct behavior. See [the testing checklist](docs/TESTING.md).
+
+## Developer build and checks
+
+Linux prerequisites: Mono development tools (`mcs`, `mono`), GCC, SDL2 development files, Python dependencies, and FFmpeg. The Miyoo build additionally needs the compatible ARM toolchain, SigmaStar MI headers/libraries and Mono ARM runtime described in `engine/build_miyoo.sh`; a desktop build is not a device build.
+
 ```bash
-sudo apt update && sudo apt install -y build-essential mono-devel libsdl2-dev python3 python3-pip ffmpeg
-```
-
-### Build Pipeline
-```bash
-git clone https://github.com/devarshi16/kingdom-miyoo.git
-cd kingdom-miyoo
 ./compile.sh "/path/to/Kingdom_Data"
+python3 -m unittest discover -s tests -v
+./tests/run_runtime.sh
+./tools/package_release.sh
 ```
 
----
+`compile.sh` creates a fresh `.build-data.*` folder and prints whether an ARM package was built. `engine/run.sh --data pack --boot --window` runs an existing pack for desktop investigation. `tools/package_release.sh` explicitly selects redistributable runtime files and bundles the player setup tools; it does not copy the developer's game data. It emits a versioned ZIP, SHA-256 checksum and an internal manifest recording the source commit and dirty-tree state. Commit the candidate source before publishing.
 
-## 📜 Legal & Disclaimer
+The managed host is named `knl.dll` consistently, but is still a managed executable. Its extension is not a malware assessment. Report antivirus detections with the exact archive hash and detection name; do not disable protection to install a flagged download.
 
-*Kingdom: New Lands* is © **Noio** and **Raw Fury**. This project is an independent re-implementation created for educational and preservation purposes. It is not affiliated with or endorsed by Noio or Raw Fury.
+Kingdom: New Lands belongs to Noio and Raw Fury. This independent port is not endorsed by them. Third-party runtime notices accompany candidate archives.

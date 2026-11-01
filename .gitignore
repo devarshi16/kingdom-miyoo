@@ -22,3 +22,8 @@ pack/
 *.log
 *.zip
 release_pkg/
+.build-data.*/
+sd_card_data/
+dist/
+
+.player-venv/

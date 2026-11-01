@@ -1,0 +1,27 @@
+{
+  "name": "Kingdom: New Lands 1.2.8 / Unity 2017.1.2p1 (verified local PC build)",
+  "fingerprints": {
+    "globalgamemanagers": "8073fab961a42b4e67d2351131564519b63fef4e945ddf2512cb03dd013001c6",
+    "globalgamemanagers.assets": "361a0eaeb507fcce673622436de5189da6c9ff3ef24414268eb63ab453a27571",
+    "level0": "a69b464af59f9cbaaee41a59bbb883c28ce5872ecf1a5b1b4ce91377f5f2b83a",
+    "level1": "d43b2fe2ac793893cc76ec69473b7642a68fc15ed193f84e264471965619eb82",
+    "level2": "f5ab8dfb310d8ec909c4be1ea65b9f492bddb8b579454ac930b499833e5aa92f",
+    "resources.assets": "d47d3873cb40081d29c4dc9448e4b4bd86ff2c93c43bd174d9fe1644dd22bd3b",
+    "sharedassets0.assets": "dcbe30d3a828aba69583bd55609aed7a8aeebce538d2f84199bf0e3ba3fa80b9",
+    "sharedassets1.assets": "babba4d01e89c634d63b01afe9d158037607a216dd4548d65e805c9400483e8e",
+    "sharedassets2.assets": "d7f0291aac639cf53a8a3bd9769882850bf4dfdb2f27d0fa027be13b3ca9c920",
+    "Managed/Assembly-CSharp.dll": "89e7bdc9b18ccb4a6d37e93c09245c58d67506d92d1fdc26206ef096c73150e3",
+    "Managed/Assembly-CSharp-firstpass.dll": "84697e75e37969e97ac030473be439c19cc484c8c31fe1537fdc76b0e9324514",
+    "Managed/UnityEngine.UI.dll": "d43a604ffdc0aaf051e0fe263374cea1678491b8179f9c6b5e3ce3db5bb62f7e",
+    "Managed/UnityEngine.Timeline.dll": "463c8b8664b58306aded67af125b889cce23aa9f7a12500decd67ca25673953a",
+    "Managed/UnityEngine.Networking.dll": "80eb863912294c6c97fadf4ac51f2753b76920f43114d2037bf0385a3681c000",
+    "Managed/DOTween.dll": "eb4388b2540ebbf41a1fe1721dae8925cf8a15eb4cc3d3d48ce67e27c2c18825",
+    "Managed/DOTween43.dll": "73230d96285d15a8779efb90b19cff7c4dd96322655756cab0e2cbd90e4014d7",
+    "Managed/DOTween46.dll": "3b994e90c8f9ee0a3070e133e9716398b02acf85f23d0944bd179c4321f690f5",
+    "Managed/DOTween50.dll": "7c060d5040dc6b157c625460c82b9ccd07fb471f955e23046a70bbd90e64cf56",
+    "Managed/DOTweenPro.dll": "0e5b5e6979cc24b0c2a22cf3675ee8f42b80cee04cb01c2a3c1a3a1106266469",
+    "Managed/DemiLib.dll": "1966890184f0c94a27bc346169ef6599e1f19412a6a756f12b8279635b1f1ff4",
+    "Managed/UnityEngine.dll": "ac58b0e45834c81a4905677874592ec75072f697e020a0c0d485daec74b9981d",
+    "Managed/Rewired_Core.dll": "d1f90f269f48a9632214f1d6782def2a1dffb3acf1460f89e4840441aabb5832"
+  }
+}

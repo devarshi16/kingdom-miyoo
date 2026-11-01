@@ -13,7 +13,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(dirname "$HERE")"
 GAME="${1:-$HOME/Games/KingdomNewLands/Kingdom_Data}"
 M="$GAME/Managed"
-REPORT="$ROOT/extracted/report.json"
+REPORT="${KNL_EXTRACTED:-$ROOT/extracted}/report.json"
 B="$HERE/build"
 NOWARN=0108,0114,0618,0649,0169,0414,0067,0660,0661
 SHIM() { bash "$ROOT/tools/run.sh" gen_shim.py "$@"; }
@@ -22,6 +22,7 @@ for t in mcs mono gcc python3; do command -v $t >/dev/null || { echo "missing: $
 [ -f "$M/Assembly-CSharp.dll" ] || { echo "no game assemblies at $M"; exit 1; }
 [ -f "$REPORT" ] || { echo "run tools/run.sh convert.py $GAME first"; exit 1; }
 mkdir -p "$B"
+rm -f "$B"/*.dll "$B/knl.exe"
 cd "$HERE"
 
 echo "== native core"
@@ -56,6 +57,6 @@ for f in "$M"/*.dll; do
 done
 rm -f "$B/Rewired_Windows_Lib.dll"
 
-echo "== knl.exe"
-mcs -out:"$B/knl.exe" -r:"$B/UnityEngine.dll" -r:System.Core.dll Host/Program.cs
+echo "== knl.dll (managed executable)"
+mcs -target:exe -out:"$B/knl.dll" -r:"$B/UnityEngine.dll" -r:System.Core.dll Host/Program.cs
 echo "ok -> $B   (try: engine/run.sh --boot --window; for device data: tools/run.sh pack.py, then engine/run.sh --data pack --boot --window)"

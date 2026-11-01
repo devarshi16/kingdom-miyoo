@@ -13,6 +13,7 @@ Everything in the pack is derived from YOUR game data: never share it.
 """
 import argparse, json, os, struct, sys, time, wave, array, glob, shutil
 from PIL import Image
+from data_checks import validate_extraction, validate_pack
 
 T0 = time.time()
 def log(*a):
@@ -21,9 +22,13 @@ def log(*a):
 ap = argparse.ArgumentParser()
 ap.add_argument("extracted", nargs="?", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "extracted"))
 ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "pack"))
+ap.add_argument("--skip-audio", action="store_true")
 args = ap.parse_args()
 src = os.path.abspath(args.extracted)
 out = os.path.abspath(args.out)
+validate_extraction(src, audio=not args.skip_audio)
+if os.path.exists(out) and os.listdir(out):
+    sys.exit("Pack output must be empty; select a new --out directory.")
 os.makedirs(os.path.join(out, "music"), exist_ok=True)
 entries = []   # (name, bytes)
 
@@ -175,7 +180,7 @@ def adpcm(samples):
     return bytes(outb)
 
 ns = nm = 0; pcm_bytes = 0
-for p in sorted(glob.glob(os.path.join(src, "audio", "sfx", "*.wav"))):
+for p in ([] if args.skip_audio else sorted(glob.glob(os.path.join(src, "audio", "sfx", "*.wav")))):
     w = wave.open(p, "rb")
     ch, rate, n = w.getnchannels(), w.getframerate(), w.getnframes()
     a = array.array("h"); a.frombytes(w.readframes(n))
@@ -183,7 +188,7 @@ for p in sorted(glob.glob(os.path.join(src, "audio", "sfx", "*.wav"))):
     data = adpcm(a.tolist())
     entries.append(("sfx/" + os.path.basename(p)[:-4], struct.pack("<III", rate, len(a), BLOCK) + data))
     ns += 1; pcm_bytes += len(a) * 2
-for p in sorted(glob.glob(os.path.join(src, "audio", "music", "*.ogg"))):
+for p in ([] if args.skip_audio else sorted(glob.glob(os.path.join(src, "audio", "music", "*.ogg")))):
     shutil.copy2(p, os.path.join(out, "music", os.path.basename(p))); nm += 1
 log(f"sfx: {ns} clips, {pcm_bytes / 1e6:.1f} MB pcm -> adpcm; music: {nm} ogg streamed")
 
@@ -201,4 +206,5 @@ with open(dst, "wb") as f:
     f.write(b"KNLP" + struct.pack("<II", 1, len(entries)))
     f.write(dirb)
     for _, data in entries: f.write(data)
+validate_pack(dst)
 log(f"wrote {dst}: {len(entries)} entries, {os.path.getsize(dst) / 1e6:.1f} MB (+ music/)")

@@ -39,11 +39,9 @@ import time
 
 import UnityPy
 from UnityPy.helpers.TypeTreeGenerator import TypeTreeGenerator
+from data_checks import SERIALIZED, validate_source, validate_extraction
 
 UNITY_VERSION = "2017.1.2p1"
-SERIALIZED = ["globalgamemanagers", "globalgamemanagers.assets", "level0", "level1", "level2",
-              "resources.assets", "sharedassets0.assets", "sharedassets1.assets",
-              "sharedassets2.assets"]
 # fields holding large binary payloads that are exported separately
 STRIP = {"image data", "m_AudioData", "m_FontData", "m_Script_bytes"}
 
@@ -116,14 +114,19 @@ def main():
     ap.add_argument("--skip", default="", help="comma list of: objects,textures,audio")
     ap.add_argument("--rate", type=int, default=22050, help="output sample rate for audio")
     ap.add_argument("--music-q", type=float, default=2.0, help="libvorbis quality for music")
+    ap.add_argument("--allow-unsupported", action="store_true")
     args = ap.parse_args()
     skip = set(filter(None, args.skip.split(",")))
     D = os.path.abspath(args.data_dir)
+    source_manifest = validate_source(D, args.allow_unsupported)
     OUT = os.path.abspath(args.out)
     os.makedirs(OUT, exist_ok=True)
+    if os.listdir(OUT):
+        sys.exit("Extraction output must be empty; select a new --out directory to prevent stale data.")
     report = {"unity_version": UNITY_VERSION, "source": D, "files": {}, "type_counts": {},
               "monobehaviour_failures": {}, "textures": [], "audio": {"sfx": [], "music": []},
               "timings_s": {}}
+    report["source_manifest"] = source_manifest
     t0 = time.time()
 
     # -- type trees from the user's own DLLs (this build has none embedded) --
@@ -140,6 +143,9 @@ def main():
     paths = [os.path.join(D, f) for f in SERIALIZED if os.path.exists(os.path.join(D, f))]
     env = UnityPy.load(*paths)
     env.typetree_generator = gen
+    for sf in env.files.values():
+        if hasattr(sf, "unity_version") and sf.unity_version != UNITY_VERSION:
+            sys.exit(f"Unsupported Unity serialization version: {sf.unity_version}; expected {UNITY_VERSION}")
     log(f"loaded {len(env.files)} serialized files")
 
     # MonoScript lookup: (file name, path id) -> "Assembly:Namespace.Class"
@@ -359,6 +365,8 @@ def main():
     report["timings_s"]["total"] = round(time.time() - t0, 1)
     with open(os.path.join(OUT, "report.json"), "w") as fh:
         json.dump(report, fh, indent=1, default=str)
+    if not (skip - {"audio"}):
+        validate_extraction(OUT, audio="audio" not in skip)
     log(f"done in {report['timings_s']['total']} s -> {OUT}/report.json")
 
 

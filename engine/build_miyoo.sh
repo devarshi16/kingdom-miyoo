@@ -23,8 +23,9 @@ MONO_ROOT="${MONO_ROOT:-$TC/mono-armhf-6.8.0.105/root}"
 PUSH=0; OUT="$HERE/build-miyoo"
 for x in "$@"; do case "$x" in --push) PUSH=1;; *) OUT="$x";; esac; done
 B="$HERE/build"; GAME="$OUT/Roms/PORTS/Games/KingdomNewLands"
-[ -f "$B/knl.exe" ] || { echo "run engine/build.sh first"; exit 1; }
-[ -f "$ROOT/pack/kingdom.knlpack" ] || { echo "run tools/run.sh pack.py first"; exit 1; }
+PACK="${KNL_PACK:-$ROOT/pack}"
+[ -f "$B/knl.dll" ] || { echo "run engine/build.sh first"; exit 1; }
+[ -f "$PACK/kingdom.knlpack" ] || { echo "run tools/run.sh pack.py first"; exit 1; }
 
 echo "== libknlcore.so (armhf, Cortex-A7 NEON hard-float)"
 mkdir -p "$GAME/lib" "$GAME/managed" "$GAME/mono/bin" "$GAME/mono/lib/mono/4.5" "$GAME/mono/etc/mono" "$GAME/data" "$GAME/save" "$GAME/logs" \
@@ -42,16 +43,19 @@ echo "== Mono runtime + the BCL assemblies the game loads"
 cp "$MONO_ROOT/usr/bin/mono-sgen" "$GAME/mono/bin/"
 cp "$MONO_ROOT/usr/lib/libmono-native.so.0.0.0" "$GAME/mono/lib/libmono-native.so"
 cp "$MONO_ROOT/etc/mono/config" "$GAME/mono/etc/mono/"
+cp "$MONO_ROOT/usr/share/doc/mono-runtime-common/copyright" "$GAME/mono/COPYRIGHT"
 for a in mscorlib System System.Core System.Xml System.Configuration Mono.Security; do
   cp "$MONO_ROOT/usr/lib/mono/4.5/$a.dll" "$GAME/mono/lib/mono/4.5/"
 done
 
 echo "== managed: our engine + your game assemblies (never share this folder)"
-cp "$B"/*.dll "$B/knl.exe" "$GAME/managed/"
+rm -rf "$GAME/managed"
+mkdir -p "$GAME/managed"
+cp "$B"/*.dll "$GAME/managed/"
 rm -f "$GAME/managed/"*.stage1.dll
 echo "== data: your device pack (never share)"
-cp "$ROOT/pack/kingdom.knlpack" "$GAME/data/"
-rm -rf "$GAME/data/music"; cp -r "$ROOT/pack/music" "$GAME/data/"
+cp "$PACK/kingdom.knlpack" "$GAME/data/"
+rm -rf "$GAME/data/music"; cp -r "$PACK/music" "$GAME/data/"
 
 cp "$HERE/miyoo/knl.sh" "$GAME/"
 cp "$HERE/miyoo/Kingdom New Lands.port" "$OUT/Roms/PORTS/Shortcuts/Strategy/"

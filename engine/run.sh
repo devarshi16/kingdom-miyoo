@@ -37,4 +37,4 @@ for x in "$@"; do
   case "$x" in --data) next=data;; --save) next=save;; *) args+=("$x");; esac
 done
 cd "$HERE/build"
-LD_LIBRARY_PATH="$HERE/build${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" exec mono knl.exe --data "$data" ${args[@]+"${args[@]}"}
+LD_LIBRARY_PATH="$HERE/build${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" exec mono knl.dll --data "$data" ${args[@]+"${args[@]}"}
