@@ -165,6 +165,7 @@ namespace KNL
             }
             foreach (var s in list.OrderBy(x => x.info.order).ThenBy(x => x.seq))
             {
+                if (!s.awoken) CoinCounter.BeforeAwake(s.mb);
                 if (s.mb.m_Destroyed || !s.mb.gameObject.activeInHierarchy) continue;
                 if (!s.awoken) { s.awoken = true; Call(s, s.info.Awake, "Awake"); }
                 if (s.mb.m_Destroyed || !s.mb.gameObject.activeInHierarchy) continue;
@@ -209,6 +210,7 @@ namespace KNL
             var mb = b as MonoBehaviour;
             if (mb == null || mb.gameObject == null || mb.gameObject.m_Scene == null) return;
             var s = State(mb);
+            if (!s.awoken) CoinCounter.BeforeAwake(mb);
             if (!mb.gameObject.activeInHierarchy) return;
             if (mb.m_Enabled && !s.enabledCalled)
             {
@@ -348,6 +350,7 @@ namespace KNL
             Invokes.Tick();
             if (Prof.Level > 0) tInv = Prof.Add("  logic: invokes", tInv);
             Coroutines.Tick();
+            CoinCounter.Tick();
             if (Prof.Level > 0) Prof.Add("  logic: coroutines", tInv);
             pt = Prof.Add("logic: invokes + coroutines", pt);
             if (AnimatorStep != null) AnimatorStep();
@@ -355,7 +358,7 @@ namespace KNL
             foreach (var s in With(2))
             {
                 if (!Live(s) || !s.started) continue;
-                if (s.lateUpdate == null) s.lateUpdate = Bind(s, s.info.LateUpdate);
+                if (s.lateUpdate == null) s.lateUpdate = VisualQuality.WrapLateUpdate(s.mb, Bind(s, s.info.LateUpdate));
                 long t1 = Prof.Level > 1 ? Prof.Now() : 0;
                 try { s.lateUpdate(); } catch (Exception e) { Fail(s.mb, "LateUpdate", e); }
                 if (Prof.Level > 1) Prof.Add("  LateUpdate " + s.info.name, t1);

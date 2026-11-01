@@ -709,12 +709,12 @@ namespace KNL
         }
         public static GameObject FindGameObjectWithTag(string tag)
         {
-            foreach (var g in SceneObjects) if (!g.m_Destroyed && g.m_Tag == tag && g.activeInHierarchy) return g;
+            foreach (var g in SceneObjects) if (!g.m_Destroyed && g.m_Tag == tag && (g.activeInHierarchy || (tag == "CoinBag" && CoinCounter.IsHiddenBag(g)))) return g;
             return null;
         }
         public static GameObject[] FindGameObjectsWithTag(string tag)
         {
-            var r = SceneObjects.Where(g => !g.m_Destroyed && g.m_Tag == tag && g.activeInHierarchy).ToArray();
+            var r = SceneObjects.Where(g => !g.m_Destroyed && g.m_Tag == tag && (g.activeInHierarchy || (tag == "CoinBag" && CoinCounter.IsHiddenBag(g)))).ToArray();
             if (r.Length == 0 && Environment.GetEnvironmentVariable("KNL_DEBUG_TAGS") != null)
                 foreach (var g in SceneObjects.Where(g => g.m_Tag == tag))
                     Console.Error.WriteLine("[tag " + tag + "] " + g.name + " destroyed=" + g.m_Destroyed + " self=" + g.m_IsActive + " hier=" + g.activeInHierarchy + " scene=" + (g.m_Scene != null ? g.m_Scene.displayName : "null") + " path=" + PathOf(g));

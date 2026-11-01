@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-02",
+  "engine": "Unity 2017.1.2p1 original Windows x86 player",
+  "runtime": "Wine 6.0.3, private prefix and extracted runtime; no system installation",
+  "mode": "batchmode nographics; original native Physics2D solver",
+  "protocol": {
+    "trials": 20,
+    "seed_formula": "4511 + trial * 7919",
+    "fixed_delta_seconds": 0.02,
+    "capture_framerate": 50,
+    "time_scale": 1,
+    "coin_addition_interval_seconds": 0.24,
+    "settle_after_first_spill_seconds": 1,
+    "unrelated_world_scripts": "disabled after startup; CoinBag, BagCoin, SpriteFX, DOTweenComponent and Pool remain active",
+    "world_coin_pool": "initialized with original PoolManager.CreatePoolFor if needed"
+  },
+  "first_spill_counts": [
+    46,
+    44,
+    41,
+    44,
+    41,
+    42,
+    43,
+    49,
+    45,
+    42,
+    41,
+    48,
+    45,
+    46,
+    46,
+    42,
+    44,
+    43,
+    41,
+    41
+  ],
+  "minimum": 41,
+  "maximum": 49,
+  "mean": 43.7,
+  "median": 43.5,
+  "clean_completed_trial_exceptions": 0,
+  "clean_log_sha256": "b7838fd4184d2c44a0a8589cb77e2f8e16062a27fcdeee3e96f706be76825068",
+  "identities": {
+    "original_player": {
+      "path": "/home/devarshi/Games/KingdomNewLands/Kingdom.exe",
+      "sha256": "28e102c10de309f0e2a175fa64f817b7fa5072ad88718acbe6f7d12b6a8d7442"
+    },
+    "original_game_assembly": {
+      "path": "/home/devarshi/Games/KingdomNewLands/Kingdom_Data/Managed/Assembly-CSharp.dll",
+      "sha256": "89e7bdc9b18ccb4a6d37e93c09245c58d67506d92d1fdc26206ef096c73150e3"
+    },
+    "original_unity_assembly": {
+      "path": "/home/devarshi/Games/KingdomNewLands/Kingdom_Data/Managed/UnityEngine.dll",
+      "sha256": "ac58b0e45834c81a4905677874592ec75072f697e020a0c0d485daec74b9981d"
+    },
+    "trial_harness_source": {
+      "path": "tools/reference_pouch/OriginalPouchTrials.cs",
+      "sha256": "db7ba1de3eedda4fb553956b08ff0d1d9973cbc2f53bfc216e0e8670c11bca96"
+    },
+    "instrumenter_source": {
+      "path": "tools/reference_pouch/Instrument.cs",
+      "sha256": "14e50f22efeb17035028e371062cd65907f7e23ea139258abe5b5eef4212f9b3"
+    },
+    "csv": {
+      "path": "docs/evidence/original-pouch-20.csv",
+      "sha256": "38a6359fff83dc68e34ec5aa24bba0ec56e05008da119cc95c0bf0520ab79405"
+    }
+  },
+  "rea_evidence_ids": [
+    "ev_ed50fcf08c325c3ed46e733deabc3fbcaecbb3982926ea1360ab8578c6443806",
+    "ev_e71182d1eb2adb2eb962c068d24418ad0187665fb6172dea48850fa243c63226"
+  ],
+  "limitations": [
+    "One controlled stationary-pouch fill pattern, one owned build,20seeds; not a universal exact capacity.",
+    "No rendered original-game screenshot comparison or movement/burst-fill calibration.",
+    "Instrumented copy adds bootstrap and observation calls, freezes unrelated world logic; original pouch, shapes, spawning, contacts and drop bodies use original code.",
+    "Earlier harness attempts with missing/disabled world coin pools were discarded; only last complete error-free20-run segment is calibration evidence."
+  ]
+}

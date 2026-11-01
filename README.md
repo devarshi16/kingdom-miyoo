@@ -51,6 +51,8 @@ Use `--skip-audio` only for a silent test. Each conversion uses a fresh temporar
 
 For setup failures, attach `prepare.log` from beside the preparer. For game failures, attach `Roms/PORTS/Games/KingdomNewLands/logs/knl.log` and describe the steps leading to the failure. Include candidate version, Onion version, game source/build, whether the save is new or existing, and whether sound was enabled. Logs may contain local paths; review them before posting.
 
+The Miyoo candidate uses a top-right coin counter and lighter decorative effects by default. Overflow is a measured approximation of the original pouch, with no drops at 40 coins or below. [Counter behavior and measurements](docs/POUCH-COUNTER.md) and [visual changes](docs/LITE-VISUALS.md) describe the tradeoffs and optional modes.
+
 Please report tutorial completion, menu/save navigation and upgrades even if there is no crash. No exception in a log does not prove correct behavior. See [the testing checklist](docs/TESTING.md).
 
 ## Developer build and checks
@@ -62,6 +64,8 @@ Linux prerequisites: Mono development tools (`mcs`, `mono`), GCC/G++, SDL2 devel
 python3 -m unittest discover -s tests -v
 ./tests/run_runtime.sh
 ./tests/run_native.sh
+./tests/run_visual.sh
+./tests/run_coin_counter.sh
 ./tools/package_release.sh
 ```
 

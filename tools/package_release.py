@@ -16,6 +16,8 @@ RUNTIME += ["managed/" + n for n in ("UnityEngine.dll", "Rewired_Core.dll", "knl
 RUNTIME += ["mono/lib/mono/4.5/" + n + ".dll" for n in
             ("mscorlib", "System", "System.Core", "System.Xml", "System.Configuration", "Mono.Security")]
 PLAYER = ["prepare_data.py", "setup_windows.bat", "setup.sh", "setup_gui.py", "README.md", "VERSION", "THIRD_PARTY_NOTICES.md", "docs/TESTING.md",
+          "docs/LITE-VISUALS.md", "docs/POUCH-COUNTER.md", "docs/evidence/original-pouch-20.csv", "docs/evidence/original-pouch-20.json",
+          "tools/reference_pouch/README.md", "tools/reference_pouch/OriginalPouchTrials.cs", "tools/reference_pouch/Instrument.cs",
           "tools/convert.py", "tools/pack.py", "tools/data_checks.py", "tools/supported_build.json", "tools/requirements.txt", "licenses/GCC-COPYING3", "licenses/GCC-COPYING.RUNTIME"]
 
 

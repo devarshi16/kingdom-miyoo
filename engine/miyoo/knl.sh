@@ -11,6 +11,8 @@ export LD_LIBRARY_PATH="$D/lib:/config/lib:/customer/lib:/lib"
 export MONO_PATH="$D/mono/lib/mono/4.5"
 export MONO_GC_PARAMS=major=marksweep,nursery-size=16m
 export KNL_CONTROLS=gamepad
+export KNL_VISUALS="${KNL_VISUALS:-lite}"
+export KNL_WALLET="${KNL_WALLET:-counter}"
 cd managed
 RUN_TARGET="knl.dll"
 [ -f "$RUN_TARGET" ] || RUN_TARGET="knl.exe" # compatibility with pre-1.1 local builds

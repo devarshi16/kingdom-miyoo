@@ -199,6 +199,11 @@ static class Program
     /// Real game boot: load build scene 0 (loader) and run frames like the Unity player.
     static int Boot(Args a)
     {
+        if (CoinCounter.Enabled) CoinCounter.ConfigureOverflow(new[] {
+            // Original Unity 2017.1.2p1 player, 20 instrumented pouch fills; see
+            // docs/POUCH-COUNTER.md and docs/evidence/original-pouch-20.csv.
+            46,44,41,44,41,42,43,49,45,42,41,48,45,46,46,42,44,43,41,41
+        });
         Lifecycle.LoadExecutionOrder();
         Lifecycle.AnimatorStep = AnimationSystem.Step;
         Lifecycle.PhysicsStep = Physics2DSystem.Step;
@@ -256,7 +261,10 @@ static class Program
                     if (w != null)
                     {
                         var bf = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
-                        w.GetType().GetProperty("coins", bf).SetValue(w, int.Parse(a.Get("test-coins", "6")), null);
+                        var property = w.GetType().GetProperty("coins", bf);
+                        int before = (int)property.GetValue(w, null);
+                        property.SetValue(w, int.Parse(a.Get("test-coins", "6")), null);
+                        CoinCounter.NotifyTestPickups(w, Math.Max(0, (int)property.GetValue(w, null) - before));
                     }
                 }
             }

@@ -353,6 +353,7 @@ namespace KNL
             pt = Prof.Add("render: UI draw", pt);
             Native.knl_stats(out LastSprites, out LastPixels);
             EdgeIndicators.Draw(cp, k);
+            CoinCounter.Draw();
         }
 
         static void DrawSprite(SpriteRenderer sr, Matrix4x4 m, Vector3 cp, float k)
@@ -503,6 +504,13 @@ namespace KNL
             }
             if (shader.IndexOf("Water", StringComparison.Ordinal) >= 0)
             {
+                if (VisualQuality.Lite)
+                {
+                    Color top, bottom;
+                    VisualQuality.WaterColors(mat.GetColor("_Color"), RenderSettings.s_AmbientSky, out top, out bottom);
+                    Native.knl_quad_gradient(0, Mathf.Max(0, Mathf.Round(y0)), Width, Height, top.ToRGBA32(), top.ToRGBA32(), bottom.ToRGBA32(), bottom.ToRGBA32(), 0);
+                    return;
+                }
                 var water = mr.gameObject.m_Components.FirstOrDefault(c => c.GetType().Name == "Water");
                 float scale = 0.8f;
                 if (water != null) { var f = water.GetType().GetField("reflectionScale"); if (f != null) scale = (float)f.GetValue(water); }

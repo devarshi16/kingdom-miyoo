@@ -1,0 +1,11 @@
+# Measuring the owned original pouch
+
+These developer tools run **inside the original Unity player**, not the replacement engine. No owned executable, DLL, asset, log or runtime is supplied here. Use an isolated copy of the supported owned Kingdom New Lands 1.2.8 / Unity 2017.1.2p1 Windows build; keep its normal installation and saves untouched. The recorded Linux run used a private Wine 6.0.3 prefix. A working Windows environment needs no Wine.
+
+Compile `OriginalPouchTrials.cs` as a .NET 2.0-compatible library against the **original** UnityEngine.dll and put it in the copied player's Managed folder. Compile `Instrument.cs` against Mono.Cecil 0.11. Run the instrumenter with three absolute paths: the original Managed directory, the harness DLL and a new output Assembly-CSharp.dll in the copied game. It refuses to overwrite the source assembly. It adds only a bootstrap call in Loader.Awake and an observation call at the start of CoinBag.CoinFell. Keep every original method body otherwise intact.
+
+Run the copied Kingdom.exe with `-batchmode -nographics -logFile <new unique absolute log path>`. The harness waits for initialization, makes the world-coin pool available through the original API, then freezes unrelated world scripts. CoinBag, BagCoin, SpriteFX, DOTween and Pool remain active. Disabling Pool unregisters its prefab and invalidates drop measurements, so preserve it.
+
+Each of 20 trials resets the bag and its pooled UI coins, seeds Unity.Random, adds one real wallet coin every 0.24 simulation seconds, records the wallet count at the first CoinFell callback, then lets the pile settle for one second. The original Physics2D solver and serialized settings run at 50 Hz; captureFramerate fixes frame timing without scaling simulation time. Output is `pouch-trials.csv` beside the copied player. Reject runs with callback/pool errors, incomplete trials or mismatched log/CSV rows. A player may append logs: use a new path or identify the exact completed run segment.
+
+The checked-in CSV/JSON records only measurements and provenance. Raw local logs and modified owned assemblies must remain outside release archives. This controlled stationary fill does not establish capacity under every movement, pickup rate, game version or stacking history.
