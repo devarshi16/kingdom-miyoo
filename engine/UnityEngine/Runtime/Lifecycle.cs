@@ -196,7 +196,9 @@ namespace KNL
                 {
                     var mb = c as MonoBehaviour;
                     BehaviourState s;
-                    if (mb == null || !states.TryGetValue(mb, out s) || !s.enabledCalled) continue;
+                    if (mb == null) continue;
+                    Coroutines.StopAll(mb);
+                    if (!states.TryGetValue(mb, out s) || !s.enabledCalled) continue;
                     s.enabledCalled = false;
                     Call(s, s.info.OnDisable, "OnDisable");
                 }
@@ -225,6 +227,7 @@ namespace KNL
 
         public static void OnDestroyed(MonoBehaviour mb)
         {
+            Coroutines.StopAll(mb);
             BehaviourState s;
             if (!states.TryGetValue(mb, out s) || s.destroyed) return;
             if (s.enabledCalled) { s.enabledCalled = false; Call(s, s.info.OnDisable, "OnDisable"); }
@@ -284,10 +287,11 @@ namespace KNL
         public static Action PhysicsStep;   // set by Physics2D
         public static Action AnimatorStep;  // set by Animator system
 
-        public static void Frame(float dt)
+        public static void Frame(float dt) { Frame(dt, dt); }
+        public static void Frame(float dt, float wallDt)
         {
             dt = Mathf.Min(dt, 1f / 3f);   // TimeManager 'Maximum Allowed Timestep'
-            Time.s_UnscaledDeltaTime = dt; Time.s_UnscaledTime += dt;
+            Time.s_UnscaledDeltaTime = wallDt; Time.s_UnscaledTime += wallDt;
             Time.s_DeltaTime = dt * Time.s_TimeScale;
             Time.s_FrameCount++;
 
@@ -303,10 +307,11 @@ namespace KNL
             float fdt = Time.s_FixedDeltaTime;
             int steps = 0;
             float frameStartTime = Time.s_Time;
-            while (fixedAccumulator >= fdt && steps < 5)
+            while (Time.timeScale > 0f && fdt > 0f && fixedAccumulator >= fdt && steps < 5)
             {
                 fixedAccumulator -= fdt; steps++;
-                Time.s_Time += fdt;
+                Time.s_FixedTime += fdt; Time.s_FixedStepCount++;
+                Time.s_Time = Time.s_FixedTime;
                 float saved = Time.s_DeltaTime; Time.s_DeltaTime = fdt;
                 SortIfNeeded();
                 foreach (var s in With(0))
@@ -319,6 +324,7 @@ namespace KNL
                 }
                 pt = Prof.Add("logic: FixedUpdate scripts", pt);
                 if (PhysicsStep != null) PhysicsStep();
+                Coroutines.TickFixed();
                 pt = Prof.Add("logic: physics", pt);
                 Time.s_DeltaTime = saved;
             }
@@ -360,6 +366,17 @@ namespace KNL
         }
 
         public static int LiveCount { get { return all.Count(Live); } }
+
+        static bool quitSent;
+        public static void ApplicationQuit()
+        {
+            if (quitSent) return;
+            quitSent = true;
+            foreach (var s in all.ToArray())
+                if (!s.destroyed && !s.mb.m_Destroyed && s.awoken)
+                    Reflect.InvokeMessage(s.mb, "OnApplicationQuit", null);
+            PlayerPrefs.Save();
+        }
     }
 
     // =================================================================== scenes
@@ -408,6 +425,7 @@ namespace KNL
                 Loaded.RemoveAll(t => !t.persistent);
             }
             var tag = World.LoadScene("level" + idx, BuildScenes.Length > idx ? BuildScenes[idx] : name);
+            if (!additive) Time.s_LevelLoadTime = Time.s_Time;
             tag.buildIndex = idx;
             Loaded.Add(tag);
             if (!additive || World.ActiveScene == null) World.ActiveScene = tag;

@@ -33,7 +33,9 @@
 #include <linux/input.h>
 #include <pthread.h>
 static int g_fbfd = -1, g_evfd = -1, g_page; static uint32_t *g_fbmem; static size_t g_fblen;
-static struct fb_var_screeninfo g_vinfo; static uint32_t g_keys;
+static struct fb_var_screeninfo g_vinfo, g_original_vinfo;
+static struct fb_fix_screeninfo g_finfo;
+static uint32_t g_keys;
 #endif
 
 #define KNL_API __attribute__((visibility("default")))
@@ -80,8 +82,17 @@ KNL_API int knl_init(int w, int h, int scale, int window)
     if (window) {
         g_fbfd = open("/dev/fb0", O_RDWR);
         if (g_fbfd < 0 || ioctl(g_fbfd, FBIOGET_VSCREENINFO, &g_vinfo) < 0) return -2;
-        if (g_vinfo.bits_per_pixel != 32 || (int)g_vinfo.xres != w * g_scale || (int)g_vinfo.yres != h * g_scale) return -3;
-        g_fblen = (size_t)g_vinfo.xres * g_vinfo.yres_virtual * 4;
+        if (ioctl(g_fbfd, FBIOGET_FSCREENINFO, &g_finfo) < 0) return -2;
+        g_original_vinfo = g_vinfo;
+        if (g_scale != 2 || g_vinfo.bits_per_pixel != 32 || (int)g_vinfo.xres != w * 2 || (int)g_vinfo.yres != h * 2 ||
+            g_vinfo.red.length != 8 || g_vinfo.green.length != 8 || g_vinfo.blue.length != 8 ||
+            g_vinfo.red.msb_right || g_vinfo.green.msb_right || g_vinfo.blue.msb_right ||
+            g_vinfo.red.offset > 24 || g_vinfo.green.offset > 24 || g_vinfo.blue.offset > 24 ||
+            g_vinfo.xoffset || g_vinfo.yres_virtual < g_vinfo.yres || g_finfo.line_length < g_vinfo.xres * 4 ||
+            g_finfo.line_length % 8) return -3;
+        g_fblen = (size_t)g_finfo.line_length * g_vinfo.yres_virtual;
+        if (g_fblen > g_finfo.smem_len) return -3;
+        g_page = g_vinfo.yoffset / g_vinfo.yres;
         g_fbmem = (uint32_t *)mmap(NULL, g_fblen, PROT_READ | PROT_WRITE, MAP_SHARED, g_fbfd, 0);
         if (g_fbmem == MAP_FAILED) { g_fbmem = NULL; return -4; }
         g_evfd = open("/dev/input/event0", O_RDONLY | O_NONBLOCK);
@@ -115,7 +126,10 @@ KNL_API void knl_shutdown(void)
 #endif
 #ifdef KNL_MIYOO
     stop_worker();
-    if (g_fbmem) { memset(g_fbmem, 0, g_fblen); munmap(g_fbmem, g_fblen); g_fbmem = NULL; }
+    if (g_fbmem) {
+        ioctl(g_fbfd, FBIOPAN_DISPLAY, &g_original_vinfo);
+        munmap(g_fbmem, g_fblen); g_fbmem = NULL;
+    }
     if (g_fbfd >= 0) close(g_fbfd);
     if (g_evfd >= 0) close(g_evfd);
     g_fbfd = g_evfd = -1;
@@ -686,7 +700,7 @@ static pthread_t g_worker; static pthread_mutex_t g_wm = PTHREAD_MUTEX_INITIALIZ
 static pthread_cond_t g_wc = PTHREAD_COND_INITIALIZER;
 static CmdList g_run;
 static int g_busy, g_stop;
-static double g_raster_ms;      /* worker time of the last frame (rasterise + flip) */
+static double g_raster_ms, g_draw_ms, g_flip_ms; /* measured separately to guide optimization */
 static void fb_flip(void);
 static void *worker_main(void *ud)
 {
@@ -696,12 +710,15 @@ static void *worker_main(void *ud)
         while (!g_busy && !g_stop) pthread_cond_wait(&g_wc, &g_wm);
         if (g_stop) break;
         pthread_mutex_unlock(&g_wm);
-        struct timespec a, b; clock_gettime(CLOCK_MONOTONIC, &a);
+        struct timespec a, b, c; clock_gettime(CLOCK_MONOTONIC, &a);
         run_list(&g_run);
-        fb_flip();
         clock_gettime(CLOCK_MONOTONIC, &b);
+        fb_flip();
+        clock_gettime(CLOCK_MONOTONIC, &c);
         pthread_mutex_lock(&g_wm);
-        g_raster_ms = (b.tv_sec - a.tv_sec) * 1e3 + (b.tv_nsec - a.tv_nsec) / 1e6;
+        g_draw_ms = (b.tv_sec - a.tv_sec) * 1e3 + (b.tv_nsec - a.tv_nsec) / 1e6;
+        g_flip_ms = (c.tv_sec - b.tv_sec) * 1e3 + (c.tv_nsec - b.tv_nsec) / 1e6;
+        g_raster_ms = g_draw_ms + g_flip_ms;
         g_busy = 0;
         pthread_cond_broadcast(&g_wc);
     }
@@ -736,10 +753,14 @@ static void stop_worker(void)
     pthread_join(g_worker, NULL);
     g_async = 0; g_stop = 0;
 }
-KNL_API float knl_raster_ms(void) { return (float)g_raster_ms; }
+KNL_API float knl_raster_ms(void) { pthread_mutex_lock(&g_wm); float v = g_raster_ms; pthread_mutex_unlock(&g_wm); return v; }
+KNL_API float knl_draw_ms(void) { pthread_mutex_lock(&g_wm); float v = g_draw_ms; pthread_mutex_unlock(&g_wm); return v; }
+KNL_API float knl_flip_ms(void) { pthread_mutex_lock(&g_wm); float v = g_flip_ms; pthread_mutex_unlock(&g_wm); return v; }
 #else
 static void wait_idle(void) { }
 KNL_API float knl_raster_ms(void) { return 0; }
+KNL_API float knl_draw_ms(void) { return 0; }
+KNL_API float knl_flip_ms(void) { return 0; }
 #endif
 
 /* runs everything recorded so far, so the framebuffer is complete (screenshots) */
@@ -780,24 +801,26 @@ KNL_API uint32_t knl_buttons(void);
 static void fb_flip(void)
 {
     /* back page when the fb is double height, then pan to it; RGBA -> BGRA, 2x, rotated 180 */
-    int pages = g_vinfo.yres_virtual >= 2 * g_vinfo.yres ? 2 : 1;
-    int page = pages == 2 ? g_page ^ 1 : 0;
-    uint32_t *dst = g_fbmem + (size_t)page * g_vinfo.yres * g_vinfo.xres;
+    int pages = g_vinfo.yres_virtual / g_vinfo.yres;
+    int page = (g_page + 1) % pages;
+    uint8_t *dst = (uint8_t *)g_fbmem + (size_t)page * g_vinfo.yres * g_finfo.line_length;
     for (int y = 0; y < g_h; y++) {
         const uint32_t *src = g_fb + (size_t)y * g_w;
-        uint32_t *r0 = dst + (size_t)(g_vinfo.yres - 1 - 2 * y) * g_vinfo.xres;
-        uint32_t *r1 = r0 - g_vinfo.xres;
+        uint8_t *r0 = dst + (size_t)(g_vinfo.yres - 1 - 2 * y) * g_finfo.line_length;
+        uint8_t *r1 = r0 - g_finfo.line_length;
         uint64_t *dst0 = (uint64_t *)r0;
         uint64_t *dst1 = (uint64_t *)r1;
         for (int x = 0; x < g_w; x++) {
             uint32_t c = src[g_w - 1 - x];
-            c = 0xFF000000u | (c & 0x0000FF00u) | ((c & 0xFFu) << 16) | ((c >> 16) & 0xFFu);
+            c = ((c & 255u) << g_vinfo.red.offset) | (((c >> 8) & 255u) << g_vinfo.green.offset) |
+                (((c >> 16) & 255u) << g_vinfo.blue.offset) |
+                (g_vinfo.transp.length == 8 ? 255u << g_vinfo.transp.offset : 0u);
             uint64_t pair = (uint64_t)c | ((uint64_t)c << 32);
             dst0[x] = pair;
             dst1[x] = pair;
         }
     }
-    if (pages == 2) {
+    if (pages > 1) {
         g_vinfo.yoffset = page * g_vinfo.yres;
         ioctl(g_fbfd, FBIOPAN_DISPLAY, &g_vinfo);
         g_page = page;

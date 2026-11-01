@@ -176,34 +176,57 @@ namespace KNL
     {
         public MonoBehaviour owner; public IEnumerator routine; public string methodName;
         public float waitUntil = -1f; public CoroutineState waitFor; public bool done;
-        public AsyncOperation waitOp; public CustomYieldInstruction custom; public bool endOfFrame;
+        public AsyncOperation waitOp; public CustomYieldInstruction custom;
+        public int phase, resumeFrame, resumeFixedStep;
         public Coroutine handle;
     }
 
     public static class Coroutines
     {
         static readonly List<CoroutineState> active = new List<CoroutineState>();
+        static int dispatchPhase; // 0: Update, 1: after physics, 2: after rendering
 
         public static Coroutine Start(MonoBehaviour owner, IEnumerator routine, string methodName = null)
         {
-            if (routine == null) return null;
+            if (routine == null || owner == null || !owner.gameObject.activeInHierarchy) return null;
             var st = new CoroutineState { owner = owner, routine = routine, methodName = methodName };
             st.handle = new Coroutine(); st.handle.state = st;
-            Step(st);                         // Unity runs the first segment immediately
-            if (!st.done) active.Add(st);
+            // Register before MoveNext: SetActive(false) inside the iterator must cancel it too.
+            active.Add(st);
+            Step(st);
             return st.handle;
+        }
+
+        static void Finish(CoroutineState st)
+        {
+            if (st.done) return;
+            st.done = true;
+            var disposable = st.routine as IDisposable;
+            if (disposable != null)
+                try { disposable.Dispose(); }
+                catch (Exception e) { Lifecycle.Fail(st.owner, "coroutine dispose", e); }
         }
 
         static void Step(CoroutineState st)
         {
             try
             {
-                if (!st.routine.MoveNext()) { st.done = true; return; }
+                if (!st.routine.MoveNext()) { Finish(st); return; }
+                if (st.done) return;
+                if (st.owner == null || !st.owner.gameObject.activeInHierarchy) { Finish(st); return; }
                 var y = st.routine.Current;
-                st.waitUntil = -1f; st.waitFor = null; st.waitOp = null; st.custom = null; st.endOfFrame = false;
+                st.waitUntil = -1f; st.waitFor = null; st.waitOp = null; st.custom = null;
+                st.phase = 0; st.resumeFrame = Time.frameCount + 1;
                 st.waitOp = y as AsyncOperation;
                 st.custom = y as CustomYieldInstruction;
-                st.endOfFrame = y is WaitForEndOfFrame || y is WaitForFixedUpdate;
+                if (y is WaitForFixedUpdate)
+                {
+                    st.phase = 1; st.resumeFixedStep = Time.s_FixedStepCount + 1;
+                }
+                else if (y is WaitForEndOfFrame)
+                {
+                    st.phase = 2; st.resumeFrame = Time.frameCount + (dispatchPhase == 2 ? 1 : 0);
+                }
                 var ws = y as WaitForSeconds;
                 if (ws != null) st.waitUntil = Time.time + ws.m_Seconds;
                 var co = y as Coroutine;
@@ -211,42 +234,48 @@ namespace KNL
                 var nested = y as IEnumerator;
                 if (nested != null) { var c = Start(st.owner, nested); st.waitFor = c != null ? c.state : null; }
             }
-            catch (Exception e) { st.done = true; Lifecycle.Fail(st.owner, "coroutine " + (st.methodName ?? st.routine.GetType().Name), e); }
+            catch (Exception e)
+            {
+                Finish(st);
+                Lifecycle.Fail(st.owner, "coroutine " + (st.methodName ?? st.routine.GetType().Name), e);
+            }
         }
 
-        public static void Tick()
+        public static void Tick() { TickPhase(0); }
+        public static void TickFixed() { TickPhase(1); }
+        public static void TickEndOfFrame() { TickPhase(2); }
+
+        static void TickPhase(int phase)
         {
-            int count = active.Count;
-            for (int i = 0; i < count; i++)
+            int previousPhase = dispatchPhase; dispatchPhase = phase;
+            try
             {
-                var st = active[i];
-                if (st.done) continue;
-                if (st.owner == null || !st.owner.gameObject.activeInHierarchy) continue;
-                if (st.waitUntil >= 0f && Time.time < st.waitUntil) continue;
-                if (st.waitFor != null && !st.waitFor.done) continue;
-                if (st.waitOp != null && !st.waitOp.isDone) continue;
-                if (st.custom != null && st.custom.keepWaiting) continue;
-                long tC = Prof.Level > 1 ? Prof.Now() : 0;
-                Step(st);
-                if (Prof.Level > 1) Prof.Add("    coroutine " + (st.owner != null ? st.owner.GetType().Name : "?") + "." + (st.methodName ?? st.routine.GetType().Name), tC);
-            }
-            int write = 0;
-            for (int i = 0; i < active.Count; i++)
-            {
-                var s = active[i];
-                if (!s.done && (object)s.owner != null && !s.owner.m_Destroyed)
+                int count = active.Count;
+                for (int i = 0; i < count; i++)
                 {
-                    if (write != i) active[write] = s;
-                    write++;
+                    var st = active[i];
+                    if (st.done) continue;
+                    if (st.owner == null || !st.owner.gameObject.activeInHierarchy) { Finish(st); continue; }
+                    if (st.phase != phase) continue;
+                    if (phase == 1 ? Time.s_FixedStepCount < st.resumeFixedStep : Time.frameCount < st.resumeFrame) continue;
+                    if (st.waitUntil >= 0f && Time.time < st.waitUntil) continue;
+                    if (st.waitFor != null && !st.waitFor.done) continue;
+                    if (st.waitOp != null && !st.waitOp.isDone) continue;
+                    if (st.custom != null && st.custom.keepWaiting) continue;
+                    long tC = Prof.Level > 1 ? Prof.Now() : 0;
+                    Step(st);
+                    if (Prof.Level > 1) Prof.Add("    coroutine " + st.owner.GetType().Name + "." + (st.methodName ?? st.routine.GetType().Name), tC);
                 }
             }
-            if (write < active.Count) active.RemoveRange(write, active.Count - write);
+            finally { dispatchPhase = previousPhase; }
+            // In-place compaction includes iterators started during this dispatch.
+            active.RemoveAll(s => s.done);
         }
 
-        public static void Stop(MonoBehaviour o, IEnumerator r) { foreach (var s in active) if (s.owner == o && s.routine == r) s.done = true; }
-        public static void Stop(MonoBehaviour o, Coroutine c) { if (c != null && c.state != null) c.state.done = true; }
-        public static void Stop(MonoBehaviour o, string m) { foreach (var s in active) if (s.owner == o && s.methodName == m) s.done = true; }
-        public static void StopAll(MonoBehaviour o) { foreach (var s in active) if (s.owner == o) s.done = true; }
+        public static void Stop(MonoBehaviour o, IEnumerator r) { foreach (var s in active.ToArray()) if (s.owner == o && s.routine == r) Finish(s); }
+        public static void Stop(MonoBehaviour o, Coroutine c) { if (c != null && c.state != null && c.state.owner == o) Finish(c.state); }
+        public static void Stop(MonoBehaviour o, string m) { foreach (var s in active.ToArray()) if (s.owner == o && s.methodName == m) Finish(s); }
+        public static void StopAll(MonoBehaviour o) { foreach (var s in active.ToArray()) if (ReferenceEquals(s.owner, o)) Finish(s); }
     }
 
     public static class Invokes

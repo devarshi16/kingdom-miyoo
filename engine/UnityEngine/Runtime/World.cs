@@ -782,7 +782,7 @@ namespace KNL
             var r = c as Renderer; if (r != null) { Renderer.s_All.Add(r); return; }
             var a = c as Animator; if (a != null) { Animator.s_All.Add(a); return; }
             var col = c as Collider2D; if (col != null) { Collider2D.s_All.Add(col); return; }
-            var rb = c as Rigidbody2D; if (rb != null) { Rigidbody2D.s_All.Add(rb); return; }
+            var rb = c as Rigidbody2D; if (rb != null) { PhysicsTopologyVersion++; Rigidbody2D.s_All.Add(rb); return; }
             var cam = c as Camera; if (cam != null) { Camera.s_All.Add(cam); return; }
             var cv = c as Canvas; if (cv != null) { Canvas.s_All.Add(cv); return; }
             var al = c as AudioListener; if (al != null) { AudioListener.s_All.Add(al); return; }
@@ -798,6 +798,7 @@ namespace KNL
         public static void DestroyNow(UnityEngine.Object o)
         {
             if (ReferenceEquals(o, null) || o.m_Destroyed) return;
+            if (o is GameObject || o is Rigidbody2D) PhysicsTopologyVersion++;
             var go = o as GameObject;
             if (go != null)
             {
@@ -846,7 +847,12 @@ namespace KNL
         public static bool IsPersistent(GameObject g) { return g.m_Scene != null && g.m_Scene.persistent; }
         public static void OnActiveChanged(GameObject go) { Lifecycle.OnActiveChanged(go); }
         public static void OnBehaviourEnabledChanged(Behaviour b) { Lifecycle.OnBehaviourEnabledChanged(b); }
-        public static void OnParentChanged(Transform t) { }
+        internal static int PhysicsTopologyVersion;
+        public static void OnParentChanged(Transform t)
+        {
+            PhysicsTopologyVersion++;
+            Lifecycle.OnActiveChanged(t.gameObject);
+        }
     }
 
     /// Simple timed callbacks (Destroy(obj, t)).

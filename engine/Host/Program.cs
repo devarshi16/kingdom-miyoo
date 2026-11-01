@@ -58,6 +58,18 @@ static class Program
 
     static int Main(string[] argv)
     {
+        try { return Run(argv); }
+        catch (Exception e) { Console.Error.WriteLine("[FATAL] " + e); return 1; }
+        finally
+        {
+            try { Lifecycle.ApplicationQuit(); } catch (Exception e) { Console.Error.WriteLine("[shutdown] " + e); }
+            try { AudioNative.knl_audio_shutdown(); } catch (Exception e) { Console.Error.WriteLine("[shutdown] audio: " + e.Message); }
+            try { Native.knl_shutdown(); } catch (Exception e) { Console.Error.WriteLine("[shutdown] video: " + e.Message); }
+        }
+    }
+
+    static int Run(string[] argv)
+    {
         var a = Args.Parse(argv);
         Paths.DataDir = a.Get("data", "extracted");
         Paths.SaveDir = System.IO.Path.GetFullPath(a.Get("save", "save"));
@@ -177,7 +189,6 @@ static class Program
             if (frames > 0) report.AppendLine(string.Format("window: frames={0} avg_render_ms={1:F2} avg_frame_ms={2:F2}", frames, renderMs / frames, bench.Elapsed.TotalMilliseconds / frames));
         }
 
-        Native.knl_shutdown();
         var text = report.ToString();
         Console.Write(text);
         if (a.Has("report")) File.WriteAllText(a.Get("report", "report.txt"), text);
@@ -201,6 +212,7 @@ static class Program
         string shotDir = a.Get("shots", "shots");
         if (shotEvery > 0) System.IO.Directory.CreateDirectory(shotDir);
         bool window = a.Has("window") && Native.knl_has_window() != 0;
+        Time.s_OfflineClock = !window || a.Has("fixed-dt");
         var sw = System.Diagnostics.Stopwatch.StartNew();
         SceneLoader.LoadNow(SceneLoader.BuildScenes.Length > 0 ? SceneLoader.BuildScenes[0] : "level0", false);
         Console.Error.WriteLine("[knl] booted scene 0 in " + sw.ElapsedMilliseconds + " ms");
@@ -247,14 +259,16 @@ static class Program
                 }
             }
             float dt = 1f / 30f;
-            if (window && !a.Has("fixed-dt")) { uint now = Native.knl_ticks_ms(); dt = Mathf.Clamp((now - lastTicks) / 1000f, 0.001f, maxDt); lastTicks = now; }
+            float wallDt = dt;
+            if (window && !a.Has("fixed-dt")) { uint now = Native.knl_ticks_ms(); wallDt = Mathf.Max((now - lastTicks) / 1000f, 0.001f); dt = Mathf.Min(wallDt, maxDt); lastTicks = now; }
             var t0 = sw.Elapsed.TotalMilliseconds;
-            Lifecycle.Frame(dt);
+            Lifecycle.Frame(dt, wallDt);
             AudioSystem.Update(Time.unscaledDeltaTime);
             var t1 = sw.Elapsed.TotalMilliseconds;
             // render through Camera.main (tagged MainCamera); before the main scene exists, any camera
             RenderSystem.MainCamera = RenderSystem.TaggedMainCamera() ?? RenderSystem.FindMainCamera();
             RenderSystem.RenderFrame();
+            Coroutines.TickEndOfFrame();
             renderMs += sw.Elapsed.TotalMilliseconds - t1; logicMs += t1 - t0;
             if (a.Has("shot-on-edge") && (EdgeIndicators.LastLeft + EdgeIndicators.LastRight) > 0 && f % 10 == 0)
             { System.IO.Directory.CreateDirectory(a.Get("shot-on-edge", "edge")); RenderSystem.SavePng(System.IO.Path.Combine(a.Get("shot-on-edge", "edge"), string.Format("e{0:D5}.png", f)), 2); }
@@ -267,6 +281,7 @@ static class Program
                 Console.Error.WriteLine(string.Format("[perf] f{0} logic={1:F1} render={2:F1} present={3:F1} ms/frame (raster thread {5:F1} ms last frame) managed={4:F1} MB",
                     f + 1, (logicMs - perfLogic) / 300, (renderMs - perfRender) / 300, presentMs / 300, GC.GetTotalMemory(false) / 1048576.0, Native.knl_raster_ms()));
                 perfLogic = logicMs; perfRender = renderMs; presentMs = 0;
+                Console.Error.WriteLine(string.Format("[worker] last_draw_ms={0:F1} last_flip_ms={1:F1}", Native.knl_draw_ms(), Native.knl_flip_ms()));
                 KNL.Prof.Report(300, 25);
             }
             if (KNL.Engine.QuitRequested) break;
@@ -329,7 +344,6 @@ static class Program
         Console.WriteLine("needs:");
         foreach (var kv in Log.NotImplementedHits.OrderByDescending(k => k.Value).Take(int.Parse(a.Get("top", "25"))))
             Console.WriteLine(string.Format("  x{0,-5} {1}", kv.Value, kv.Key));
-        Native.knl_shutdown();
         return 0;
     }
 

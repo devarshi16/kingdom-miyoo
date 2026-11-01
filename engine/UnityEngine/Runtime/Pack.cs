@@ -26,19 +26,32 @@ namespace KNL
         {
             var p = Path.Combine(dataDir, "kingdom.knlpack");
             if (!File.Exists(p)) return false;
+            dir.Clear(); Active = false;
             fs = new FileStream(p, FileMode.Open, FileAccess.Read, FileShare.Read, 65536);
             var br = new BinaryReader(fs);
             if (new string(br.ReadChars(4)) != "KNLP" || br.ReadUInt32() != 1) throw new InvalidDataException("not a v1 knlpack: " + p);
             uint n = br.ReadUInt32();
+            if (n == 0 || n > 100000) throw new InvalidDataException("invalid pack entry count");
             for (uint i = 0; i < n; i++)
             {
                 int ln = br.ReadUInt16();
+                if (ln == 0 || ln > 4096) throw new InvalidDataException("invalid pack name length");
                 string name = Encoding.UTF8.GetString(br.ReadBytes(ln));
                 long off = (long)br.ReadUInt64(); int len = (int)br.ReadUInt32();
-                dir[name] = new KeyValuePair<long, int>(off, len);
+                if (dir.ContainsKey(name) || off < 0 || len <= 0 || off > fs.Length - len)
+                    throw new InvalidDataException("invalid/truncated pack entry: " + name);
+                dir.Add(name, new KeyValuePair<long, int>(off, len));
             }
+            long end = fs.Position;
+            foreach (var entry in System.Linq.Enumerable.OrderBy(dir, e => e.Value.Key))
+            {
+                if (entry.Value.Key < end) throw new InvalidDataException("overlapping pack entries");
+                end = entry.Value.Key + entry.Value.Value;
+            }
+            foreach (var required in new[] { "sprites", "objects/globalgamemanagers", "objects/globalgamemanagers.assets", "objects/level0", "objects/level1", "objects/level2", "objects/resources.assets", "objects/sharedassets0.assets", "objects/sharedassets1.assets", "objects/sharedassets2.assets" })
+                if (!dir.ContainsKey(required)) throw new InvalidDataException("pack missing " + required);
             FilePath = p; Active = true;
-            knl_pack_open(p);
+            if (knl_pack_open(p) == 0) throw new IOException("native pack open failed: " + p);
             Log.Info(string.Format("data: pack {0} ({1} entries)", p, n));
             return true;
         }
@@ -54,7 +67,7 @@ namespace KNL
             long off; int len;
             if (!Locate(name, out off, out len)) return null;
             var b = new byte[len];
-            lock (fs) { fs.Seek(off, SeekOrigin.Begin); int got = 0; while (got < len) { int r = fs.Read(b, got, len - got); if (r <= 0) break; got += r; } }
+            lock (fs) { fs.Seek(off, SeekOrigin.Begin); int got = 0; while (got < len) { int r = fs.Read(b, got, len - got); if (r <= 0) throw new EndOfStreamException("truncated pack: " + name); got += r; } }
             return b;
         }
     }

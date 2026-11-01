@@ -69,6 +69,7 @@ namespace UnityEngine
         internal bool m_IsTrigger; internal Vector2 m_Offset; internal PhysicsMaterial2D m_Material;
         internal Rigidbody2D m_CachedRb;
         internal bool m_RbCached;
+        internal int m_RbVersion = -1;
         internal KNL.Aabb m_CachedAabb;
         internal int m_AabbStamp = -1;
         public bool isTrigger { get { return m_IsTrigger; } set { m_IsTrigger = value; } }
@@ -78,9 +79,10 @@ namespace UnityEngine
         {
             get
             {
-                if (m_RbCached && (m_CachedRb == null || !m_CachedRb.m_Destroyed)) return m_CachedRb;
+                if (m_RbCached && m_RbVersion == KNL.World.PhysicsTopologyVersion && (m_CachedRb == null || !m_CachedRb.m_Destroyed)) return m_CachedRb;
                 m_CachedRb = gameObject != null ? gameObject.GetComponentInParent<Rigidbody2D>() : null;
                 m_RbCached = true;
+                m_RbVersion = KNL.World.PhysicsTopologyVersion;
                 return m_CachedRb;
             }
         }

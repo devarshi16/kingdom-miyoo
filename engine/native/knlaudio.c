@@ -24,6 +24,7 @@
 #endif
 #ifdef KNL_MIYOO
 #include <pthread.h>
+#include <unistd.h>
 #include "mi_sys.h"
 #include "mi_ao.h"
 #endif
@@ -404,7 +405,8 @@ static void *ao_thread(void *ud)
         MI_AUDIO_Frame_t fr; memset(&fr, 0, sizeof fr);
         fr.eBitwidth = E_MI_AUDIO_BIT_WIDTH_16; fr.eSoundmode = E_MI_AUDIO_SOUND_MODE_STEREO;
         fr.u32Len = sizeof buf; fr.apVirAddr[0] = buf;
-        MI_AO_SendFrame(0, 0, &fr, -1);
+        // A finite wait lets shutdown join this thread even if the audio device stops draining.
+        if (MI_AO_SendFrame(0, 0, &fr, 100) != 0 && g_run) usleep(10000);
     }
     return NULL;
 }
@@ -464,6 +466,7 @@ KNL_API void knl_audio_shutdown(void)
 #elif defined(KNL_MIYOO)
     if (g_run) { g_run = 0; pthread_join(g_thr, NULL); MI_AO_DisableChn(0, 0); MI_AO_Disable(0); }
 #endif
+    g_open = 0;
     for (int i = 0; i < KNL_VOICES; i++) stream_close(&g_v[i]);
 }
 

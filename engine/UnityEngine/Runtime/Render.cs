@@ -30,6 +30,8 @@ namespace KNL
         [DllImport(Lib)] public static extern int knl_save_png(string path, int scale);
         [DllImport(Lib)] public static extern int knl_present();
         [DllImport(Lib)] public static extern float knl_raster_ms();
+        [DllImport(Lib)] public static extern float knl_draw_ms();
+        [DllImport(Lib)] public static extern float knl_flip_ms();
         [DllImport(Lib)] public static extern uint knl_buttons();
         [DllImport(Lib)] public static extern uint knl_ticks_ms();
     }

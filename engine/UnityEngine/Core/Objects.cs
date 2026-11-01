@@ -773,13 +773,17 @@ namespace UnityEngine
         internal static float s_Time, s_DeltaTime = 1f / 30f, s_UnscaledTime, s_UnscaledDeltaTime = 1f / 30f;
         internal static float s_FixedDeltaTime = 0.02f, s_TimeScale = 1f;
         internal static int s_FrameCount;
+        internal static float s_FixedTime, s_LevelLoadTime;
+        internal static int s_FixedStepCount;
+        internal static bool s_OfflineClock;
+        static readonly System.Diagnostics.Stopwatch s_Clock = System.Diagnostics.Stopwatch.StartNew();
         public static float time { get { return s_Time; } }
         public static float deltaTime { get { return s_DeltaTime; } }
         public static float unscaledTime { get { return s_UnscaledTime; } }
         public static float unscaledDeltaTime { get { return s_UnscaledDeltaTime; } }
-        public static float realtimeSinceStartup { get { return s_UnscaledTime; } }
-        public static float timeSinceLevelLoad { get { return s_Time; } }
-        public static float fixedTime { get { return s_Time; } }
+        public static float realtimeSinceStartup { get { return s_OfflineClock ? s_UnscaledTime : (float)s_Clock.Elapsed.TotalSeconds; } }
+        public static float timeSinceLevelLoad { get { return s_Time - s_LevelLoadTime; } }
+        public static float fixedTime { get { return s_FixedTime; } }
         public static float fixedDeltaTime { get { return s_FixedDeltaTime; } set { s_FixedDeltaTime = value; } }
         public static float smoothDeltaTime { get { return s_DeltaTime; } }
         public static float maximumDeltaTime { get; set; }
