@@ -43,6 +43,14 @@ namespace KNL
         public string img; public int imgW, imgH, offX, offY;
         public Texture2D atlas;
         public string name;
+        internal float centerX, centerY, halfX, halfY;
+        void CacheBounds()
+        {
+            float inv = 1f / ppu;
+            centerX = (offX + imgW * .5f - pivot.x * rect.width) * inv;
+            centerY = (offY + imgH * .5f - pivot.y * rect.height) * inv;
+            halfX = imgW * .5f * inv; halfY = imgH * .5f * inv;
+        }
         int tex = -2;
         long packOff = -1; int packFmt, packPal;        // device pack: absolute offset of palette/pixels
 
@@ -68,6 +76,7 @@ namespace KNL
                     pivot = Json.V2(e["pivot"]), ppu = Json.F(e, "ppu", 32f), img = (string)e["img"],
                     imgW = (int)(double)sz[0], imgH = (int)(double)sz[1], offX = (int)(double)off[0], offY = (int)(double)off[1],
                 };
+                s.CacheBounds();
                 index[(string)e["file"] + ":" + (long)(double)e["path_id"]] = s;
             }
         }
@@ -90,6 +99,7 @@ namespace KNL
                 s.packFmt = b[p]; s.packPal = BitConverter.ToUInt16(b, p + 1); p += 3;
                 s.packOff = baseOff + p;
                 p += s.packFmt == 0 ? s.packPal * 4 + s.imgW * s.imgH : s.imgW * s.imgH * 4;
+                s.CacheBounds();
                 index[file + ":" + pid] = s;
             }
         }
@@ -245,6 +255,7 @@ namespace KNL
             pt = Prof.Add("render: UI layout", pt);
             var cp = CamPos();
             float k = PixelsPerUnit;
+            float viewHalfW = Width / (2f * k) + 1f / k, viewHalfH = Height / (2f * k) + 1f / k;
             float halfW = Width / 2f / k + 4f, halfH = Height / 2f / k + 4f;   // generous cull margin (world units)
             Native.knl_clear(MainCamera != null && !CameraOverride.HasValue ? MainCamera.m_BackgroundColor.ToRGBA32() | 0xFF000000u : ClearColor.ToRGBA32());
 
@@ -280,11 +291,23 @@ namespace KNL
                     }
                     var m = tr.localToWorldMatrix;
                     float wx = m.m03, wy = m.m13;
-                    if (Mathf.Abs(wx - cp.x) <= halfW + 8f && Mathf.Abs(wy - cp.y) <= halfH + 8f)
+                    bool mainView = Mathf.Abs(wx - cp.x) <= halfW + 8f && Mathf.Abs(wy - cp.y) <= halfH + 8f;
+                    bool uiView = !mainView && hasIc && Mathf.Abs(wx - icPos.x) <= icHalfW && Mathf.Abs(wy - icPos.y) <= icHalfH;
+                    if (!mainView && !uiView) continue;
+                    // Cull the actual transformed image before sorting/copying Items or entering
+                    // DrawSprite. A one-pixel guard makes rounding at the view edge conservative.
+                    var sd = sr.m_Sprite.data;
+                    float lx = sr.m_FlipX ? -sd.centerX : sd.centerX, ly = sr.m_FlipY ? -sd.centerY : sd.centerY;
+                    float cx = m.m00 * lx + m.m01 * ly + wx, cy = m.m10 * lx + m.m11 * ly + wy;
+                    float hx = Mathf.Abs(m.m00) * sd.halfX + Mathf.Abs(m.m01) * sd.halfY;
+                    float hy = Mathf.Abs(m.m10) * sd.halfX + Mathf.Abs(m.m11) * sd.halfY;
+                    var view = mainView ? cp : icPos;
+                    if (Mathf.Abs(cx - view.x) > viewHalfW + hx || Mathf.Abs(cy - view.y) > viewHalfH + hy) continue;
+                    if (mainView)
                     {
                         items.Add(new Item { sr = sr, m = m, dist = m.m23 - cp.z, order = sr.m_SortingOrder, id = sr.m_InstanceID });
                     }
-                    else if (hasIc && Mathf.Abs(wx - icPos.x) <= icHalfW && Mathf.Abs(wy - icPos.y) <= icHalfH)
+                    else
                     {
                         s_UiItems.Add(new Item { sr = sr, m = m, dist = m.m23 - icPos.z, order = sr.m_SortingOrder, id = sr.m_InstanceID });
                     }
