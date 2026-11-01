@@ -9,5 +9,7 @@ export MONO_PATH="$D/mono/lib/mono/4.5"
 export MONO_GC_PARAMS=major=marksweep,nursery-size=16m
 export KNL_CONTROLS=gamepad
 cd managed
-exec "$D/mono/bin/mono-sgen" knl.exe --data "$D/data" --save "$D/save" --boot --window --max-dt 0.05 "$@" \
+RUN_TARGET="knl.dll"
+[ -f "knl.exe" ] && RUN_TARGET="knl.exe"
+exec "$D/mono/bin/mono-sgen" "$RUN_TARGET" --data "$D/data" --save "$D/save" --boot --window --max-dt 0.05 "$@" \
   > "$D/logs/knl.log" 2>&1

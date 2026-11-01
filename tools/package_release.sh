@@ -30,7 +30,7 @@ cp -r "$GAME_SRC/mono/"* "$OUT_DIR/Roms/PORTS/Games/KingdomNewLands/mono/"
 # Copy clean-room engine assemblies ONLY (no original game assemblies)
 cp "$GAME_SRC/managed/UnityEngine.dll" "$OUT_DIR/Roms/PORTS/Games/KingdomNewLands/managed/"
 cp "$GAME_SRC/managed/Rewired_Core.dll" "$OUT_DIR/Roms/PORTS/Games/KingdomNewLands/managed/"
-cp "$GAME_SRC/managed/knl.exe" "$OUT_DIR/Roms/PORTS/Games/KingdomNewLands/managed/"
+cp "$GAME_SRC/managed/knl.dll" "$OUT_DIR/Roms/PORTS/Games/KingdomNewLands/managed/"
 
 # Create placeholder README inside the port folder
 cat << 'EOF' > "$OUT_DIR/Roms/PORTS/Games/KingdomNewLands/data/PLACE_DATA_HERE.txt"
