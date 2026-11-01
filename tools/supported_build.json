@@ -21,6 +21,11 @@
     "Managed/DOTween50.dll": "7c060d5040dc6b157c625460c82b9ccd07fb471f955e23046a70bbd90e64cf56",
     "Managed/DOTweenPro.dll": "0e5b5e6979cc24b0c2a22cf3675ee8f42b80cee04cb01c2a3c1a3a1106266469",
     "Managed/DemiLib.dll": "1966890184f0c94a27bc346169ef6599e1f19412a6a756f12b8279635b1f1ff4",
+    "Managed/UnityEngine.Analytics.dll": "ffa13dad5f6ca48429504dbf654e7d732a54a82fc9812b62ff97bf595f27fac5",
+    "Managed/XInputDotNetPure.dll": "0c8d94492f16aa384e98a98cb399944afb0061dd07c41e2cbd052498336ededa",
+    "Managed/SonyNP.dll": "e6d955ebfa974a7d334a344da99b0b977809e7f8f84715639186b3ef5bb102a4",
+    "Managed/SonyPS4CommonDialog.dll": "00c22be661d72d66d8cb9e7778e1f0f4c0f38f9850ec401be8b9003d9ea7f2e2",
+    "Managed/SonyPS4SavedGames.dll": "2ea15a170543702a9a991ebe2f9e0ae78b3f9938ad004c8f00575fceef7bd022",
     "Managed/UnityEngine.dll": "ac58b0e45834c81a4905677874592ec75072f697e020a0c0d485daec74b9981d",
     "Managed/Rewired_Core.dll": "d1f90f269f48a9632214f1d6782def2a1dffb3acf1460f89e4840441aabb5832"
   }

@@ -12,6 +12,8 @@ GAME_DLLS = (
     "Assembly-CSharp.dll", "Assembly-CSharp-firstpass.dll", "UnityEngine.UI.dll",
     "UnityEngine.Timeline.dll", "UnityEngine.Networking.dll", "DOTween.dll",
     "DOTween43.dll", "DOTween46.dll", "DOTween50.dll", "DOTweenPro.dll", "DemiLib.dll",
+    "UnityEngine.Analytics.dll", "XInputDotNetPure.dll", "SonyNP.dll",
+    "SonyPS4CommonDialog.dll", "SonyPS4SavedGames.dll",
 )
 
 
