@@ -3,6 +3,7 @@
 # or by hand over SSH: ./knl.sh [extra knl.exe args, e.g. --frames 600 --shot-every 300 --shots logs]
 cd "$(dirname "$0")"
 D="$PWD"
+mkdir -p "$D/logs" "$D/save"
 export LD_PRELOAD="/config/lib/libcam_os_wrapper.so"
 export LD_LIBRARY_PATH="$D/lib:/config/lib:/customer/lib:/lib"
 export MONO_PATH="$D/mono/lib/mono/4.5"

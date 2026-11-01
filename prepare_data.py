@@ -41,21 +41,50 @@ def check_dependencies():
         print(f"    pip install {' '.join(missing)} TypeTreeGeneratorAPI\n")
         sys.exit(1)
 
-def find_kingdom_data(path_str):
-    p = Path(path_str).resolve()
-    if p.is_dir() and p.name == "Kingdom_Data":
-        return p
-    if p.is_dir() and (p / "Kingdom_Data").is_dir():
-        return p / "Kingdom_Data"
+def find_kingdom_data(path_str=None):
+    if path_str:
+        p = Path(path_str).expanduser().resolve()
+        if p.is_dir() and p.name == "Kingdom_Data":
+            return p
+        if p.is_dir() and (p / "Kingdom_Data").is_dir():
+            return p / "Kingdom_Data"
+
+    # Auto-detect common game paths
+    candidates = [
+        Path.home() / "Games/KingdomNewLands/Kingdom_Data",
+        Path.home() / "Games/KingdomNewLands",
+        Path.home() / "Games/Heroic/KingdomNewLands/Kingdom_Data",
+        Path.home() / ".local/share/Steam/steamapps/common/Kingdom New Lands/Kingdom_Data",
+        Path.home() / ".steam/steam/steamapps/common/Kingdom New Lands/Kingdom_Data",
+        Path.home() / "GOG Games/Kingdom New Lands/Kingdom_Data",
+        Path("C:/Program Files (x86)/Steam/steamapps/common/Kingdom New Lands/Kingdom_Data"),
+        Path("C:/GOG Games/Kingdom New Lands/Kingdom_Data"),
+        Path("C:/Program Files/Epic Games/KingdomNewLands/Kingdom_Data"),
+    ]
+    for c in candidates:
+        try:
+            c_p = c.expanduser().resolve()
+            if c_p.is_dir():
+                if c_p.name == "Kingdom_Data":
+                    return c_p
+                if (c_p / "Kingdom_Data").is_dir():
+                    return c_p / "Kingdom_Data"
+        except:
+            pass
     return None
 
 def main():
     parser = argparse.ArgumentParser(description="Prepare Kingdom: New Lands BYOD assets for Miyoo Mini.")
-    parser.add_argument("data_dir", help="Path to Kingdom_Data directory or game install folder")
+    parser.add_argument("data_dir", nargs="?", default=None,
+                        help="Path to Kingdom_Data directory or game install folder (optional if in standard path)")
     parser.add_argument("--out", "-o", default=str(HERE / "sd_card_data"),
                         help="Target output folder or SD card root (default: ./sd_card_data)")
     parser.add_argument("--skip-extract", action="store_true",
                         help="Skip extraction if extracted/ already exists")
+    parser.add_argument("--skip-audio", action="store_true",
+                        help="Skip audio/music extraction (useful if ffmpeg is not installed)")
+    parser.add_argument("--skip", default="",
+                        help="Comma-separated list of passes to skip (e.g. audio,textures,objects)")
     args = parser.parse_args()
 
     print("==================================================================")
@@ -79,7 +108,14 @@ def main():
     if not args.skip_extract or not extracted_dir.exists():
         print("\n[*] Step 1/3: Extracting game assets (this may take 1-2 minutes)...")
         convert_script = HERE / "tools" / "convert.py"
+        skip_list = [s.strip() for s in args.skip.split(",") if s.strip()]
+        if args.skip_audio and "audio" not in skip_list:
+            skip_list.append("audio")
+        
         cmd = [sys.executable, str(convert_script), str(data_dir), "--out", str(extracted_dir)]
+        if skip_list:
+            cmd.extend(["--skip", ",".join(skip_list)])
+            
         res = subprocess.run(cmd)
         if res.returncode != 0:
             print("[!] Asset extraction failed.")
@@ -98,7 +134,7 @@ def main():
 
     # Step 3: Staging files for SD card
     print("\n[*] Step 3/3: Staging files for SD card...")
-    out_root = Path(args.out).resolve()
+    out_root = Path(args.out).expanduser().resolve()
     target_game_dir = out_root / "Roms" / "PORTS" / "Games" / "KingdomNewLands"
     target_data_dir = target_game_dir / "data"
     target_managed_dir = target_game_dir / "managed"
@@ -122,13 +158,29 @@ def main():
         shutil.copytree(music_src, target_music)
 
     # Copy user's game assemblies from Kingdom_Data/Managed
+    # Exclude:
+    # 1. Our custom engine shims (provided by the port package)
+    # 2. Standard .NET BCL assemblies (provided by mono/lib/mono/4.5/ - Unity's stripped .NET 3.5 BCL breaks Mono 4.5)
+    EXCLUDE_DLLS = {
+        "UnityEngine.dll", "Rewired_Core.dll", "knl.dll", "knl.exe",
+        "mscorlib.dll", "System.dll", "System.Core.dll", "System.Xml.dll",
+        "System.Configuration.dll", "System.Security.dll", "Mono.Security.dll",
+        "Mono.Posix.dll", "I18N.dll", "I18N.West.dll"
+    }
+
     src_managed = data_dir / "Managed"
     copied_dlls = 0
     if src_managed.is_dir():
-        for dll in src_managed.glob("Assembly-CSharp*.dll"):
+        for dll in src_managed.glob("*.dll"):
+            if dll.name in EXCLUDE_DLLS:
+                continue
             print(f"    • Copying game assembly: {dll.name}...")
             shutil.copy2(dll, target_managed_dir / dll.name)
             copied_dlls += 1
+
+    # Ensure logs and save directories exist
+    (target_game_dir / "logs").mkdir(parents=True, exist_ok=True)
+    (target_game_dir / "save").mkdir(parents=True, exist_ok=True)
 
     if copied_dlls == 0:
         print("[!] Warning: Could not find Assembly-CSharp.dll inside Kingdom_Data/Managed/.")

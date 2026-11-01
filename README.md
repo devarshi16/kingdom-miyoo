@@ -18,21 +18,44 @@ This is a **Bring Your Own Data (BYOD)** port. You must provide game files from 
 1. Download [`KingdomNewLands-MiyooMini-v1.0.zip`](https://github.com/devarshi16/kingdom-miyoo/releases) from Releases.
 2. Extract the `Roms/` folder directly to the root of your Miyoo SD card.
 
-### Step 2: Prepare Your Game Data (Windows, Mac, or Linux)
-Run the automated asset preparer on your PC to convert and stage your game data:
+### Step 2: Prepare Your Game Data
 
+#### 🪟 On Windows (Easiest — Automated):
+1. Download or clone this repository to your PC.
+2. Double-click **`setup_windows.bat`**.
+   * It will automatically verify Python, install dependencies, auto-detect your Steam/GOG/Epic install, and stage files directly to your SD card!
+
+#### 🐧 On macOS / Linux (or Manual Windows):
 ```bash
-# 1. Install standard dependencies (pure Python, no C compiler required)
+# 1. Install dependencies (ffmpeg is recommended for soundtrack & sound effects)
 pip install UnityPy Pillow dnfile TypeTreeGeneratorAPI
 
 # 2. Run data preparer (point it to your game's Kingdom_Data and your SD card)
-python prepare_data.py "C:\path\to\Kingdom New Lands\Kingdom_Data" --out "E:\"
+python prepare_data.py "/path/to/Kingdom New Lands/Kingdom_Data" --out "/media/$USER/SDCARD"
 ```
+*(On Windows manual CLI, replace with e.g. `python prepare_data.py "C:\GOG Games\Kingdom New Lands\Kingdom_Data" --out "E:\"`).*
+*(Add `--skip-audio` if you do not have `ffmpeg` installed and wish to test without audio).*
 
-*(On macOS/Linux, replace the paths accordingly, e.g. `--out /media/$USER/SDCARD`).*
+> [!TIP]
+> **WSL Users**: 
+> 1. Always clone this repository inside your WSL home directory (`~`, e.g. `~/kingdom-miyoo`), **not** under `/mnt/c/`, as Windows-WSL filesystem bridging (`drvfs`) is drastically slower and can break Python packages.
+> 2. Your SD card (e.g. drive `E:`) is accessible in WSL under `/mnt/e` (e.g. `--out /mnt/e`).
 
 ### Step 3: Play!
 Insert the SD card into your Miyoo Mini, go to **Games › Ports › Refresh ROMs**, and launch **Kingdom New Lands**!
+
+---
+
+## 🪵 Troubleshooting & Sharing Logs
+
+If the game crashes back to the menu or shows a black screen, the port writes an execution log every time it starts:
+
+### Finding Your Log File:
+On your SD card, open:
+📁 `Roms/PORTS/Games/KingdomNewLands/logs/knl.log`
+
+### Reporting an Issue:
+If you encounter any crash or bug, please **open an issue on GitHub and attach or paste your `knl.log` file**. It contains the exact Mono stack trace and error message, which makes diagnosing and fixing your issue fast!
 
 > [!NOTE]
 > **Windows Defender Notice**: The release zip contains **zero `.exe` files** (the launcher uses `knl.dll` executed directly by Mono on the device). If generic heuristics flag the archive because of unfamiliar Linux ARM binaries or shell scripts, it is a false positive. All source code is completely open in this repository.
@@ -49,6 +72,8 @@ Locate the `Kingdom_Data` directory from your PC installation:
 | **Steam (Linux)** | `~/.local/share/Steam/steamapps/common/Kingdom New Lands/Kingdom_Data` |
 | **Steam (macOS)** | `~/Library/Application Support/Steam/steamapps/common/Kingdom New Lands/Kingdom_Data` |
 | **Epic Games (Windows)** | `C:\Program Files\Epic Games\KingdomNewLands\Kingdom_Data` |
+| **Epic Games (Linux - Native / Heroic)** | `~/Games/KingdomNewLands/Kingdom_Data` |
+| **Epic Games (Linux - Lutris)** | `~/Games/epic-games-store/drive_c/Program Files/Epic Games/KingdomNewLands/Kingdom_Data` |
 | **Epic Games (macOS)** | `/Users/Shared/Epic Games/KingdomNewLands/Kingdom_Data` |
 | **GOG (Windows)** | `C:\GOG Games\Kingdom New Lands\Kingdom_Data` |
 | **GOG (Linux)** | `~/GOG Games/Kingdom New Lands/Kingdom_Data` |
@@ -68,6 +93,9 @@ Run python prepare_data.py to extract and pack the game data, sync the Roms fold
 ---
 
 ## 🛠️ Building Engine from Source (Developers Only)
+
+> [!IMPORTANT]
+> **Players do NOT need to build from source.** `compile.sh` compiles the desktop engine test harness unless you have the Miyoo cross-compiler toolchain installed. To play on your Miyoo Mini, follow the **Easy Installation (Steps 1 & 2)** above using the pre-compiled release package.
 
 If you are modifying the clean-room C blitter or C# UnityEngine replacement:
 

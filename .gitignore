@@ -6,6 +6,7 @@ extracted/
 Kingdom_Data/
 
 tools/.venv/
+tools/.pydeps/
 __pycache__/
 *.pyc
 

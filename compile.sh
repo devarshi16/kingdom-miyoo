@@ -55,6 +55,15 @@ if [ -x "$CC" ]; then
     echo "Copy the 'Roms' folder from engine/build-miyoo/ directly to your SD card root."
 else
     echo ""
-    echo "SUCCESS: Desktop engine built at engine/build/ (run: ./engine/run.sh --data pack --boot --window)"
-    echo "Note: ARM toolchain not detected ($CC). To build the Miyoo package, ensure the Miyoo toolchain is installed."
+    echo "=================================================================="
+    echo "Desktop engine built at: engine/build/ (run: ./engine/run.sh --data pack --boot --window)"
+    echo ""
+    echo "[!] NOTE: Miyoo Mini package was NOT built because the ARM cross-compiler"
+    echo "    was not found at: $CC"
+    echo ""
+    echo "    • If you want to play on Miyoo Mini without cross-compiling, use the"
+    echo "      pre-built release package instead: python prepare_data.py \"$DATA_DIR\" --out \"/path/to/sdcard\""
+    echo "    • To cross-compile the Miyoo package yourself, install the Miyoo toolchain"
+    echo "      and set MIYOO_TOOLCHAIN_ROOT (or MIYOO_CC)."
+    echo "=================================================================="
 fi
