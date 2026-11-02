@@ -24,6 +24,16 @@ public static class DayHud {
     public static int CurrentDay { get; private set; }
     public static float CurrentTime { get; private set; }
 
+    // This compact HUD persists after the game's original day announcement fades away.
+    // GetGenerationSettings copies Graphic.color, including that transient alpha, so retain
+    // its RGB tint but render regenerated glyphs fully opaque.
+    static TextGenerationSettings PersistentLabelSettings(TextGenerationSettings settings) {
+        Color color = settings.color;
+        color.a = 1f;
+        settings.color = color;
+        return settings;
+    }
+
     public static void Observe(MonoBehaviour mb) {
         string name = mb.GetType().Name;
         if (name == "Kingdom") {
@@ -76,6 +86,7 @@ public static class DayHud {
             // Menu.OnEnable uses this exact original Roman formatter and lower-case glyphs.
             string text = roman == null ? CurrentDay.ToString() : roman(CurrentDay).ToLowerInvariant();
             var settings = (TextGenerationSettings)type.GetMethod("GetGenerationSettings").Invoke(sourceText, new object[] { new Vector2(1024, 64) });
+            settings = PersistentLabelSettings(settings);
             settings.textAnchor = TextAnchor.UpperLeft; settings.pivot = new Vector2(0,1);
             settings.horizontalOverflow = HorizontalWrapMode.Overflow; settings.verticalOverflow = VerticalWrapMode.Overflow;
             generator.Populate(text, settings);

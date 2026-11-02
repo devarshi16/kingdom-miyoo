@@ -27,3 +27,6 @@ sd_card_data/
 dist/
 
 .player-venv/
+
+# local gameplay saves
+/save/

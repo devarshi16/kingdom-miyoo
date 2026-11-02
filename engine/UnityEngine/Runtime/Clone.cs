@@ -232,6 +232,8 @@ namespace KNL
                         f.SetValue(c, Activator.CreateInstance(f.FieldType, f.GetValue(c)));
                 }
             NativeCloneHooks.After(c);
+            var animator = c as Animator;
+            if (animator != null) animator.m_Rt = null; // runtime targets and state belong to one instance
             var col = c as Collider2D;
             if (col != null) { col.m_RbCached = false; col.m_RbVersion = -1; col.m_CachedRb = null; col.m_AabbStamp = -1; }
         }

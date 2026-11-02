@@ -87,11 +87,30 @@ namespace UnityEngine
             get
             {
                 if (m_RbCached && m_RbVersion == KNL.World.PhysicsTopologyVersion && (m_CachedRb == null || !m_CachedRb.m_Destroyed)) return m_CachedRb;
-                m_CachedRb = gameObject != null ? gameObject.GetComponentInParent<Rigidbody2D>() : null;
+                m_CachedRb = gameObject != null ? FindAttachedBody(gameObject) : null;
                 m_RbCached = true;
                 m_RbVersion = KNL.World.PhysicsTopologyVersion;
                 return m_CachedRb;
             }
+        }
+        static Rigidbody2D FindAttachedBody(GameObject go)
+        {
+            // This hot closed-type lookup has the same active-ancestor and first-component
+            // rules as GetComponentInParent(Type), without reflection on every component.
+            for (var t = go.m_Transform; t != null; t = t.m_Parent)
+            {
+                var g = t.m_GameObject;
+                if (!g.activeInHierarchy) continue;
+                var components = g.m_Components;
+                for (int i = 0; i < components.Count; i++)
+                {
+                    var rb = components[i] as Rigidbody2D;
+                    if (ReferenceEquals(rb, null)) continue;
+                    if (rb != null) return rb;
+                    break; // The Type API also skips this ancestor if its first body is destroyed.
+                }
+            }
+            return null;
         }
         public Bounds bounds { get { var a = KNL.Physics2DSystem.AabbOf(this); return new Bounds(new Vector3((a.x0 + a.x1) / 2, (a.y0 + a.y1) / 2, transform.position.z), new Vector3(a.x1 - a.x0, a.y1 - a.y0, 0)); } }
         public bool OverlapPoint(Vector2 p) { return KNL.Physics2DSystem.ContainsPoint(this, p); }
@@ -343,17 +362,41 @@ namespace KNL
         // ------------------------------------------------------------- registry
         sealed class Entry { public Collider2D c; public Rigidbody2D rb; public Aabb box; public int layer; public float sortedX; }
         static readonly List<Entry> entries = new List<Entry>();
-        static readonly List<Entry> gatherEntries = new List<Entry>();
         static bool entriesOrdered;
         static readonly List<Entry> entryPool = new List<Entry>();   // reused every step (M5: no per-step garbage)
         static readonly List<Rigidbody2D> bodies = new List<Rigidbody2D>();
+        sealed class MaskEntries { public int version = -1; public readonly List<Entry> items = new List<Entry>(); }
+        static readonly Dictionary<int, MaskEntries> maskEntries = new Dictionary<int, MaskEntries>();
+        static int queryOrderVersion;
+
+        static List<Entry> EntriesForMask(int mask)
+        {
+            if (mask == -1) return entries;
+            MaskEntries filtered;
+            if (!maskEntries.TryGetValue(mask, out filtered))
+            {
+                // The game repeats a small set of masks. Unusual/adversarial masks retain
+                // the ordinary scan rather than growing an unbounded cache.
+                if (maskEntries.Count >= 32) return entries;
+                filtered = new MaskEntries(); maskEntries.Add(mask, filtered);
+            }
+            if (filtered.version != queryOrderVersion)
+            {
+                filtered.items.Clear();
+                for (int i = 0; i < entries.Count; i++)
+                    if (((1 << entries[i].layer) & mask) != 0) filtered.items.Add(entries[i]);
+                filtered.version = queryOrderVersion;
+            }
+            return filtered.items;
+        }
 
         static readonly Comparison<Entry> s_EntryComparison = (a, b) => a.box.x0.CompareTo(b.box.x0);
 
         static void Gather()
         {
-            gatherEntries.Clear(); bodies.Clear();
+            int gatherCount = 0, liveBodyCount = 0;
             bool sameStructure = true;
+            bool sameLayers = true;
             int pass = GameObject.NewPass();
             var cols = Collider2D.s_All;
             int colCount = cols.Count;
@@ -363,12 +406,14 @@ namespace KNL
                 if (c == null || c.m_Destroyed || !c.m_Enabled) continue;
                 var g = c.m_GameObject;
                 if (g == null || g.m_Destroyed || !g.ActiveInPass(pass)) continue;
-                if (entryPool.Count == gatherEntries.Count) entryPool.Add(new Entry());
-                var e = entryPool[gatherEntries.Count];
-                if (!ReferenceEquals(e.c, c)) sameStructure = false;
-                e.c = c; e.rb = BodyOf(c, pass); e.box = AabbOf(c); e.layer = g.m_Layer;
+                if (entryPool.Count == gatherCount) entryPool.Add(new Entry());
+                var e = entryPool[gatherCount++];
+                if (!ReferenceEquals(e.c, c)) { sameStructure = false; e.c = c; }
+                var attached = BodyOf(c, pass);
+                if (!ReferenceEquals(e.rb, attached)) e.rb = attached;
+                e.box = AabbOf(c);
+                if (e.layer != g.m_Layer) { e.layer = g.m_Layer; sameLayers = false; }
                 if (float.IsNaN(e.box.x0) || float.IsNaN(e.sortedX)) sameStructure = false;
-                gatherEntries.Add(e);
             }
             var bds = Rigidbody2D.s_All;
             int bdCount = bds.Count;
@@ -378,13 +423,16 @@ namespace KNL
                 if (rb == null || rb.m_Destroyed || !rb.m_Simulated) continue;
                 var g = rb.m_GameObject;
                 if (g == null || g.m_Destroyed || !g.ActiveInPass(pass)) continue;
-                bodies.Add(rb);
+                if (liveBodyCount == bodies.Count) bodies.Add(rb);
+                else if (!ReferenceEquals(bodies[liveBodyCount], rb)) bodies[liveBodyCount] = rb;
+                liveBodyCount++;
             }
+            if (liveBodyCount < bodies.Count) bodies.RemoveRange(liveBodyCount, bodies.Count - liveBodyCount);
             // Pool entries keep their identity while the active registry is unchanged.
             // Reuse the last sweep order only if every strict/equal neighbor relationship
             // is unchanged. Otherwise sort the original registry order exactly as before,
             // including the framework sort's ordering of equal-x colliders.
-            bool sorted = sameStructure && entries.Count == gatherEntries.Count;
+            bool sorted = sameStructure && entries.Count == gatherCount;
             if (sorted)
                 for (int i = 1; i < entries.Count; i++)
                 {
@@ -393,10 +441,12 @@ namespace KNL
                 }
             if (!sorted)
             {
-                entries.Clear(); entries.AddRange(gatherEntries);
+                entries.Clear();
+                for (int i = 0; i < gatherCount; i++) entries.Add(entryPool[i]);
                 entries.Sort(s_EntryComparison);
+                for (int i = 0; i < entries.Count; i++) entries[i].sortedX = entries[i].box.x0;
             }
-            for (int i = 0; i < entries.Count; i++) entries[i].sortedX = entries[i].box.x0;
+            if (!sorted || !sameLayers) queryOrderVersion++;
             entriesOrdered = true;
         }
 
@@ -912,7 +962,7 @@ namespace KNL
         static IEnumerable<Entry> Live(int mask)
         {
             EnsureGathered();
-            foreach (var e in entries)
+            foreach (var e in EntriesForMask(mask))
                 if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0) yield return e;
         }
         static int gatheredFrame = -1;
@@ -926,9 +976,10 @@ namespace KNL
         {
             EnsureGathered();
             var result = new List<Collider2D>();
-            for (int i = 0; i < entries.Count; i++)
+            var candidates = EntriesForMask(mask);
+            for (int i = 0; i < candidates.Count; i++)
             {
-                var e = entries[i];
+                var e = candidates[i];
                 // ContainsPoint refreshes a collider's live transform even between queries
                 // in the same frame; its older gather bound cannot safely cull that test.
                 if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0 && ContainsPoint(e.c, p)) result.Add(e.c);
@@ -938,9 +989,10 @@ namespace KNL
         public static int QueryPointNonAlloc(Vector2 p, int mask, Collider2D[] result)
         {
             EnsureGathered(); int count = 0, capacity = result.Length;
-            for (int i = 0; i < entries.Count && count < capacity; i++)
+            var candidates = EntriesForMask(mask);
+            for (int i = 0; i < candidates.Count && count < capacity; i++)
             {
-                var e = entries[i];
+                var e = candidates[i];
                 if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0 && ContainsPoint(e.c, p)) result[count++] = e.c;
             }
             return count;
@@ -949,9 +1001,10 @@ namespace KNL
         {
             var q = new Aabb { x0 = Mathf.Min(a.x, b.x), x1 = Mathf.Max(a.x, b.x), y0 = Mathf.Min(a.y, b.y), y1 = Mathf.Max(a.y, b.y) };
             EnsureGathered(); var result = new List<Collider2D>();
-            for (int i = 0; i < entries.Count; i++)
+            var candidates = EntriesForMask(mask);
+            for (int i = 0; i < candidates.Count; i++)
             {
-                var e = entries[i];
+                var e = candidates[i];
                 if (entriesOrdered && e.box.x0 > q.x1) break;
                 if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0 && e.box.Overlaps(q)) result.Add(e.c);
             }
@@ -961,9 +1014,10 @@ namespace KNL
         {
             var q = new Aabb { x0 = Mathf.Min(a.x, b.x), x1 = Mathf.Max(a.x, b.x), y0 = Mathf.Min(a.y, b.y), y1 = Mathf.Max(a.y, b.y) };
             EnsureGathered(); int count = 0, capacity = result.Length;
-            for (int i = 0; i < entries.Count && count < capacity; i++)
+            var candidates = EntriesForMask(mask);
+            for (int i = 0; i < candidates.Count && count < capacity; i++)
             {
-                var e = entries[i];
+                var e = candidates[i];
                 if (entriesOrdered && e.box.x0 > q.x1) break;
                 if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0 && e.box.Overlaps(q)) result[count++] = e.c;
             }
@@ -972,9 +1026,10 @@ namespace KNL
         public static List<Collider2D> QueryCircle(Vector2 c, float r, int mask)
         {
             EnsureGathered(); var result = new List<Collider2D>();
-            for (int i = 0; i < entries.Count; i++)
+            var candidates = EntriesForMask(mask);
+            for (int i = 0; i < candidates.Count; i++)
             {
-                var e = entries[i];
+                var e = candidates[i];
                 if (e.c.m_Destroyed || ((1 << e.layer) & mask) == 0) continue;
                 float cx = Mathf.Clamp(c.x, e.box.x0, e.box.x1), cy = Mathf.Clamp(c.y, e.box.y0, e.box.y1);
                 if ((cx - c.x) * (cx - c.x) + (cy - c.y) * (cy - c.y) <= r * r) result.Add(e.c);

@@ -5,6 +5,13 @@ using System.Collections.Generic;
 
 namespace UnityEngine
 {
+    public sealed partial class TouchScreenKeyboard
+    {
+        // Neither desktop SDL nor Miyoo provides an operating-system touch keyboard.
+        // UI.InputField uses this capability to select its ordinary hardware-input path.
+        public static bool isSupported { get { return false; } }
+    }
+
     public sealed partial class Canvas
     {
         internal static readonly List<Canvas> s_All = new List<Canvas>();

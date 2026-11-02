@@ -657,6 +657,8 @@ static void do_quad_gradient(float x0f, float y0f, float x1f, float y1f,
     if (y0 < 0) y0 = 0;
     if (x1 > g_w) x1 = g_w;
     if (y1 > g_h) y1 = g_h;
+    if (g_sprite_clip_bottom >= 0 && y1 > g_sprite_clip_bottom) y1 = g_sprite_clip_bottom;
+    if (x0 >= x1 || y0 >= y1) return;
     float C[4][4];
     uint32_t cs[4] = { c00, c10, c01, c11 };
     for (int i = 0; i < 4; i++)

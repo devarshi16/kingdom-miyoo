@@ -270,6 +270,22 @@ namespace KNL
             return camera == null || (uint)layer < 32 && (camera.cullingMask & (1 << layer)) != 0;
         }
 
+        internal static void PrepareSpriteBounds(SpriteRenderer sr, Transform tr, SpriteData data)
+        {
+            tr.UpdateWorld();
+            if (sr.m_RenderBoundsStamp == tr.m_Stamp && ReferenceEquals(sr.m_RenderBoundsData, data)
+                && sr.m_RenderBoundsFlipX == sr.m_FlipX && sr.m_RenderBoundsFlipY == sr.m_FlipY) return;
+            var m = tr.localToWorldMatrix;
+            float lx = sr.m_FlipX ? -data.centerX : data.centerX, ly = sr.m_FlipY ? -data.centerY : data.centerY;
+            sr.m_RenderOriginX = m.m03; sr.m_RenderOriginY = m.m13;
+            sr.m_RenderCenterX = m.m00 * lx + m.m01 * ly + m.m03;
+            sr.m_RenderCenterY = m.m10 * lx + m.m11 * ly + m.m13;
+            sr.m_RenderHalfX = Mathf.Abs(m.m00) * data.halfX + Mathf.Abs(m.m01) * data.halfY;
+            sr.m_RenderHalfY = Mathf.Abs(m.m10) * data.halfX + Mathf.Abs(m.m11) * data.halfY;
+            sr.m_RenderBoundsData = data; sr.m_RenderBoundsStamp = tr.m_Stamp;
+            sr.m_RenderBoundsFlipX = sr.m_FlipX; sr.m_RenderBoundsFlipY = sr.m_FlipY;
+        }
+
         public static void RenderFrame()
         {
             long pt = Prof.Now();
@@ -332,20 +348,18 @@ namespace KNL
                         bool nearIc = hasIc && Mathf.Abs(px - icPos.x) <= icHalfW && Mathf.Abs(py - icPos.y) <= icHalfH;
                         if (!nearMain && !nearIc) continue;
                     }
-                    var m = tr.localToWorldMatrix;
-                    float wx = m.m03, wy = m.m13;
+                    var sd = sr.m_Sprite.data;
+                    PrepareSpriteBounds(sr, tr, sd);
+                    float wx = sr.m_RenderOriginX, wy = sr.m_RenderOriginY;
                     bool mainView = mainLayer && Mathf.Abs(wx - cp.x) <= halfW + 8f && Mathf.Abs(wy - cp.y) <= halfH + 8f;
                     bool uiView = !mainView && interfaceLayer && Mathf.Abs(wx - icPos.x) <= icHalfW && Mathf.Abs(wy - icPos.y) <= icHalfH;
                     if (!mainView && !uiView) continue;
                     // Cull the actual transformed image before sorting/copying Items or entering
                     // DrawSprite. A one-pixel guard makes rounding at the view edge conservative.
-                    var sd = sr.m_Sprite.data;
-                    float lx = sr.m_FlipX ? -sd.centerX : sd.centerX, ly = sr.m_FlipY ? -sd.centerY : sd.centerY;
-                    float cx = m.m00 * lx + m.m01 * ly + wx, cy = m.m10 * lx + m.m11 * ly + wy;
-                    float hx = Mathf.Abs(m.m00) * sd.halfX + Mathf.Abs(m.m01) * sd.halfY;
-                    float hy = Mathf.Abs(m.m10) * sd.halfX + Mathf.Abs(m.m11) * sd.halfY;
                     var view = mainView ? cp : icPos;
-                    if (Mathf.Abs(cx - view.x) > viewHalfW + hx || Mathf.Abs(cy - view.y) > viewHalfH + hy) continue;
+                    if (Mathf.Abs(sr.m_RenderCenterX - view.x) > viewHalfW + sr.m_RenderHalfX
+                        || Mathf.Abs(sr.m_RenderCenterY - view.y) > viewHalfH + sr.m_RenderHalfY) continue;
+                    var m = tr.localToWorldMatrix;
                     if (mainView)
                     {
                         items.Add(new Item { sr = sr, m = m, dist = m.m23 - cp.z, order = sr.m_SortingOrder, id = sr.m_InstanceID });
@@ -384,6 +398,8 @@ namespace KNL
                 if (it.mr != null) { DrawMesh(it.mr, it.m, cp, k); pt = Prof.Add("render: meshes", pt); }
                 else { DrawSprite(it.sr, it.m, cp, k); pt = Prof.Add("render: sprites", pt); }
             }
+            LiteWeather.Draw();
+            pt = Prof.Add("render: weather", pt);
             if (hasIc && s_UiItems.Count > 0)
             {
                 int uin = s_UiItems.Count;
@@ -453,11 +469,17 @@ namespace KNL
                 if (pb.colors.TryGetValue("_RecolorB", out cc)) rb = cc;
                 if (pb.floats.TryGetValue("_AmbientResponse", out ff)) resp = ff;
             }
-            // vertex lighting at the four texture corners (TL, TR, BL, BR), interpolated by the blitter
+            // Full mode interpolates four vertex samples. Lite samples the trimmed image center
+            // once, retaining ambient/night lighting and hit overlays while allowing flat palette
+            // shading in the native blitter. Geometry, alpha and recoloring remain unchanged.
             float keep = 1f - ov.a;
-            if (s_ActiveLightCount == 0)
+            if (s_ActiveLightCount == 0 || resp == 0f || VisualQuality.Lite)
             {
                 var amb = RenderSettings.s_AmbientSky;
+                if (s_ActiveLightCount > 0 && resp != 0f && VisualQuality.Lite)
+                    amb = VertexLight(m.MultiplyPoint3x4(new Vector3(
+                        sx * (sd.offX + sd.imgW * .5f - px) * inv,
+                        sy * (sd.offY + sd.imgH * .5f - py) * inv, 0)));
                 int m0 = Mathf.Max(0, (int)(keep * (1f + resp * (amb.r - 1f)) * 256f));
                 int m1 = Mathf.Max(0, (int)(keep * (1f + resp * (amb.g - 1f)) * 256f));
                 int m2 = Mathf.Max(0, (int)(keep * (1f + resp * (amb.b - 1f)) * 256f));
@@ -557,6 +579,7 @@ namespace KNL
                     Color top, bottom;
                     VisualQuality.WaterColors(mat.GetColor("_Color"), RenderSettings.s_AmbientSky, out top, out bottom);
                     Native.knl_quad_gradient(0, Mathf.Max(0, Mathf.Round(y0)), Width, Height, top.ToRGBA32(), top.ToRGBA32(), bottom.ToRGBA32(), bottom.ToRGBA32(), 0);
+                    LiteWeather.DrawWater(0, Mathf.Max(0, Mathf.Round(y0)), Width, Height, top, bottom);
                     return;
                 }
                 var water = mr.gameObject.m_Components.FirstOrDefault(c => c.GetType().Name == "Water");

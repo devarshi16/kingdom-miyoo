@@ -194,6 +194,7 @@ namespace KNL
         static void Deactivate(IEnumerable<GameObject> gos)
         {
             foreach (var g in gos)
+            {
                 foreach (var c in g.m_Components.ToArray())
                 {
                     var mb = c as MonoBehaviour;
@@ -204,6 +205,15 @@ namespace KNL
                     s.enabledCalled = false;
                     Call(s, s.info.OnDisable, "OnDisable");
                 }
+                // Unity 2017 clears an Animator's evaluated state when its object is
+                // disabled. A pooled, revived Troll must not keep its terminal Die pose.
+                // Clear after script callbacks, which may still write animation parameters.
+                foreach (var c in g.m_Components)
+                {
+                    var animator = c as Animator;
+                    if (animator != null) animator.m_Rt = null;
+                }
+            }
         }
 
         public static void OnBehaviourEnabledChanged(Behaviour b)

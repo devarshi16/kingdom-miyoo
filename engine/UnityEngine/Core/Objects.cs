@@ -607,6 +607,13 @@ namespace UnityEngine
 
     public sealed partial class SpriteRenderer
     {
+        // Sprite image geometry is immutable after import. World bounds can be reused until
+        // an animation changes its image/flip or its transform's world stamp advances.
+        internal KNL.SpriteData m_RenderBoundsData;
+        internal int m_RenderBoundsStamp = int.MinValue;
+        internal bool m_RenderBoundsFlipX, m_RenderBoundsFlipY;
+        internal float m_RenderOriginX, m_RenderOriginY;
+        internal float m_RenderCenterX, m_RenderCenterY, m_RenderHalfX, m_RenderHalfY;
         internal Sprite m_Sprite;
         internal Color m_Color = Color.white;
         internal bool m_FlipX, m_FlipY;
