@@ -1,0 +1,393 @@
+{
+  "title": "Enemy body visibility follow-up",
+  "date": "2026-11-02",
+  "status": "A replacement-only pooled death-state defect was reproduced and then retested after the narrow Animator lifecycle reset: before the fix, a live reused Troll retained the terminal Die state and tiny troll_die_8 sprite; after the fix, its first Animator step returned to the expected Stand state and troll_recover_3. Original Unity 2017.1.2p1 showed the same expected reset behavior. The user-reported live body disappearing while its mask remains visible in ordinary play was not reproduced and remains unresolved.",
+  "scope": {
+    "runtime": "Private desktop replacement-engine build using the unchanged owned Assembly-CSharp.dll and original game scripts; no shared engine build, device, installation, or original save was modified.",
+    "save": "Each run used a fresh private copy of /home/devarshi/Recompilation/work/knl-rc5/20261102T112218Z/save.",
+    "probe_source": "tools/reference_enemies/PortProbe.inc.cs",
+    "private_outputs": "/home/devarshi/Recompilation/work/knl-rc5/enemy-invisible/",
+    "original_assets_or_dlls_committed": false
+  },
+  "runs": [
+    {
+      "name": "natural 10000-frame night, hit, death, and pool run",
+      "command_shape": "KNL_ENEMY_LONG_PROBE=1 KNL_ENEMY_SHOTS=<private-dir> mono <private-build>/knl.dll --data <owned-pack> --boot --frames 10000 --save <private-save-copy>",
+      "log": "/home/devarshi/Recompilation/work/knl-rc5/enemy-invisible/long-reuse.log",
+      "frames": 10000,
+      "runtime_exceptions": 0,
+      "tracked_troll_objects": 36,
+      "body_samples": 22122,
+      "alpha_below_one_samples": 360,
+      "alpha_zero_samples": 186,
+      "alpha_below_one_samples_on_dead_trolls": 360,
+      "alpha_below_one_samples_with_body_renderer_disabled": 0,
+      "alpha_below_one_samples_with_mask_renderer_enabled": 0,
+      "active_actor_root_y_range": [
+        0.9,
+        1.6
+      ],
+      "active_actor_body_bounds_center_y_range": [
+        1.368,
+        2.136
+      ],
+      "inactive_faded_body": "At frame 733, qa-invisible-19 was inactive with troll_die_8 selected, body alpha restored to 1, SpriteRenderer enabled, and no mask renderer. This matches SpriteFX.OnDisable restoring its captured original alpha after the death fade.",
+      "material_and_property_block": "All sampled body renderers referenced the Troll prefab shared material; no sampled body differed from the template. Each renderer had its own property-block instance, distinct from SpriteFX's static scratch block.",
+      "isolated_render_captures": [
+        "/home/devarshi/Recompilation/work/knl-rc5/enemy-invisible/reuse-shots/f600-masked-cf63aa0e-body-only.png",
+        "/home/devarshi/Recompilation/work/knl-rc5/enemy-invisible/reuse-shots/f600-masked-cf63aa0e-mask-only.png",
+        "/home/devarshi/Recompilation/work/knl-rc5/enemy-invisible/reuse-shots/f600-unmasked-46006f2-body-plus-mask.png"
+      ]
+    },
+    {
+      "name": "20 original-pool deactivate/reactivate cycles",
+      "log": "/home/devarshi/Recompilation/work/knl-rc5/enemy-invisible/long-reuse.log",
+      "cycles": 20,
+      "spawned_and_despawned_through": "Original Pool.SpawnGO and Pool.Despawn methods; no SetActive shortcut or animation/alpha override.",
+      "unique_reused_gameobjects": 1,
+      "unique_animator_runtime_objects": 1,
+      "animator_runtime_reference": "The same AnimatorRuntime object remained attached through all 20 cycles. The state changed into the controller's Stand state on the first cycle, then its normalized time continued across the rapid cycles. The reused object was not the naturally faded Troll, so these cycles do not test reactivation from a death-fade state.",
+      "log_prefix": "LONGREUSE"
+    },
+    {
+      "name": "targeted naturally faded Troll death/reuse after Animator lifecycle reset",
+      "runtime": "Private desktop replacement-engine build compiled against the current engine/build/UnityEngine.dll; original Assembly-CSharp.dll unchanged; fresh private save copy.",
+      "command_shape": "KNL_ENEMY_LONG_PROBE=1 KNL_ENEMY_SHOTS=<private-dir> mono <private-build>/knl.dll --data <owned-pack> --boot --frames 3700 --save <fresh-private-save>",
+      "log": "/home/devarshi/Recompilation/work/knl-rc5/enemy-invisible/death-reuse-fixed.log",
+      "frames": 3700,
+      "runtime_exceptions": 0,
+      "target": "qa-invisible-18, a naturally killed and deactivated actor; reacquired with original Pool.SpawnGO after holding 31 other spawned pool candidates, then subjected to 20 original Pool.Despawn/SpawnGO cycles.",
+      "tough_troll": "Original MakeToughTroll invoked immediately after each reactivation; no manual alpha, enabled, state, or sprite changes.",
+      "activation_before_first_animator_step": "body alpha=1, SpriteRenderer enabled, hp=5, animator runtime null after lifecycle reset, but the selected sprite remains troll_die_8 at 32x5 (43 opaque pixels).",
+      "after_first_animator_step": "AnimatorRuntime recreated; state hash -1518848078 (Stand), normalized time 0.0333; sprite troll_recover_3 at 16x23 (181 opaque pixels), body alpha=1 and enabled; original Troll mask update created an enabled troll_masks_0 at 10x15 (46 opaque pixels).",
+      "cycles": 20,
+      "unique_reused_gameobjects": 1,
+      "reset_behavior": "Each SpawnGO activation cleared the retained AnimatorRuntime before first step; the first step recreated it and selected the expected normal state. This matches the original Unity comparison.",
+      "log_prefix": "LONGREUSE"
+    },
+    {
+      "name": "original Unity 2017.1.2p1 targeted death fade and 20 pool reuses",
+      "runtime": "Owned original Assembly-CSharp.dll copied into an isolated private game and instrumented in that copy only; original Unity 2017.1.2p1 under the existing private Wine 6.0.3 prefix and Xvfb. Original source DLL hash before instrumentation: 89e7bdc9b18ccb4a6d37e93c09245c58d67506d92d1fdc26206ef096c73150e3.",
+      "log": "/home/devarshi/Recompilation/work/knl-rc5/enemy-invisible/original-reuse/prefix/drive_c/users/devarshi/AppData/LocalLow/noio/Kingdom/output_log.txt",
+      "death_fade": "One naturally driven controlled death advanced from troll_walk_0 to troll_die_8; by death wait frame 90 body alpha was 0 while renderer remained enabled. At frame 121 the object was inactive and alpha had reset to 1.",
+      "reuse": "Same original GameObject was reused 20 times. Immediate reuse cycle 0 was active, alive, alpha=1, enabled, sprite troll_die_8, animator Stand hash -1518848078 at normalized time 0. Subsequent reuse cycles selected troll_recover_3 while remaining in Stand.",
+      "limits": "This is a private instrumented original-game copy, not the user-facing intermittent scene. It validates Unity 2017 Animator reset behavior for this controlled pool path, not the reported visibility symptom."
+    }
+  ],
+  "owned_controller_and_clip_findings": {
+    "asset": "extracted/objects/sharedassets0.assets.json: objects/515 (AnimatorController troll)",
+    "states": [
+      "Stand",
+      "Die",
+      "Holding Walk",
+      "Charge",
+      "Walk",
+      "Recover"
+    ],
+    "clips": [
+      "troll_stand",
+      "troll_die",
+      "troll_walk_hold",
+      "troll_charge",
+      "troll_walk",
+      "troll_recover"
+    ],
+    "bindings": "Across the six clips, controller bindings are Transform local position and SpriteRenderer sprite PPtr curves. No clip binds SpriteRenderer color alpha or SpriteRenderer enabled. The die clip has a sprite curve, not a body-hide binding.",
+    "mask_binding": "Troll.mask is a separately spawned SpriteRenderer on layer 17; the body SpriteRenderer is on layer 16. Sampled body and mask sorting orders are both 0. The camera culling mask included both layers."
+  },
+  "owned_original_cil_findings": {
+    "troll": "/home/devarshi/Recompilation/work/knl-gameplay-issues/enemy-cil/Troll.cil.txt",
+    "damageable": "/home/devarshi/Recompilation/work/knl-gameplay-issues/enemy-cil/Damageable.cil.txt",
+    "sprite_fx": "/home/devarshi/Recompilation/work/knl-rc5/body-weather-cil/SpriteFX.cil.txt",
+    "death": "Damageable.ReceiveDamage sets the Die trigger and starts FadeAndDestroy when destroyOnDeath is true. Troll.HandleOnDeath clears Holding. On the hit that reduces a masked Troll to its last hit point, Troll detaches and despawns the separate mask. The runtime samples show the dead body's alpha fading while the body renderer remains enabled; inactive samples return to alpha 1.",
+    "disable": "SpriteFX.OnDisable clears its fade routine and writes its captured _originalAlpha back through SpriteFX.alpha. The runtime observed this restoration after deactivation.",
+    "material_reset": "ResetSharedMaterial exists in SpriteFX CIL; no call site appeared in the inspected enemy CIL set."
+  },
+  "conclusion": "The death fade can make a Troll body transparent by design and removes a masked Troll\u2019s separate mask on the last hit. A distinct replacement-only pooled reuse defect was also proven: without lifecycle Animator reset, the naturally faded Troll reactivated with alpha restored to 1 but remained in the terminal Die state and troll_die_8 (32x5, 43 opaque pixels), which can appear almost invisible. Original Unity 2017 resets the controller to Stand on reactivation; after the narrow replacement lifecycle reset, the first Animator step likewise restored troll_recover_3 and the tough Troll mask. This resolves that specific implementation mismatch. The user-reported live-body disappearance with a visible mask in ordinary play was not reproduced; this evidence does not establish it as the cause and leaves the symptom unresolved.",
+  "next_evidence_needed": "Capture the reported actor in ordinary play or an original Unity scene with body and mask isolated while recording isDead, hitPoints, body and mask enabled/color/sprite/bounds, camera culling, animator state, and pool activation history. The controlled death/reuse trial establishes one matching replacement defect and its original-Unity parity fix, but does not establish that it caused the reported live, masked disappearance.",
+  "original_crowd_control": {
+    "runtime": "Owned original Unity 2017.1.2p1 with graphics enabled, copied player and copied save/prefix",
+    "actors": 24,
+    "night_hour": 22,
+    "camera_sort": "Camera and GraphicsSettings default orthographic sorting; Z axis",
+    "contributions": [
+      {
+        "enemy": "qa-original-greed-0",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 0,
+        "solo_pixels": 292
+      },
+      {
+        "enemy": "qa-original-greed-1",
+        "bounds": [
+          95,
+          117,
+          146,
+          168
+        ],
+        "crowd_pixels": 10,
+        "solo_pixels": 357
+      },
+      {
+        "enemy": "qa-original-greed-2",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 2,
+        "solo_pixels": 302
+      },
+      {
+        "enemy": "qa-original-greed-3",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 0,
+        "solo_pixels": 272
+      },
+      {
+        "enemy": "qa-original-greed-4",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 12,
+        "solo_pixels": 305
+      },
+      {
+        "enemy": "qa-original-greed-5",
+        "bounds": [
+          98,
+          117,
+          148,
+          168
+        ],
+        "crowd_pixels": 2,
+        "solo_pixels": 363
+      },
+      {
+        "enemy": "qa-original-greed-6",
+        "bounds": [
+          100,
+          115,
+          150,
+          166
+        ],
+        "crowd_pixels": 264,
+        "solo_pixels": 418
+      },
+      {
+        "enemy": "qa-original-greed-7",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 0,
+        "solo_pixels": 272
+      },
+      {
+        "enemy": "qa-original-greed-8",
+        "bounds": [
+          97,
+          117,
+          148,
+          168
+        ],
+        "crowd_pixels": 4,
+        "solo_pixels": 429
+      },
+      {
+        "enemy": "qa-original-greed-9",
+        "bounds": [
+          36,
+          117,
+          87,
+          168
+        ],
+        "crowd_pixels": 58,
+        "solo_pixels": 65
+      },
+      {
+        "enemy": "qa-original-greed-10",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 4,
+        "solo_pixels": 292
+      },
+      {
+        "enemy": "qa-original-greed-11",
+        "bounds": [
+          93,
+          117,
+          144,
+          168
+        ],
+        "crowd_pixels": 9,
+        "solo_pixels": 365
+      },
+      {
+        "enemy": "qa-original-greed-12",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 107,
+        "solo_pixels": 284
+      },
+      {
+        "enemy": "qa-original-greed-13",
+        "bounds": [
+          19,
+          117,
+          70,
+          168
+        ],
+        "crowd_pixels": 65,
+        "solo_pixels": 65
+      },
+      {
+        "enemy": "qa-original-greed-14",
+        "bounds": [
+          97,
+          117,
+          147,
+          168
+        ],
+        "crowd_pixels": 131,
+        "solo_pixels": 413
+      },
+      {
+        "enemy": "qa-original-greed-15",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 1,
+        "solo_pixels": 262
+      },
+      {
+        "enemy": "qa-original-greed-16",
+        "bounds": [
+          92,
+          117,
+          143,
+          168
+        ],
+        "crowd_pixels": 7,
+        "solo_pixels": 400
+      },
+      {
+        "enemy": "qa-original-greed-17",
+        "bounds": [
+          90,
+          118,
+          141,
+          168
+        ],
+        "crowd_pixels": 102,
+        "solo_pixels": 375
+      },
+      {
+        "enemy": "qa-original-greed-18",
+        "bounds": [
+          105,
+          117,
+          156,
+          168
+        ],
+        "crowd_pixels": 48,
+        "solo_pixels": 351
+      },
+      {
+        "enemy": "qa-original-greed-19",
+        "bounds": [
+          90,
+          117,
+          141,
+          168
+        ],
+        "crowd_pixels": 1,
+        "solo_pixels": 377
+      },
+      {
+        "enemy": "qa-original-greed-20",
+        "bounds": [
+          92,
+          117,
+          142,
+          168
+        ],
+        "crowd_pixels": 85,
+        "solo_pixels": 412
+      },
+      {
+        "enemy": "qa-original-greed-21",
+        "bounds": [
+          113,
+          117,
+          164,
+          168
+        ],
+        "crowd_pixels": 0,
+        "solo_pixels": 272
+      },
+      {
+        "enemy": "qa-original-greed-22",
+        "bounds": [
+          79,
+          115,
+          130,
+          166
+        ],
+        "crowd_pixels": 351,
+        "solo_pixels": 419
+      },
+      {
+        "enemy": "qa-original-greed-23",
+        "bounds": [
+          111,
+          117,
+          161,
+          168
+        ],
+        "crowd_pixels": 15,
+        "solo_pixels": 300
+      }
+    ],
+    "scope": "Several live opaque actors contribute zero crowd pixels, yet draw when isolated in the same scene. This demonstrates ordinary occlusion and does not explain or refute every invisible-body report."
+  },
+  "miyoo_pool_repair_validation": {
+    "log": "/home/devarshi/Recompilation/work/knl-rc5/rc5-enemy-pool-proof.log",
+    "frames": 1600,
+    "runtime_exceptions": 0,
+    "source": "Private instrumented host, copied save, actual Miyoo; original ReceiveDamage invoked once at frame800, original fade/despawn awaited, then exact same actor reacquired from original pool at frame1200",
+    "same_actor_acquired": true,
+    "reuse_cycles": 20,
+    "all_post_step_bodies": "troll_recover_3, 16x23, alpha1, renderer enabled, isDead=false, hp5",
+    "all_post_step_masks": "enabled original Troll mask sprites after original MakeToughTroll",
+    "all_spawn_runtime_fields_null": true,
+    "benchmark_limit": "Fixed-step diagnostic with injected enemies, detailed logs and captures. FPS from this probe is not an ordinary-gameplay performance claim."
+  }
+}

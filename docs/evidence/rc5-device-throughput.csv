@@ -1,0 +1,21 @@
+run,scene,variant,frame_window_end,fps,clock_mhz_max,profiler,audio,time_clock,max_dt,note
+rc4-island2-normaldt,copied island 2,rc4,300,10.93,1200,0,muted,real-time,0.05,loading included
+rc4-island2-normaldt,copied island 2,rc4,600,22.16,1200,0,muted,real-time,0.05,300-frame window
+rc4-island2-normaldt,copied island 2,rc4,900,22.52,1200,0,muted,real-time,0.05,300-frame window
+rc4-island2-normaldt,copied island 2,rc4,1200,25.59,1200,0,muted,real-time,0.05,300-frame window
+rc5-island2-normaldt,copied island 2,rc5 before animation repair,300,10.99,1200,0,muted,real-time,0.05,loading included
+rc5-island2-normaldt,copied island 2,rc5 before animation repair,600,26.6,1200,0,muted,real-time,0.05,300-frame window
+rc5-island2-normaldt,copied island 2,rc5 before animation repair,900,27.24,1200,0,muted,real-time,0.05,300-frame window
+rc5-island2-normaldt,copied island 2,rc5 before animation repair,1200,29.13,1200,0,muted,real-time,0.05,300-frame window
+rc4-start-normaldt,fresh start,rc4,300,10.92,1200,0,muted,real-time,0.05,loading included
+rc4-start-normaldt,fresh start,rc4,600,36.17,1200,0,muted,real-time,0.05,300-frame window
+rc4-start-normaldt,fresh start,rc4,900,38.26,1200,0,muted,real-time,0.05,300-frame window
+rc4-start-normaldt,fresh start,rc4,1200,36.89,1200,0,muted,real-time,0.05,300-frame window
+rc5-start-normaldt,fresh start,rc5 before animation repair,300,10.37,1200,0,muted,real-time,0.05,loading included
+rc5-start-normaldt,fresh start,rc5 before animation repair,600,36.71,1200,0,muted,real-time,0.05,300-frame window
+rc5-start-normaldt,fresh start,rc5 before animation repair,900,47.61,1200,0,muted,real-time,0.05,300-frame window
+rc5-start-normaldt,fresh start,rc5 before animation repair,1200,44.23,1200,0,muted,real-time,0.05,300-frame window
+rc5-final-island2,copied island 2,rc5 final with animation repair,300,10.54,1200,0,muted,real-time,0.05,loading included
+rc5-final-island2,copied island 2,rc5 final with animation repair,600,25.2,1200,0,muted,real-time,0.05,300-frame window
+rc5-final-island2,copied island 2,rc5 final with animation repair,900,25.77,1200,0,muted,real-time,0.05,300-frame window
+rc5-final-island2,copied island 2,rc5 final with animation repair,1200,29.06,1200,0,muted,real-time,0.05,300-frame window

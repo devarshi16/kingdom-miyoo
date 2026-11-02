@@ -1,0 +1,6742 @@
+{
+  "schema_version": 1,
+  "runtime": "clean-room port private host",
+  "save_sha256": "03f70b622d9eb9df1b8ff79ae8cee6b02c3c78daa81a69e092d73713e9b4fd63",
+  "sample_interval_frames": 30,
+  "sampled_through_frame": 4200,
+  "events": [
+    "pay frame=600 workshop=Left side=Left",
+    "pay frame=600 workshop=Right side=Right",
+    "complete-construction frame=605 catapult=Catapult(Clone) side=-1",
+    "complete-construction frame=605 catapult=Catapult(Clone) side=1"
+  ],
+  "observations": [
+    {
+      "frame": 600,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": 0,
+      "state": 0,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -12.7,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": 0,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": -6,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -8.5
+    },
+    {
+      "frame": 600,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 0,
+      "state": 0,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -10.3,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": 0,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 630,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -12.7132473,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": 9.477218,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": -6,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -8.5
+    },
+    {
+      "frame": 630,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -10.2867384,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": -9.477205,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 660,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -12.7332916,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": 9.47722,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": -6,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -8.5
+    },
+    {
+      "frame": 660,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -10.2666607,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": -9.477208,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 690,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -12.753334,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": 9.47722,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 690,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -10.24657,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": -9.477208,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 720,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -12.7733793,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": 9.47722,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 720,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -10.22649,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": -9.477208,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 750,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -12.7934265,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": 9.47722,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 750,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -10.2064085,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": -9.477208,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 780,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 0,
+      "workerX": [],
+      "x": -12.813467,
+      "vx": 0,
+      "vy": 0,
+      "angularVelocity": 9.47722,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 780,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -10.1820068,
+        -10.2132568
+      ],
+      "x": -10.0257568,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 810,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -12.8190651,
+        -12.8190651
+      ],
+      "x": -12.9128151,
+      "vx": -0.3,
+      "vy": 0,
+      "angularVelocity": 9.408398,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 810,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -9.910863,
+        -9.942113
+      ],
+      "x": -9.754613,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 840,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -13.0899677,
+        -13.0899677
+      ],
+      "x": -13.1837177,
+      "vx": -0.3,
+      "vy": 0,
+      "angularVelocity": 9.417172,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.922192e-06,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.922192e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 840,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -9.639733,
+        -9.670983
+      ],
+      "x": -9.483483,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 870,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -13.361083,
+        -13.361083
+      ],
+      "x": -13.454833,
+      "vx": -0.3,
+      "vy": 0,
+      "angularVelocity": 9.417172,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.83025e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 870,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -9.368594,
+        -9.399844
+      ],
+      "x": -9.212344,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 900,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -13.6322,
+        -13.6322
+      ],
+      "x": -13.72595,
+      "vx": -0.3,
+      "vy": 0,
+      "angularVelocity": 9.417172,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 900,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -9.097452,
+        -9.128702
+      ],
+      "x": -8.941202,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 930,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -13.9033184,
+        -13.9033184
+      ],
+      "x": -13.9970684,
+      "vx": -0.3,
+      "vy": 0,
+      "angularVelocity": 9.41717148,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.83025e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 930,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -8.826313,
+        -8.857563
+      ],
+      "x": -8.670063,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        9.83025e-07
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 960,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -14.17444,
+        -14.17444
+      ],
+      "x": -14.26819,
+      "vx": -0.3,
+      "vy": 0,
+      "angularVelocity": 9.417172,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 960,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -8.555168,
+        -8.586418
+      ],
+      "x": -8.398918,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        0
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 990,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        -14.418726,
+        -14.418726
+      ],
+      "x": -14.512476,
+      "vx": -0.0139051676,
+      "vy": -0.202476829,
+      "angularVelocity": 13.7730951,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        0
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 990,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -8.284058,
+        -8.315308
+      ],
+      "x": -8.127808,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1020,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        -14.4436178,
+        -14.4436178
+      ],
+      "x": -14.5373678,
+      "vx": 7.874321e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1020,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -8.012955,
+        -8.044205
+      ],
+      "x": -7.856705,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1050,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        -14.466773,
+        -14.466773
+      ],
+      "x": -14.560523,
+      "vx": 0.000220642876,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.83025e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1050,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -7.74186563,
+        -7.77311563
+      ],
+      "x": -7.58561563,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1080,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        -14.4898071,
+        -14.4898071
+      ],
+      "x": -14.5835571,
+      "vx": 0.000306909962,
+      "vy": -0.200901374,
+      "angularVelocity": 12.452158,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1080,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -7.47079229,
+        -7.50204229
+      ],
+      "x": -7.31454229,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1110,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        -14.5129089,
+        -14.5129089
+      ],
+      "x": -14.6066589,
+      "vx": 0.000367340632,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058029,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1110,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -7.19972,
+        -7.23097
+      ],
+      "x": -7.04347,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        4.915125e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1140,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -14.1298113
+      ],
+      "x": -14.6298113,
+      "vx": 8.007848e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318537,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1140,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -6.92864561,
+        -6.95989561
+      ],
+      "x": -6.77239561,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1170,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.1529627,
+        -14.1529627
+      ],
+      "x": -14.6529627,
+      "vx": 0.000220642352,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1170,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -6.65757036,
+        -6.68882036
+      ],
+      "x": -6.50132036,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        4.915125e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1200,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.176,
+        -14.176
+      ],
+      "x": -14.676,
+      "vx": 0.000306901871,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521589,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1200,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -6.386493,
+        -6.417743
+      ],
+      "x": -6.230243,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1230,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.19909,
+        -14.19909
+      ],
+      "x": -14.69909,
+      "vx": 0.000367345376,
+      "vy": -0.202295318,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1230,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -6.115415,
+        -6.146665
+      ],
+      "x": -5.959165,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1260,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.2222509,
+        -14.2222509
+      ],
+      "x": -14.7222509,
+      "vx": 8.008096e-05,
+      "vy": -0.218341917,
+      "angularVelocity": 6.40318966,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1260,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -5.84433126,
+        -5.87558126
+      ],
+      "x": -5.68808126,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1290,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.2453985,
+        -14.2453985
+      ],
+      "x": -14.7453985,
+      "vx": 0.000220645874,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1290,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -5.573254,
+        -5.604504
+      ],
+      "x": -5.417004,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1320,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.2684355,
+        -14.2684355
+      ],
+      "x": -14.7684355,
+      "vx": 0.000306904083,
+      "vy": -0.200901374,
+      "angularVelocity": 12.452158,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.91107029e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1320,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -5.302171,
+        -5.333421
+      ],
+      "x": -5.145921,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        4.915125e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1350,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.2915211,
+        -14.2915211
+      ],
+      "x": -14.7915211,
+      "vx": 0.0003673399,
+      "vy": -0.202295318,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1350,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -5.03108358,
+        -5.06233358
+      ],
+      "x": -4.87483358,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        4.915125e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1380,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.3146887,
+        -14.3146887
+      ],
+      "x": -14.8146887,
+      "vx": 8.00802154e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1380,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -4.759996,
+        -4.791246
+      ],
+      "x": -4.603746,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        0
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1410,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.3378515,
+        -14.3378515
+      ],
+      "x": -14.8378515,
+      "vx": 0.00022064324,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1410,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -4.488905,
+        -4.520155
+      ],
+      "x": -4.332655,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1440,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -14.3608961
+      ],
+      "x": -14.8608961,
+      "vx": 0.000306905451,
+      "vy": -0.200901374,
+      "angularVelocity": 12.452158,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1440,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -4.21780872,
+        -4.24905872
+      ],
+      "x": -4.06155872,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.66560079e-07,
+        4.915125e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1470,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -14.3839874
+      ],
+      "x": -14.8839874,
+      "vx": 0.0003673451,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058058,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1470,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -3.94671679,
+        -3.97796679
+      ],
+      "x": -3.79046679,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1500,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -14.4071436
+      ],
+      "x": -14.9071436,
+      "vx": 8.00780545e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1500,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -3.67563,
+        -3.70688
+      ],
+      "x": -3.51938,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        2.66560079e-07
+      ],
+      "maxHingeAnchorError": 2.66560079e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1530,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.4302931,
+        -15.7427931
+      ],
+      "x": -14.9302931,
+      "vx": 0.000220641625,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.83025e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1530,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -3.4045465,
+        -3.4357965
+      ],
+      "x": -3.2482965,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        2.66560079e-07
+      ],
+      "maxHingeAnchorError": 2.66560079e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1560,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.4533339,
+        -15.7658339
+      ],
+      "x": -14.9533339,
+      "vx": 0.000306902075,
+      "vy": -0.200901374,
+      "angularVelocity": 12.452158,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1560,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -3.13346386,
+        -3.16471386
+      ],
+      "x": -2.97721386,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1590,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.4764175,
+        -15.7889175
+      ],
+      "x": -14.9764175,
+      "vx": 0.000367340224,
+      "vy": -0.202295318,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1590,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -2.86237383,
+        -2.89362383
+      ],
+      "x": -2.70612383,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1620,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.4995737,
+        -15.8120737
+      ],
+      "x": -14.9995737,
+      "vx": 8.008114e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1620,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -2.59128785,
+        -2.62253785
+      ],
+      "x": -2.43503785,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1650,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.5227385,
+        -15.8352385
+      ],
+      "x": -15.0227385,
+      "vx": 0.00022064762,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1650,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -2.32019472,
+        -2.35144472
+      ],
+      "x": -2.16394472,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1680,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.5457773,
+        -15.8582773
+      ],
+      "x": -15.0457773,
+      "vx": 0.000306907576,
+      "vy": -0.200901374,
+      "angularVelocity": 12.452158,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1680,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -2.04910088,
+        -2.08035088
+      ],
+      "x": -1.892851,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1710,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.5688686,
+        -15.8813686
+      ],
+      "x": -15.0688686,
+      "vx": 0.000367341156,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058058,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1710,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -1.77800953,
+        -1.80925953
+      ],
+      "x": -1.62175953,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1740,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.5920153,
+        -15.9045153
+      ],
+      "x": -15.0920153,
+      "vx": 8.00813141e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1740,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -1.50691819,
+        -1.53816819
+      ],
+      "x": -1.35066819,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        5.96046448e-08,
+        0
+      ],
+      "maxHingeAnchorError": 5.96046448e-08,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1770,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.17766,
+        -15.92766
+      ],
+      "x": -15.11516,
+      "vx": 0.000220640359,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1770,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -1.2358259,
+        -1.2670759
+      ],
+      "x": -1.0795759,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.33280039e-07,
+        0
+      ],
+      "maxHingeAnchorError": 1.33280039e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1800,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.2007055,
+        -15.9507055
+      ],
+      "x": -15.1382055,
+      "vx": 0.00030690257,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521532,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1800,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -0.964733839,
+        -0.995983839
+      ],
+      "x": -0.808483839,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.98023224e-08,
+        0
+      ],
+      "maxHingeAnchorError": 2.98023224e-08,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1830,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.2237854,
+        -15.9737854
+      ],
+      "x": -15.1612854,
+      "vx": 0.00036734,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058058,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1830,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -0.6936433,
+        -0.7248933
+      ],
+      "x": -0.5373933,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        5.96046448e-08
+      ],
+      "maxHingeAnchorError": 5.96046448e-08,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1860,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.2469339,
+        -15.9969339
+      ],
+      "x": -15.1844339,
+      "vx": 8.008041e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1860,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -0.4225539,
+        -0.4538039
+      ],
+      "x": -0.2663039,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": -8.5,
+      "thresholdMinusWallX": 21.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        5.96046448e-08,
+        1.33280039e-07
+      ],
+      "maxHingeAnchorError": 1.33280039e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1890,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.2700853,
+        -16.0200844
+      ],
+      "x": -15.2075853,
+      "vx": 0.000220648115,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1890,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        -0.151464611,
+        -0.182714611
+      ],
+      "x": 0.00478538871,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.98023224e-08,
+        0
+      ],
+      "maxHingeAnchorError": 2.98023224e-08,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1920,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -16.043129
+      ],
+      "x": -15.230628,
+      "vx": 0.0003069113,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521589,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1920,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        0.11962387,
+        0.08837387
+      ],
+      "x": 0.27587387,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1950,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.316227,
+        -16.066227
+      ],
+      "x": -15.253727,
+      "vx": 0.000367337227,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058058,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1950,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        0.390712142,
+        0.359462142
+      ],
+      "x": 0.546962142,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        1.2287812e-07
+      ],
+      "maxHingeAnchorError": 1.2287812e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 1980,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.3393793,
+        -15.51321
+      ],
+      "x": -15.2768793,
+      "vx": 8.008537e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 1980,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        0.661793947,
+        0.630543947
+      ],
+      "x": 0.818043947,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2010,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.3625212,
+        -15.5500212
+      ],
+      "x": -15.3000212,
+      "vx": 0.000220645,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.83025e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2010,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        0.9328743,
+        0.9016243
+      ],
+      "x": 1.08912432,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2040,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.3855543,
+        -15.5730543
+      ],
+      "x": -15.3230543,
+      "vx": 0.0003069092,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521589,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2040,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        1.20395577,
+        1.17270577
+      ],
+      "x": 1.36020577,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2070,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.4086418,
+        -15.5961418
+      ],
+      "x": -15.3461418,
+      "vx": 0.000367345026,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2070,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        1.47503543,
+        1.44378543
+      ],
+      "x": 1.63128543,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        2.66560079e-07
+      ],
+      "maxHingeAnchorError": 2.66560079e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2100,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.431798,
+        -15.619298
+      ],
+      "x": -15.369298,
+      "vx": 8.008257e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        0
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2100,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        1.74611,
+        1.71486
+      ],
+      "x": 1.90236,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2130,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.4549484,
+        -15.6424484
+      ],
+      "x": -15.3924484,
+      "vx": 0.0002206413,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.83025e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2130,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        2.01718235,
+        1.98593235
+      ],
+      "x": 2.17343235,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2160,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.4779863,
+        -15.6654863
+      ],
+      "x": -15.4154863,
+      "vx": 0.000306904723,
+      "vy": -0.200901374,
+      "angularVelocity": 12.452158,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2160,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        2.288254,
+        2.257004
+      ],
+      "x": 2.444504,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.66560079e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.66560079e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2190,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.5010757,
+        -15.6885757
+      ],
+      "x": -15.4385757,
+      "vx": 0.000367341185,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2190,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        2.55932546,
+        2.52807546
+      ],
+      "x": 2.71557546,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2220,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.5242319,
+        -15.7117319
+      ],
+      "x": -15.4617319,
+      "vx": 8.00821144e-05,
+      "vy": -0.218341872,
+      "angularVelocity": 6.40318871,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2220,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        2.830399,
+        2.799149
+      ],
+      "x": 2.986649,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        0
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2250,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.9224014,
+        -15.7349014
+      ],
+      "x": -15.4849014,
+      "vx": 0.000220641712,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374649,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2250,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        3.10147357,
+        3.07022357
+      ],
+      "x": 3.25772357,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417157,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2280,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.9454374,
+        -15.7579374
+      ],
+      "x": -15.5079374,
+      "vx": 0.0003069037,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521532,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2280,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        3.37254763,
+        3.34129763
+      ],
+      "x": 3.52879763,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2310,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.968523,
+        -15.781023
+      ],
+      "x": -15.531023,
+      "vx": 0.000367341418,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2310,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        3.64363146,
+        3.61238146
+      ],
+      "x": 3.79988146,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2340,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -14.9916849,
+        -15.8041849
+      ],
+      "x": -15.5541849,
+      "vx": 8.00833659e-05,
+      "vy": -0.2183419,
+      "angularVelocity": 6.40318966,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2340,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        3.91470957,
+        3.88345957
+      ],
+      "x": 4.07095957,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        0
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2370,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.01484,
+        -15.82734
+      ],
+      "x": -15.57734,
+      "vx": 0.000220643866,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2370,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        4.18576956,
+        4.15451956
+      ],
+      "x": 4.34201956,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.915125e-07,
+        0
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2400,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -15.8504171
+      ],
+      "x": -15.6004171,
+      "vx": 0.000306909351,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521589,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2400,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        4.45683146,
+        4.42558146
+      ],
+      "x": 4.61308146,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2430,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.0610466,
+        -15.8735466
+      ],
+      "x": -15.6235466,
+      "vx": 0.000367342116,
+      "vy": -0.202295363,
+      "angularVelocity": 13.2058077,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2430,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        4.72789526,
+        4.69664526
+      ],
+      "x": 4.88414526,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2460,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.084218,
+        -15.896718
+      ],
+      "x": -15.646718,
+      "vx": 8.008416e-05,
+      "vy": -0.2183419,
+      "angularVelocity": 6.40318966,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2460,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        4.998958,
+        4.967708
+      ],
+      "x": 5.155208,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        4.915125e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2490,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.10741,
+        -15.91991
+      ],
+      "x": -15.66991,
+      "vx": 0.0002206452,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2490,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        5.270024,
+        5.238774
+      ],
+      "x": 5.426274,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        0
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2520,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.1304789,
+        -15.9429789
+      ],
+      "x": -15.6929789,
+      "vx": 0.0003069135,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521589,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2520,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        5.541085,
+        5.509835
+      ],
+      "x": 5.697335,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        0
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2550,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.1536064,
+        -15.9661064
+      ],
+      "x": -15.7161064,
+      "vx": 0.000367346074,
+      "vy": -0.202295363,
+      "angularVelocity": 13.2058077,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2550,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        5.81214952,
+        5.78089952
+      ],
+      "x": 5.96839952,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2580,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.1767836,
+        -15.9892836
+      ],
+      "x": -15.7392836,
+      "vx": 8.008676e-05,
+      "vy": -0.2183419,
+      "angularVelocity": 6.40318966,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2580,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        6.08322,
+        6.05197
+      ],
+      "x": 6.23947,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2610,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -15.1999617
+      ],
+      "x": -15.7624617,
+      "vx": 0.000220645641,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2610,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        6.35428667,
+        6.32303667
+      ],
+      "x": 6.51053667,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        5.33120158e-07
+      ],
+      "maxHingeAnchorError": 5.33120158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2640,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.223031,
+        -15.160531
+      ],
+      "x": -15.785531,
+      "vx": 0.0003069023,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521532,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2640,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        6.625357,
+        6.594107
+      ],
+      "x": 6.781607,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.915125e-07,
+        4.915125e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2670,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.2461357,
+        -15.1836357
+      ],
+      "x": -15.8086357,
+      "vx": 0.000367345841,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2670,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        6.89642859,
+        6.86517859
+      ],
+      "x": 7.05267859,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.76837158e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2700,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.2693014,
+        -15.2068014
+      ],
+      "x": -15.8318014,
+      "vx": 8.00845e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2700,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        7.167499,
+        7.136249
+      ],
+      "x": 7.323749,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        4.915125e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2730,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.2924833,
+        -15.2299833
+      ],
+      "x": -15.8549833,
+      "vx": 0.00022064714,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2730,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        7.438578,
+        7.407328
+      ],
+      "x": 7.594828,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        4.915125e-07
+      ],
+      "maxHingeAnchorError": 4.915125e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2760,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.3155451,
+        -15.2530451
+      ],
+      "x": -15.8780451,
+      "vx": 0.0003069204,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521589,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2760,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        7.70968962,
+        7.67843962
+      ],
+      "x": 7.86593962,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2790,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.3386726,
+        -15.2761726
+      ],
+      "x": -15.9011726,
+      "vx": 0.0003673477,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        2.38418579e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2790,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        7.98077965,
+        7.94952965
+      ],
+      "x": 8.13703,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        4.76837158e-07
+      ],
+      "maxHingeAnchorError": 4.76837158e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2820,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.3618517,
+        -15.2993517
+      ],
+      "x": -15.9243517,
+      "vx": 8.008612e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2820,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        8.25186,
+        8.22061
+      ],
+      "x": 8.40811,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2850,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.3850489,
+        -15.3225489
+      ],
+      "x": -15.9475489,
+      "vx": 0.000220647926,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        0
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2850,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        8.522941,
+        8.491691
+      ],
+      "x": 8.679191,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2880,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.9067736,
+        -15.345624
+      ],
+      "x": -15.970624,
+      "vx": 0.0003069077,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2880,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        8.794022,
+        8.762772
+      ],
+      "x": 8.950272,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2910,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.9312248,
+        -15.3687248
+      ],
+      "x": -15.9937248,
+      "vx": 0.0003673477,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2910,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        9.065103,
+        9.033853
+      ],
+      "x": 9.221353,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2940,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.954401,
+        -15.391901
+      ],
+      "x": -16.016901,
+      "vx": 8.00872949e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2940,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        9.3361845,
+        9.3049345
+      ],
+      "x": 9.4924345,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 2970,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -15.9775276,
+        -15.4150276
+      ],
+      "x": -16.0400276,
+      "vx": 0.000220650822,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 2970,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        9.607271,
+        9.576021
+      ],
+      "x": 9.763521,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3000,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.0005455,
+        -15.4380455
+      ],
+      "x": -16.0630455,
+      "vx": 0.000306917325,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3000,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        9.87837,
+        9.84712
+      ],
+      "x": 10.03462,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3030,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.0236073,
+        -15.4611073
+      ],
+      "x": -16.0861073,
+      "vx": 0.0003673407,
+      "vy": -0.202295363,
+      "angularVelocity": 13.2058077,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3030,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        10.149456,
+        10.118206
+      ],
+      "x": 10.305706,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        9.83025e-07
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3060,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.0467072,
+        -15.4842072
+      ],
+      "x": -16.1092072,
+      "vx": 8.008224e-05,
+      "vy": -0.2183419,
+      "angularVelocity": 6.40318966,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3060,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        10.4205523,
+        10.3893023
+      ],
+      "x": 10.5768023,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3090,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.0698223,
+        -15.5073223
+      ],
+      "x": -16.1323223,
+      "vx": 0.000220645918,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        3.81469727e-06
+      ],
+      "maxHingeAnchorError": 3.81469727e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3090,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        10.6916409,
+        10.6603909
+      ],
+      "x": 10.8478909,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.83025e-07
+      ],
+      "maxHingeAnchorError": 9.83025e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3120,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.0928288,
+        -15.5303288
+      ],
+      "x": -16.1553288,
+      "vx": 0.000306911767,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3120,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        10.9627342,
+        10.9314842
+      ],
+      "x": 11.1189842,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3150,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.1158962,
+        -15.5533962
+      ],
+      "x": -16.1783962,
+      "vx": 0.000367349334,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3150,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        11.2338257,
+        11.2025757
+      ],
+      "x": 11.3900757,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3180,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.13902,
+        -15.5765209
+      ],
+      "x": -16.20152,
+      "vx": 8.008435e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3180,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        11.5049171,
+        11.4736671
+      ],
+      "x": 11.6611671,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3210,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.16214,
+        -15.59964
+      ],
+      "x": -16.22464,
+      "vx": 0.000220652379,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3210,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        11.7760181,
+        11.7447681
+      ],
+      "x": 11.9322681,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 8.5,
+      "thresholdMinusWallX": 4.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3240,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -16.1851521
+      ],
+      "x": -16.2476521,
+      "vx": 0.000306914619,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3240,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        12.0471125,
+        12.0158625
+      ],
+      "x": 12.2033625,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.41716,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        0,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3270,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.2082119,
+        -16.5832119
+      ],
+      "x": -16.2707119,
+      "vx": 0.000367346947,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3270,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        12.3182058,
+        12.2869558
+      ],
+      "x": 12.4744558,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417161,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3300,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.2313442,
+        -16.6063442
+      ],
+      "x": -16.2938442,
+      "vx": 8.00867056e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3300,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 1,
+      "workerCount": 2,
+      "workerX": [
+        12.5892868,
+        12.5580368
+      ],
+      "x": 12.7455368,
+      "vx": 0.3,
+      "vy": 0,
+      "angularVelocity": -9.417158,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": false,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3330,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.2544689,
+        -16.6294689
+      ],
+      "x": -16.3169689,
+      "vx": 0.000220649774,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3330,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        12.8477383,
+        12.8164883
+      ],
+      "x": 13.0039883,
+      "vx": 0.0257089343,
+      "vy": -0.179888085,
+      "angularVelocity": -14.2129622,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3360,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -16.652483
+      ],
+      "x": -16.339983,
+      "vx": 0.0003069175,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3360,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        12.8736525,
+        12.8424025
+      ],
+      "x": 13.0299025,
+      "vx": -0.000337657984,
+      "vy": -0.201668769,
+      "angularVelocity": -12.9030228,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3390,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.0818062,
+        -16.6755562
+      ],
+      "x": -16.3630562,
+      "vx": 0.000367343251,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3390,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        12.8967457,
+        12.8654957
+      ],
+      "x": 13.0529957,
+      "vx": -0.0003894929,
+      "vy": -0.202758908,
+      "angularVelocity": -13.4101582,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3420,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.1049175,
+        -16.6986675
+      ],
+      "x": -16.3861675,
+      "vx": 8.008672e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.922192e-06,
+        1.922192e-06
+      ],
+      "maxHingeAnchorError": 1.922192e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3420,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        12.9199057,
+        12.8886557
+      ],
+      "x": 13.0761557,
+      "vx": -0.00016301914,
+      "vy": -0.203921944,
+      "angularVelocity": -9.103999,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3450,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.12805,
+        -16.7218
+      ],
+      "x": -16.4093,
+      "vx": 0.0002206471,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        2.86350542e-06,
+        3.81469727e-06
+      ],
+      "maxHingeAnchorError": 3.81469727e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3450,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        12.9429226,
+        12.9116726
+      ],
+      "x": 13.0991726,
+      "vx": -0.000267427124,
+      "vy": -0.200202048,
+      "angularVelocity": -11.7742472,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3480,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.1510677,
+        -16.7448177
+      ],
+      "x": -16.4323177,
+      "vx": 0.000306920148,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3480,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 4,
+      "workerCount": 2,
+      "workerX": [
+        12.9659491,
+        12.9346991
+      ],
+      "x": 13.1221991,
+      "vx": -0.000340013939,
+      "vy": -0.201668769,
+      "angularVelocity": -12.9030228,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3510,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.1741257,
+        -16.7678757
+      ],
+      "x": -16.4553757,
+      "vx": 0.000367347646,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3510,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        12.987668
+      ],
+      "x": 13.1453037,
+      "vx": -0.0003894943,
+      "vy": -0.202758908,
+      "angularVelocity": -13.4101582,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3540,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.1972427,
+        -16.7909927
+      ],
+      "x": -16.4784927,
+      "vx": 8.008468e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3540,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.01221,
+        13.91846
+      ],
+      "x": 13.16846,
+      "vx": -0.000163019518,
+      "vy": -0.203921944,
+      "angularVelocity": -9.103999,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3570,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.2203712,
+        -16.8141212
+      ],
+      "x": -16.5016212,
+      "vx": 0.000220650312,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3570,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.0352192,
+        13.9414692
+      ],
+      "x": 13.1914692,
+      "vx": -0.000267429539,
+      "vy": -0.200202048,
+      "angularVelocity": -11.7742472,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3600,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.24339,
+        -16.83714
+      ],
+      "x": -16.52464,
+      "vx": 0.000306919741,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        0
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3600,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.0582495,
+        13.9644995
+      ],
+      "x": 13.2144995,
+      "vx": -0.000340017752,
+      "vy": -0.201668769,
+      "angularVelocity": -12.9030228,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3630,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.266468,
+        -16.860218
+      ],
+      "x": -16.547718,
+      "vx": 0.00036735076,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3630,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.081337,
+        13.987587
+      ],
+      "x": 13.237587,
+      "vx": -0.000389493158,
+      "vy": -0.202758908,
+      "angularVelocity": -13.4101582,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3660,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.2895947,
+        -16.8833447
+      ],
+      "x": -16.5708447,
+      "vx": 8.00870548e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3660,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.1045008,
+        14.0107508
+      ],
+      "x": 13.2607508,
+      "vx": -0.000163020726,
+      "vy": -0.203921944,
+      "angularVelocity": -9.103999,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3690,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.312727,
+        -16.906477
+      ],
+      "x": -16.593977,
+      "vx": 0.000220654591,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.91107029e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3690,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        13.1275253
+      ],
+      "x": 13.2837753,
+      "vx": -0.00026743015,
+      "vy": -0.200202048,
+      "angularVelocity": -11.7742472,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        0
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3720,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.3357487,
+        -16.9281979
+      ],
+      "x": -16.6169987,
+      "vx": 0.0003069118,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3720,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.1505518,
+        12.4299135
+      ],
+      "x": 13.3068018,
+      "vx": -0.000340025174,
+      "vy": -0.201668769,
+      "angularVelocity": -12.9030228,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3750,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.3587971,
+        -16.9525471
+      ],
+      "x": -16.6400471,
+      "vx": 0.0003673532,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        3.81655946e-06,
+        3.81469727e-06
+      ],
+      "maxHingeAnchorError": 3.81655946e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3750,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.1736526,
+        12.4549026
+      ],
+      "x": 13.3299026,
+      "vx": -0.000389493653,
+      "vy": -0.202758849,
+      "angularVelocity": -13.4101553,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3780,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.3819256,
+        -16.9756756
+      ],
+      "x": -16.6631756,
+      "vx": 8.0087244e-05,
+      "vy": -0.218341917,
+      "angularVelocity": 6.40318966,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3780,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.1968145,
+        12.4780645
+      ],
+      "x": 13.3530645,
+      "vx": -0.000163021134,
+      "vy": -0.203921944,
+      "angularVelocity": -9.103999,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3810,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.4050674,
+        -16.9988174
+      ],
+      "x": -16.6863174,
+      "vx": 0.000220653179,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.94058657e-06,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.94058657e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3810,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.219841,
+        12.501091
+      ],
+      "x": 13.376091,
+      "vx": -0.0002674305,
+      "vy": -0.200202048,
+      "angularVelocity": -11.7742472,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3840,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.4280872,
+        -17.0218372
+      ],
+      "x": -16.7093372,
+      "vx": 0.000306913455,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3840,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.2428579,
+        12.5241079
+      ],
+      "x": 13.3991079,
+      "vx": -0.000340024475,
+      "vy": -0.201668769,
+      "angularVelocity": -12.9030228,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3870,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.45115,
+        -17.0449
+      ],
+      "x": -16.7324,
+      "vx": 0.000367348053,
+      "vy": -0.202295348,
+      "angularVelocity": 13.2058048,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3870,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.2659607,
+        12.5472107
+      ],
+      "x": 13.4222107,
+      "vx": -0.000389502326,
+      "vy": -0.202758849,
+      "angularVelocity": -13.4101553,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3900,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.4742889,
+        -16.5992889
+      ],
+      "x": -16.7555389,
+      "vx": 8.008589e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3900,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.289115,
+        12.570365
+      ],
+      "x": 13.445365,
+      "vx": -0.000163019926,
+      "vy": -0.203921944,
+      "angularVelocity": -9.103999,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3930,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.4974289,
+        -16.6224289
+      ],
+      "x": -16.7786789,
+      "vx": 0.000220653848,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3930,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.3121424,
+        12.5933924
+      ],
+      "x": 13.4683924,
+      "vx": -0.000267436029,
+      "vy": -0.200202048,
+      "angularVelocity": -11.7742472,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3960,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -17.520462,
+        -16.645462
+      ],
+      "x": -16.801712,
+      "vx": 0.0003069241,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521589,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        2.38418579e-07
+      ],
+      "maxHingeAnchorError": 2.38418579e-07,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3960,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.3351717,
+        12.6164217
+      ],
+      "x": 13.4914217,
+      "vx": -0.000340021885,
+      "vy": -0.201668769,
+      "angularVelocity": -12.9030228,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 3990,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -16.6685467
+      ],
+      "x": -16.8247967,
+      "vx": 0.0003673568,
+      "vy": -0.202295378,
+      "angularVelocity": 13.2058067,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 3990,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.6707687,
+        12.6395187
+      ],
+      "x": 13.5145187,
+      "vx": -0.000389498018,
+      "vy": -0.202758849,
+      "angularVelocity": -13.4101553,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        1.1920929e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 4020,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.16045,
+        -16.6917
+      ],
+      "x": -16.84795,
+      "vx": 8.00895359e-05,
+      "vy": -0.218341917,
+      "angularVelocity": 6.40318966,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 4020,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.6939325,
+        12.6626825
+      ],
+      "x": 13.5376825,
+      "vx": -0.000163025557,
+      "vy": -0.203921944,
+      "angularVelocity": -9.103999,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.01852459e-06,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 1.01852459e-06,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 4050,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.1835861,
+        -16.7148361
+      ],
+      "x": -16.8710861,
+      "vx": 0.000220651113,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 4050,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.7169495,
+        12.6856995
+      ],
+      "x": 13.5606995,
+      "vx": -0.000267431518,
+      "vy": -0.200202048,
+      "angularVelocity": -11.7742472,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 4080,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.20661,
+        -16.73786
+      ],
+      "x": -16.89411,
+      "vx": 0.000306913658,
+      "vy": -0.200901374,
+      "angularVelocity": 12.45216,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 4080,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.739974,
+        12.708724
+      ],
+      "x": 13.583724,
+      "vx": -0.000340021215,
+      "vy": -0.201668769,
+      "angularVelocity": -12.9030228,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        0,
+        0
+      ],
+      "maxHingeAnchorError": 0,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 4110,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.22969,
+        -16.76094
+      ],
+      "x": -16.91719,
+      "vx": 0.000367351458,
+      "vy": -0.202295378,
+      "angularVelocity": 13.2058067,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.91107029e-06
+      ],
+      "maxHingeAnchorError": 1.91107029e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 4110,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.7630711,
+        12.7318211
+      ],
+      "x": 13.6068211,
+      "vx": -0.000389494875,
+      "vy": -0.202758849,
+      "angularVelocity": -13.4101553,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        0
+      ],
+      "maxHingeAnchorError": 1.1920929e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 4140,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.252821,
+        -16.784071
+      ],
+      "x": -16.940321,
+      "vx": 8.008783e-05,
+      "vy": -0.218341932,
+      "angularVelocity": 6.40319061,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 4140,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.7862329,
+        12.7549829
+      ],
+      "x": 13.6299829,
+      "vx": -0.000163025659,
+      "vy": -0.203921944,
+      "angularVelocity": -9.103999,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.61096e-07,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 4170,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 1,
+      "workerX": [
+        -16.8072052
+      ],
+      "x": -16.9634552,
+      "vx": 0.000220653048,
+      "vy": -0.200366721,
+      "angularVelocity": 10.7374668,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.922192e-06,
+        0
+      ],
+      "maxHingeAnchorError": 1.922192e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 4170,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.8092556,
+        12.7780056
+      ],
+      "x": 13.6530056,
+      "vx": -0.0002674298,
+      "vy": -0.200202048,
+      "angularVelocity": -11.7742472,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.1920929e-07,
+        9.61096e-07
+      ],
+      "maxHingeAnchorError": 9.61096e-07,
+      "wallNearestBorderX": 15.5
+    },
+    {
+      "frame": 4200,
+      "id": 41136,
+      "name": "Catapult(Clone)",
+      "side": -1,
+      "direction": -1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        -16.2989883,
+        -16.8302383
+      ],
+      "x": -16.9864883,
+      "vx": 0.0003069215,
+      "vy": -0.200901374,
+      "angularVelocity": 12.4521589,
+      "border": -17,
+      "thresholdX": -14.5,
+      "nearestWallX": -17,
+      "thresholdMinusWallX": 2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        1.90734863e-06,
+        1.90734863e-06
+      ],
+      "maxHingeAnchorError": 1.90734863e-06,
+      "wallNearestBorderX": -17
+    },
+    {
+      "frame": 4200,
+      "id": 41200,
+      "name": "Catapult(Clone)",
+      "side": 1,
+      "direction": 1,
+      "state": 2,
+      "workerCount": 2,
+      "workerX": [
+        13.83229,
+        12.80104
+      ],
+      "x": 13.67604,
+      "vx": -0.0003400291,
+      "vy": -0.201668769,
+      "angularVelocity": -12.9030228,
+      "border": 15.5,
+      "thresholdX": 13,
+      "nearestWallX": 15.5,
+      "thresholdMinusWallX": -2.5,
+      "isInPosition": true,
+      "hingeAnchorErrors": [
+        9.536743e-07,
+        9.536743e-07
+      ],
+      "maxHingeAnchorError": 9.536743e-07,
+      "wallNearestBorderX": 15.5
+    }
+  ],
+  "runtime_engine_sha256": "44b2ef9a2d41d646731b1bba72c85e4415a37f8c2498a51881ac15d8b6cd0d16",
+  "source_log": "/home/devarshi/Recompilation/work/knl-rc5/catapult-parity/current-port-longer.log",
+  "limits": "Copied-save replacement-runtime experiment only. Both target thresholds are 2.5 units inside the wall at Kingdom.border[side]. The nearest wall to a moving catapult can be an inner wall, not the target wall. No paired original Unity dynamic comparison was performed. Ready catapults continued drifting towards the wall despite tiny reported vx: approximate joint/contact solver remains a parity concern; original AI unchanged."
+}

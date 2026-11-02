@@ -1,0 +1,134 @@
+    // Temporary diagnostic hook. It only calls the same payable-workshop/build-completion
+    // methods used by the prior fixture, then observes natural movement. It never assigns a
+    // catapult transform, velocity, or state.
+    static readonly System.Reflection.BindingFlags CatProbeFlags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
+    static readonly StringBuilder CatProbeRows = new StringBuilder();
+    static readonly List<string> CatProbeEvents = new List<string>();
+    static bool CatProbeWrote;
+    static readonly int CatProbeLastFrame = int.Parse(Environment.GetEnvironmentVariable("KNL_CATAPULT_LAST_FRAME") ?? "4200");
+
+    static string CatProbeNum(float v) {
+        return float.IsNaN(v) || float.IsInfinity(v) ? "null" : v.ToString("R", System.Globalization.CultureInfo.InvariantCulture);
+    }
+    static object CatProbeKingdom() {
+        return World.SceneObjects.SelectMany(g => g.m_Components).FirstOrDefault(c => c != null && c.GetType().Name == "Kingdom");
+    }
+    static object CatProbeValue(object target, string name) {
+        if (target == null) return null;
+        var f = target.GetType().GetField(name, CatProbeFlags);
+        return f == null ? null : f.GetValue(target);
+    }
+    static int CatProbeSide(object catapult) {
+        object v = CatProbeValue(catapult, "side");
+        return v == null ? 0 : Convert.ToInt32(v, System.Globalization.CultureInfo.InvariantCulture);
+    }
+    static float CatProbeBorder(object kingdom, int side) {
+        object sided = CatProbeValue(kingdom, "border");
+        if (sided == null) return float.NaN;
+        var item = sided.GetType().GetProperty("Item", CatProbeFlags);
+        if (item == null) return float.NaN;
+        try { return Convert.ToSingle(item.GetValue(sided, new[] { Enum.ToObject(item.GetIndexParameters()[0].ParameterType, side) }), System.Globalization.CultureInfo.InvariantCulture); }
+        catch { return float.NaN; }
+    }
+    static string CatProbeFloatArray(System.Collections.IEnumerable values) {
+        var b = new StringBuilder("["); bool first = true;
+        if (values != null) foreach (object value in values) {
+            if (!first) b.Append(','); first = false;
+            var c = value as Component;
+            b.Append(c == null ? "null" : CatProbeNum(c.transform.position.x));
+        }
+        return b.Append(']').ToString();
+    }
+    static void CatProbeAppend(GameObject go, Component cat, int frame) {
+        object kingdom = CatProbeKingdom();
+        int side = CatProbeSide(cat);
+        float border = CatProbeBorder(kingdom, side), threshold = border - side * 2.5f;
+        var sideField = cat.GetType().GetProperty("direction", CatProbeFlags);
+        object direction = sideField == null ? null : sideField.GetValue(cat, null);
+        int directionValue = direction == null ? 0 : Convert.ToInt32(direction, System.Globalization.CultureInfo.InvariantCulture);
+        int state = Convert.ToInt32(CatProbeValue(cat, "_state") ?? -1, System.Globalization.CultureInfo.InvariantCulture);
+        var workers = CatProbeValue(cat, "_currentWorkers") as System.Collections.IEnumerable;
+        int workerCount = 0;
+        if (workers != null) foreach (object ignored in workers) workerCount++;
+        string workerPositions = CatProbeFloatArray(workers);
+        var rb = CatProbeValue(cat, "_rigidbody") as Rigidbody2D;
+        if (rb == null) rb = go.GetComponent<Rigidbody2D>();
+        float vx = rb == null ? float.NaN : rb.velocity.x;
+        float vy = rb == null ? float.NaN : rb.velocity.y;
+        float angular = rb == null ? float.NaN : rb.angularVelocity;
+        bool inPosition = false;
+        try {
+            var method = cat.GetType().GetMethod("IsInPosition", CatProbeFlags, null, Type.EmptyTypes, null);
+            if (method != null) inPosition = (bool)method.Invoke(cat, null);
+        } catch { }
+
+        float nearestWallX = float.NaN, nearestWallDistance = float.PositiveInfinity;
+        float borderWallX = float.NaN, borderWallDistance = float.PositiveInfinity;
+        foreach (var wallGo in World.SceneObjects) {
+            if (wallGo == null || !wallGo.activeInHierarchy) continue;
+            bool hasWall = wallGo.m_Components.Any(c => c != null && c.GetType().Name == "Wall");
+            if (!hasWall) continue;
+            float wx = wallGo.transform.position.x, distance = Math.Abs(wx - go.transform.position.x);
+            if (Math.Abs(wx-border) < borderWallDistance) { borderWallDistance = Math.Abs(wx-border); borderWallX = wx; }
+            if (distance < nearestWallDistance) { nearestWallDistance = distance; nearestWallX = wx; }
+        }
+        var hinges = go.GetComponentsInChildren<HingeJoint2D>(true);
+        var errors = new List<float>(hinges.Length); float maxError = 0f;
+        foreach (var hinge in hinges) {
+            Vector3 a = hinge.transform.TransformPoint(hinge.anchor);
+            Vector3 b = hinge.connectedBody != null ? hinge.connectedBody.transform.TransformPoint(hinge.connectedAnchor) : (Vector3)hinge.connectedAnchor;
+            float error = Vector2.Distance((Vector2)a, (Vector2)b);
+            errors.Add(error); if (error > maxError) maxError = error;
+        }
+        float x = go.transform.position.x;
+        string row = string.Format(System.Globalization.CultureInfo.InvariantCulture,
+            "{{\"frame\":{0},\"id\":{1},\"name\":\"{2}\",\"side\":{3},\"direction\":{4},\"state\":{5},\"workerCount\":{6},\"workerX\":{7},\"x\":{8},\"vx\":{9},\"vy\":{10},\"angularVelocity\":{11},\"border\":{12},\"thresholdX\":{13},\"nearestWallX\":{14},\"thresholdMinusWallX\":{15},\"isInPosition\":{16},\"hingeAnchorErrors\":[{17}],\"maxHingeAnchorError\":{18},\"wallNearestBorderX\":{19}}}",
+            frame, go.GetInstanceID(), go.name.Replace("\\", "\\\\").Replace("\"", "\\\""), side, directionValue, state, workerCount,
+            workerPositions, CatProbeNum(x), CatProbeNum(vx), CatProbeNum(vy), CatProbeNum(angular), CatProbeNum(border), CatProbeNum(threshold), CatProbeNum(nearestWallX), CatProbeNum(threshold - nearestWallX), inPosition ? "true" : "false",
+            string.Join(",", errors.Select(CatProbeNum).ToArray()), CatProbeNum(maxError), CatProbeNum(borderWallX));
+        if (CatProbeRows.Length > 0) CatProbeRows.Append(',');
+        CatProbeRows.Append(row);
+        Console.WriteLine("PORT_CATAPULT " + row);
+    }
+    static void CatapultNaturalProbeFrame(int frame) {
+        var bfs = CatProbeFlags;
+        if (frame == 600) {
+            foreach (var workshop in World.SceneObjects.Where(g => g.activeInHierarchy).SelectMany(g => g.m_Components).Where(c => c != null && c.GetType().Name == "PayableWorkshop").ToArray()) {
+                object side = CatProbeValue(workshop, "side");
+                CatProbeEvents.Add("pay frame=600 workshop=" + workshop.gameObject.name + " side=" + (side == null ? "unknown" : side.ToString()));
+                Console.WriteLine("PORT_CATAPULT_EVENT pay workshop=" + workshop.gameObject.name + " side=" + (side == null ? "unknown" : side.ToString()));
+                var pay = workshop.GetType().GetMethod("Pay", bfs, null, Type.EmptyTypes, null);
+                if (pay != null) pay.Invoke(workshop, null);
+            }
+        }
+        if (frame == 605) {
+            foreach (var go in World.SceneObjects.Where(g => g.name == "Catapult(Clone)").ToArray()) {
+                string componentNames = string.Join(",", go.m_Components.Where(c => c != null).Select(c => c.GetType().Name).ToArray());
+                var building = go.m_Components.FirstOrDefault(c => c != null && c.GetType().Name == "WorkableBuilding");
+                var complete = building == null ? null : building.GetType().GetMethod("CompleteConstruction", bfs, null, Type.EmptyTypes, null);
+                if (complete != null) {
+                    CatProbeEvents.Add("complete-construction frame=605 catapult=" + go.name + " side=" + CatProbeSide(go.GetComponent("Catapult")));
+                    Console.WriteLine("PORT_CATAPULT_EVENT complete-construction catapult=" + go.name);
+                    complete.Invoke(building, null);
+                } else {
+                    string reason = building == null ? "missing-workable-building" : "missing-complete-method";
+                    CatProbeEvents.Add("complete-construction-skipped frame=605 catapult=" + go.name + " reason=" + reason + " components=" + componentNames);
+                    Console.WriteLine("PORT_CATAPULT_EVENT complete-construction-skipped catapult=" + go.name + " reason=" + reason + " components=" + componentNames);
+                }
+            }
+        }
+        if (frame % 30 == 0) {
+            foreach (var go in World.SceneObjects.Where(g => g.activeInHierarchy && g.name == "Catapult(Clone)").ToArray()) {
+                var cat = go.m_Components.FirstOrDefault(c => c != null && c.GetType().Name == "Catapult");
+                if (cat != null) CatProbeAppend(go, cat, frame);
+            }
+        }
+        if (frame >= CatProbeLastFrame && !CatProbeWrote) {
+            CatProbeWrote = true;
+            string path = Environment.GetEnvironmentVariable("KNL_CATAPULT_PROBE_OUT") ?? "catapult-natural-placement.json";
+            string saveHash = Environment.GetEnvironmentVariable("KNL_CATAPULT_SAVE_SHA256") ?? "unspecified";
+            string events = "[" + string.Join(",", CatProbeEvents.Select(e => "\"" + e.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"").ToArray()) + "]";
+            File.WriteAllText(path, "{\"schema_version\":1,\"runtime\":\"clean-room port private host\",\"save_sha256\":\"" + saveHash + "\",\"sample_interval_frames\":30,\"sampled_through_frame\":" + CatProbeLastFrame + ",\"events\":" + events + ",\"observations\":[" + CatProbeRows + "]}");
+            Console.WriteLine("PORT_CATAPULT_EVIDENCE " + Path.GetFullPath(path));
+        }
+    }

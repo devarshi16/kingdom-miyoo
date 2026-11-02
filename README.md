@@ -1,6 +1,6 @@
 # Kingdom: New Lands on Miyoo Mini / Mini Plus
 
-**Experimental candidate: 1.1.0-rc4. Full gameplay validation is pending.**
+**Experimental candidate: 1.1.0-rc5. Full gameplay validation is pending.**
 
 Please wait before buying the PC game specifically for this port. Tutorial, menu/save navigation, upgrades, coin-pouch physics and long-session stability still need a complete playthrough. The previous v1.0 release had installation and runtime defects. A successful boot does not establish that the full game works.
 
@@ -16,7 +16,7 @@ This port runs the player's original game logic under a replacement engine. You 
 6. Wait for validation to finish. Existing installations and saves are retained in `Roms/PORTS/Games/KingdomNewLands.backup-<timestamp>`. Keep this backup until save/reload and gameplay checks pass.
 7. Safely eject the card, insert it in the Miyoo, refresh Ports and launch **Kingdom New Lands**. If you selected a local output folder, first copy its `Roms` folder onto the SD card root.
 
-The ZIP includes the runtime and preparer. Players do not need Git, WSL, a compiler, or a separate source download. This folder-picker setup still requires Python and installs dependencies; it is **not yet a standalone Windows installer**. A raw-data, first-launch importer on the Miyoo has not been implemented or benchmarked.
+The ZIP includes the runtime and preparer. Players do not need Git, WSL, a compiler, or a separate source download. This folder-picker setup still requires Python and installs dependencies; it is **not yet a standalone Windows installer**. A full raw-data, first-launch importer is not ready. Its native verification/indexing prototype has been tested on the Miyoo; texture/audio/font conversion and recoverable pack creation are still pending. See [import progress](docs/ON_DEVICE_IMPORT.md).
 
 ### Supported data
 
@@ -53,7 +53,7 @@ For setup failures, attach `prepare.log` from beside the preparer. For game fail
 
 The Miyoo candidate uses a top-right coin counter and lighter decorative effects by default. Overflow is a measured approximation of the original pouch, with no drops at 40 coins or below. [Counter behavior and measurements](docs/POUCH-COUNTER.md) and [visual changes](docs/LITE-VISUALS.md) describe the tradeoffs and optional modes.
 
-The current local candidate also repairs catapult wheel hinges, torch reflection layers, baked menu font layout and the day HUD. Second-island performance and clustered enemy visibility still need gameplay validation; see [rc4 measurements and remaining issues](docs/VALIDATION-1.1.0-rc4.md).
+The current local candidate repairs pooled enemy animation reuse and persistent day labels, adds bounded rain/snow and water detail, and reduces physics/particle/render preparation work. The catapult AI remains original; joint/contact parity and long-session enemy visibility still need gameplay validation. See [rc5 measurements and remaining issues](docs/VALIDATION-1.1.0-rc5.md) and the [performance budget](docs/PERFORMANCE-BUDGET.xlsx).
 
 Please report tutorial completion, menu/save navigation and upgrades even if there is no crash. No exception in a log does not prove correct behavior. See [the testing checklist](docs/TESTING.md).
 
@@ -65,6 +65,13 @@ Linux prerequisites: Mono development tools (`mcs`, `mono`), GCC/G++, SDL2 devel
 ./compile.sh "/path/to/Kingdom_Data"
 python3 -m unittest discover -s tests -v
 ./tests/run_runtime.sh
+./tests/run_animator_pooling.sh
+./tests/run_sprite_culling.sh
+./tests/run_sprite_lighting.sh
+./tests/run_day_hud.sh
+./tests/run_lite_weather.sh
+./tests/run_keyboard.sh
+./tests/run_component_lookup.sh
 ./tests/run_physics_performance.sh
 ./tests/run_transform_cache.sh
 ./tests/run_hinges.sh

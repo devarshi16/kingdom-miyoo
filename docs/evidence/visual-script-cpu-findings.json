@@ -1,0 +1,67 @@
+{
+  "scope": "CPU work outside physics/render, later-island copied save; no original game assembly changes",
+  "original_assembly_sha256": "89e7bdc9b18ccb4a6d37e93c09245c58d67506d92d1fdc26206ef096c73150e3",
+  "unchanged_gameplay_scripts": [
+    "Player.Update",
+    "Game.Update",
+    "Grass.GrassUpdate",
+    "Grass.Expand",
+    "Grass.CreateGrassPatch"
+  ],
+  "gameplay_evidence": "Grass registers with World.AddGrass/RemoveGrass and modifies linked grass/thicket topology; no safe purely visual skip was established. Player and Game update control/state logic remain untouched.",
+  "particle_guard": {
+    "change": "Compile field readers once per concrete type; check the same live callback delegates, serialized event lists, manipulator lists and trackParticles flags each call. Reflection fallback remains for runtimes lacking DynamicMethod support.",
+    "synthetic_desktop_probe": {
+      "emitters": 160,
+      "iterations": 10000,
+      "baseline_ms_per_guard": 0.25228346,
+      "optimized_ms_per_guard": 0.00571793,
+      "baseline_bytes_per_guard": 3872.0224,
+      "optimized_bytes_per_guard": 0.0224,
+      "note": "Per-run stopwatch/report overhead included; durable warmed guard test verifies exactly zero allocations over 1000 iterations."
+    },
+    "copied_save_desktop_probe": {
+      "frames": 1200,
+      "emitters": 66,
+      "baseline_playground_ms_per_frame_rounded": 0.07,
+      "optimized_playground_ms_per_frame_rounded": 0.0,
+      "baseline_average_logic_ms": 1.12,
+      "optimized_average_logic_ms": 1.07,
+      "exceptions_each": 0,
+      "identical_final_png_sha256": "dd33863f935b4c13ec1d612bb92d14559b71f3e64b7ae30bce78909487a20bb3",
+      "note": "Controlled comparison captured before later requested cloud-cap reduction. This is not a device FPS claim."
+    }
+  },
+  "quality_configuration": {
+    "change": "Cache launcher environment at first access. Explicit VisualQuality.Refresh supports in-process development mode changes. Assembly-CSharp.dll contains no ASCII/UTF-16 KNL_VISUALS literal; repository in-process environment writes are confined to tests. Dynamic construction of an environment name was not exhaustively analyzed."
+  },
+  "cloud_budgets": {
+    "cumulus": 4,
+    "stratus": 1,
+    "fog": 0,
+    "mist": 0,
+    "unchanged": [
+      "weather",
+      "density",
+      "time",
+      "vegetation",
+      "animals",
+      "coins",
+      "ice floes",
+      "unknown cloud controllers"
+    ]
+  },
+  "keyboard": {
+    "change": "TouchScreenKeyboard.isSupported returns false because neither SDL desktop nor Miyoo implements an OS touch keyboard. Focused original UnityEngine.UI.InputField uses the ordinary hardware-input path.",
+    "focused_lateupdate_frames": 50,
+    "exceptions": 0,
+    "assertions": 5,
+    "two_stage_generator_checked": true
+  },
+  "tests": {
+    "visual_assertions": 21,
+    "keyboard_assertions": 5,
+    "ui_assertions_rechecked": 16
+  },
+  "remaining_validation": "Parent integrates current private source build and measures on Miyoo. No deployment or publication performed by this worker."
+}

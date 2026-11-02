@@ -30,3 +30,6 @@ dist/
 
 # local gameplay saves
 /save/
+
+# exported review artifacts
+/outputs/

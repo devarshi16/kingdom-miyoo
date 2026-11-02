@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "subject": "Kingdom New Lands 1.2.8 Catapult placement versus clean-room compatibility port",
+  "scope": "Read-only static CIL and port-source audit. No original AI or gameplay code changed.",
+  "original_artifact": {
+    "path": "/home/devarshi/Games/KingdomNewLands/Kingdom_Data/Managed/Assembly-CSharp.dll",
+    "sha256": "89e7bdc9b18ccb4a6d37e93c09245c58d67506d92d1fdc26206ef096c73150e3",
+    "reference_build": "Kingdom New Lands 1.2.8, Unity 2017.1.2p1 (per project README and DECISIONS)"
+  },
+  "findings": [
+    {
+      "id": "placement-rule",
+      "kind": "observed_static_original",
+      "confidence": "high",
+      "fact": "Catapult.Start copies CatapultData.side into Catapult.side and direction. SetState(1) registers it as Kingdom work and selects that direction. While _state == 1, Catapult.Update first checks IsInPosition; otherwise it assigns Rigidbody2D.velocity = direction * 0.15 * currentWorkers.Count. IsInPosition reads transform.position.x and tests Util.OnSideOf(x, side, Kingdom.border[side] - side * 2.5). Util.OnSideOf uses strict x < threshold for side -1 and strict x > threshold otherwise.",
+      "implication": "For the left side (side -1), the threshold is 2.5 units to the right of the left border and the catapult stops at x below that threshold. For the right side (side +1), the threshold is 2.5 units to the left of the right border and the catapult stops at x above that threshold. Thus the stop condition is on the side indicated by direction; do not reinterpret the threshold as the wall coordinate itself. Direction sign and the original wall-relative rule are explicit in CIL.",
+      "evidence": [
+        "private probe original-selected-cil.txt: Catapult::Start, Catapult::SetState, Catapult::Update, Catapult::IsInPosition, Util::OnSideOf",
+        "original Assembly-CSharp.dll method RVAs: Catapult.Start 0x474e8, Catapult.Update 0x47938, Catapult.IsInPosition 0x478e8, Util.OnSideOf 0x813cc"
+      ]
+    },
+    {
+      "id": "builder-assignment-and-position",
+      "kind": "observed_static_original",
+      "confidence": "high",
+      "fact": "Catapult.Awake creates an enemy Scanner from flippable, scanRange.max, a 2-unit height and Enemy layer mask; rangeBehind is the negated scanRange.min. Scanner.Refresh obtains candidates through Physics2D.OverlapAreaNonAlloc. Worker.CheckForWork delegates to Kingdom.ReassignWork, which constructs jobs from available Workables and assigns each available Worker. Worker.<Work>c__Iterator1 asks Mover.SetGoal using Workable.GetWorkOffset. Once a Worker starts working on a fixed-position Workable, the coroutine zeros the worker Rigidbody2D velocity and sets the worker Transform position relative to the Workable; it does not directly set the Workable/Catapult Transform.",
+      "implication": "The original catapult itself moves through its Rigidbody2D state-1 velocity path. Builder assignment/positioning is a separate path and has no direct CIL instruction that moves the catapult away from the wall. Physical contact can still affect it, so dynamic interaction requires a runtime comparison.",
+      "evidence": [
+        "private probe original-selected-cil.txt: Catapult::Awake, Scanner::Refresh, Worker::CheckForWork, Kingdom::ReassignWork, Worker::<Work>c__Iterator1::MoveNext"
+      ]
+    },
+    {
+      "id": "port-api-comparison",
+      "kind": "observed_port_source",
+      "confidence": "medium",
+      "fact": "The compatibility port implements Transform.position through parent matrices, TransformPoint through localToWorldMatrix, and Transform.SetParent(parent, worldPositionStays) by preserving world position/rotation and deriving local scale. Physics2D exposes OverlapAreaNonAlloc through its query system. The rc4 hinge subset imports explicit HingeJoint2D anchor/connected-body data and solves free-wheel axle constraints while preserving independent wheel world poses; it documents approximate inertia and does not claim full Unity 2D physics.",
+      "implication": "The CIL-used query, transform, and hinge surfaces exist in the port. Static inspection did not reveal a reversed direction, wrong border index, or missing TransformPoint/SetParent implementation. The hinge is intentionally approximate, so contact impulses around workers, wheels, wall colliders, and chassis remain a plausible runtime divergence to measure, not a confirmed cause.",
+      "evidence": [
+        "engine/UnityEngine/Core/Objects.cs: Transform.position, SetParent, TransformPoint",
+        "engine/UnityEngine/Runtime/Physics2D.cs: Physics2D.OverlapAreaNonAlloc",
+        "engine/UnityEngine/Runtime/HingePhysics.cs: hinge capture, solve, and commit",
+        "engine/UnityEngine/Runtime/World.cs: HingeJoint2D serialized fields and unsupported-mode warning"
+      ]
+    },
+    {
+      "id": "existing-port-runtime-evidence",
+      "kind": "observed_port_runtime_limited",
+      "confidence": "high",
+      "fact": "An existing port device-siege probe forcibly assigned two catapults to x=-18.0 and x=16.5, logged IsInPosition=True for both, and then drove their firing animations/projectiles. The probe explicitly invokes reflection to set catapult position/state and fire; it does not record a builder naturally pushing a newly constructed catapult to its target, and it contains no original-game runtime measurement.",
+      "implication": "This proves the compatibility build can accept those manually chosen target-side positions and run the firing path. It does not establish natural placement parity or reproduce the reported builder/wall behavior.",
+      "evidence": [
+        "/home/devarshi/Recompilation/work/knl-gameplay-issues/device-siege.log:132-135,149-160",
+        "/home/devarshi/Recompilation/work/knl-gameplay-issues/hinge-probe/FireProgram.cs:288-295"
+      ]
+    }
+  ],
+  "assessment": {
+    "confirmed_static_parity": "The original wall target, side comparison, direction assignment, and catapult movement rule are unambiguous in the inspected CIL. The corresponding port API methods exist, and the inspected source has no evident sign/index inversion.",
+    "confirmed_dynamic_parity": false,
+    "confirmed_api_mismatch": false,
+    "most_relevant_unresolved_candidate": "The port's approximate hinge/contact solver can change how the chassis and free wheels respond to builder or wall contact. This is a test hypothesis only; current logs do not show that it caused the user's displacement.",
+    "remaining_unknowns": [
+      "No paired original-game and port runtime trace was captured for natural catapult construction and worker movement.",
+      "The user's report does not specify which side, border value, time after construction, worker count, wall tier, or whether the catapult was already in a ready state.",
+      "The original CIL does not by itself establish how Unity 2017 physics resolves this specific worker/catapult/wall contact sequence."
+    ]
+  },
+  "bounded_follow_up_probe": {
+    "goal": "Compare one natural catapult construction per side in the verified original and port, with AI unchanged.",
+    "capture_each_fixed_step": [
+      "side, direction, Catapult transform position, Kingdom.border[side], IsInPosition, _state, current worker count, Rigidbody2D velocity and angular velocity",
+      "each worker's queued/current Workable, Mover goal and position, and whether its coroutine has entered fixed-position work",
+      "world positions of chassis and wheel Rigidbody2D centers, hinge anchor and connected anchor, and contacts/overlaps with worker and wall colliders"
+    ],
+    "acceptance_checks": [
+      "Check target algebra on both sides around the strict threshold at border[side] - side * 2.5, including one 1/32 world-unit step either side.",
+      "Before the threshold, verify velocity sign equals side and magnitude changes with current worker count; at/after the threshold, verify state leaves moving and velocity is stopped according to the original state transition.",
+      "Compare worker target and contact sequence separately from catapult target selection; preserve random work offsets or record the random seed/state.",
+      "If divergence begins at contact rather than at target selection, compare hinge anchor separation and contact impulses before considering a narrowly scoped physics adapter change."
+    ]
+  },
+  "private_probe": "/home/devarshi/Recompilation/work/knl-rc5/catapult-parity/original_cil_probe.py",
+  "private_cil_dump": "/home/devarshi/Recompilation/work/knl-rc5/catapult-parity/original-selected-cil.txt"
+}

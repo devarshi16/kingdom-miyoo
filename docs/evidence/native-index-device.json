@@ -1,0 +1,11 @@
+{
+  "state": "1200000\nondemand\nMemTotal:         103360 kB\nMemFree:           64340 kB\nMemAvailable:      80944 kB\nBuffers:            1712 kB\nCached:            17804 kB\nFilesystem           1K-blocks      Used Available Use% Mounted on\n/dev/mmcblk0p1       500449264  40815840 459633424   8% /mnt/SDCARD\n",
+  "ssh_roundtrip_elapsed_seconds": 0.60718385999985,
+  "indexed_objects": 16880,
+  "files": 9,
+  "stdout_sha256": "da040d5df1106238f7f3f36c30055c97b8bdbe9361b087bfc0e2ebeaca30357e",
+  "full_import_implemented": false,
+  "measured_index_elapsed_seconds": 0.506153,
+  "measured_peak_rss_kib": 1288,
+  "runtime_scope": "Nine supported serialized files: source hash verification and metadata/object indexing only, with MainUI idle, ondemand governor, 1200MHz maximum. No object/texture/audio/font payload conversion."
+}
