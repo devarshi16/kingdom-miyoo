@@ -28,6 +28,8 @@ Miyoo Mini Plus, Onion, maximum 1200 MHz, performance governor while the game ru
 | Fresh start | 900 | 38.26 | 47.61 |
 | Fresh start | 1200 | 36.89 | 44.23 |
 
+A final run on a copy of the newer save preserved at promotion measured **26.11 / 28.52 / 27.89 FPS** in the same post-load windows, with zero exceptions. No old-runtime gain is inferred for that newer save because it has no matching baseline run.
+
 All baseline and candidate runs completed 1,200 frames with zero runtime exceptions. Second-island values use the final pooled-animation repair build; fresh-start rc5 values were captured immediately before that repair. An earlier second-island rc5 pass measured 26.60 / 27.24 / 29.13 FPS, illustrating run-to-run variation. They are not audio-enabled results or a guarantee of 30 FPS in dense combat. A sound-enabled benchmark attempt failed device audio initialization and ran headless; it was excluded from these comparisons.
 
 The [workbook](PERFORMANCE-BUDGET.xlsx) ranks measured exclusive CPU phases and records their usefulness to game mechanics. Its older Prof2 phase timings locate costs; profiling overhead and overlapping wrappers make those timings unsuitable as ordinary FPS claims. It explicitly distinguishes a combined gain from an isolated feature gain. [CSV measurements](evidence/rc5-device-throughput.csv) preserve the window data and run conditions.

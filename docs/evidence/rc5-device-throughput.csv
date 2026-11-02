@@ -19,3 +19,7 @@ rc5-final-island2,copied island 2,rc5 final with animation repair,300,10.54,1200
 rc5-final-island2,copied island 2,rc5 final with animation repair,600,25.2,1200,0,muted,real-time,0.05,300-frame window
 rc5-final-island2,copied island 2,rc5 final with animation repair,900,25.77,1200,0,muted,real-time,0.05,300-frame window
 rc5-final-island2,copied island 2,rc5 final with animation repair,1200,29.06,1200,0,muted,real-time,0.05,300-frame window
+rc5-latest-save,newer copied save preserved at promotion,rc5 final with animation repair,300,11.09,1200,0,muted,real-time,0.05,loading included
+rc5-latest-save,newer copied save preserved at promotion,rc5 final with animation repair,600,26.11,1200,0,muted,real-time,0.05,300-frame window; no matching old-runtime baseline on this newer save
+rc5-latest-save,newer copied save preserved at promotion,rc5 final with animation repair,900,28.52,1200,0,muted,real-time,0.05,300-frame window; no matching old-runtime baseline on this newer save
+rc5-latest-save,newer copied save preserved at promotion,rc5 final with animation repair,1200,27.89,1200,0,muted,real-time,0.05,300-frame window; no matching old-runtime baseline on this newer save

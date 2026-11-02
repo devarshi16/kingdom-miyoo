@@ -174,4 +174,3 @@
         RenderSystem.RenderFrame();
       }
     }
-

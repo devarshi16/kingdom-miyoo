@@ -350,3 +350,10 @@ Honor camera culling masks across main/interface/reflection passes and compute M
 Catapult chassis displacement was a missing free-wheel hinge constraint, not a missing image. Import explicit wheel anchors/connected bodies, preserve independent world poses of parented rigidbodies, solve support and axle contacts together, and suppress collisions between connected bodies when configured. This is a bounded hinge subset with the same approximate inertia as the existing adapter, not full Unity 2D physics. Unsupported active motor/limit/automatic-anchor use is logged.
 
 Exact performance changes preserve pair/query order, same-frame query semantics and hierarchy invalidation. Test later-island copies and report fixed-timestep diagnostic throughput separately from normal gameplay. See `docs/VALIDATION-1.1.0-rc4.md` for measured gains and unresolved reports; the project remains experimental.
+
+
+## D24 — Restore pooled animation state and keep weather presentation read-only (accepted, rc5)
+
+The verified Unity 2017 player discards evaluated Animator state when its GameObject deactivates. Clear replacement runtime state after disable callbacks, and never copy an Animator runtime's source-instance targets into a clone. A revived Troll can otherwise remain alive with a tiny terminal death sprite. Validate the same original pool actor after original damage/fade/despawn, including its independent mask. This repair does not establish component-only Animator-disable semantics or rule out other visibility failures.
+
+Persistent HUD text uses an opaque local generation-settings copy rather than an announcement's transient faded alpha. Lite point lighting samples the sprite center; full mode preserves four-corner interpolation. Bounded precipitation reads original weather intensity/wind and scaled time without modifying season/economy logic or game RNG. First-launch verification/indexing remains a separate measured milestone until payload conversion, atomic recovery and on-screen progress are implemented. See the rc5 validation record for stock-clock results and limits.
