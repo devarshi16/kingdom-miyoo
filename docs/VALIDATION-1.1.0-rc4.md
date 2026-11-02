@@ -46,6 +46,8 @@ A separate pair of runs used the normal real-time timestep with the launcher’s
 
 Both ran 1200 frames with zero logged lifecycle exceptions. Real-time runs advance the simulation according to elapsed/capped time, so their final object counts and simulated times differ; use the fixed-step runs for equivalence. These remain **muted, instrumented** measurements; audio-enabled ordinary gameplay and 30 FPS on the second island are unverified. The cap intentionally slows simulation when frames take longer than 50 ms.
 
+A fresh-game real-time check with the same stock/muted/profiled setup measured **33.01, 34.28 and 35.30 FPS** in the three post-boot windows. The 1200-frame run completed with zero logged lifecycle exceptions. This establishes starting-scene throughput for that route, not a 30-FPS guarantee for later islands or audio-enabled play.
+
 A separate hardware construction/firing probe bought and completed both catapults, positioned them at their original valid firing borders, invoked original Ready/Fire behavior, and observed launched boulders with nonzero horizontal/upward velocity. It then called original Save+Quit successfully; 1001 frames, zero logged exceptions. Its camera overrides, screenshots and detailed inspection make its FPS unsuitable as a normal-game benchmark. Desktop reload of the generated copied save retained both supported catapults at y≈0.9, zero exceptions.
 
 ## Regression evidence
@@ -64,3 +66,9 @@ Private logs, probe sources, saves and screenshots are retained under the local 
 ## Remaining limits
 
 The engine still implements a subset of Unity physics/rendering. Hinge motors, angle limits, break thresholds and automatic connected-anchor configuration are not implemented; the active shipped catapult wheel joints do not use them. The disabled motor test joint is ignored. Full water rendering remains an approximation. Long gameplay, clustered enemy visibility, actual repair bursts, later islands and ordinary audio-enabled frame rates remain release gates.
+
+## Local deployment
+
+Candidate runtime source: `82ca6e2ed62893186a43273b233e3774c9c7ce36`. Installed into the normal `KingdomNewLands` directory on 2026-11-02. All four current save files were backed up on the PC and retained byte-for-byte. A full previous installation remains on the SD card in `KingdomNewLands.backup-before-rc4-20261102T105833Z`. Every other existing file, including owned game assemblies, pack and music, retained its hash. Only the engine DLL, matching UI repair sidecar, VERSION and installation metadata changed. Rechecked after QA.
+
+The redistributable rc4 archive was built locally and checked against its clean-source manifest; 44 payloads, with original game DLLs, asset pack and UI repair metadata excluded. Nothing was pushed or published.
