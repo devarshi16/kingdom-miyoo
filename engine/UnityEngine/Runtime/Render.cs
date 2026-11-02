@@ -237,7 +237,21 @@ namespace KNL
         public static Bounds BoundsOf(Renderer r)
         {
             var sr = r as SpriteRenderer;
-            if (sr == null || sr.m_Sprite == null) return new Bounds(r.transform.position, Vector3.zero);
+            if (sr == null)
+            {
+                // Fire.ReflectedLight derives the reflection axis from Water.renderer.bounds.max.y.
+                // A zero-size point at the water object's centre gives that pass the wrong axis.
+                // Transform every vertex: the water quad has a negative Y scale, and using only
+                // its local min/max would also fail for rotated or mirrored meshes.
+                var mf = r is MeshRenderer ? r.gameObject.GetComponent<MeshFilter>() : null;
+                var mesh = mf != null ? mf.m_Mesh : null;
+                if (mesh == null || mesh.m_Vertices.Length == 0) return new Bounds(r.transform.position, Vector3.zero);
+                var matrix = r.transform.localToWorldMatrix;
+                var bounds = new Bounds(matrix.MultiplyPoint3x4(mesh.m_Vertices[0]), Vector3.zero);
+                for (int i = 1; i < mesh.m_Vertices.Length; i++) bounds.Encapsulate(matrix.MultiplyPoint3x4(mesh.m_Vertices[i]));
+                return bounds;
+            }
+            if (sr.m_Sprite == null) return new Bounds(r.transform.position, Vector3.zero);
             var b = sr.m_Sprite.bounds; var m = r.transform.localToWorldMatrix;
             var res = new Bounds(m.MultiplyPoint3x4(b.min), Vector3.zero);
             res.Encapsulate(m.MultiplyPoint3x4(b.max));
@@ -248,6 +262,13 @@ namespace KNL
 
         static readonly List<Item> s_UiItems = new List<Item>();
         static Key[] s_UiKeys = new Key[64];
+        static readonly List<Item> s_ReflectionItems = new List<Item>();
+        static Key[] s_ReflectionKeys = new Key[16];
+
+        public static bool CameraIncludesLayer(Camera camera, int layer)
+        {
+            return camera == null || (uint)layer < 32 && (camera.cullingMask & (1 << layer)) != 0;
+        }
 
         public static void RenderFrame()
         {
@@ -265,6 +286,11 @@ namespace KNL
             Vector3 icPos = hasIc ? ic.transform.position : Vector3.zero;
             float icHalfW = Width / 2f / k + 2f, icHalfH = Height / 2f / k + 2f;
             if (hasIc) s_UiItems.Clear();
+            s_ReflectionItems.Clear();
+            Camera reflectionCamera = null;
+            foreach (var camera in Camera.s_All)
+                if (camera != null && !camera.m_Destroyed && camera.m_GameObject != null && camera.gameObject.activeInHierarchy
+                    && camera.gameObject.name == "Reflection Camera") { reflectionCamera = camera; break; }
 
             items.Clear();
             LastCandidates = 0;
@@ -276,6 +302,22 @@ namespace KNL
                 if (r == null || r.m_Destroyed || !r.m_RendererEnabled) continue;
                 var g = r.m_GameObject;
                 if (g == null || g.m_Destroyed || !g.activeInHierarchy) continue;
+                bool mainLayer = CameraIncludesLayer(MainCamera, g.m_Layer);
+                bool interfaceLayer = hasIc && CameraIncludesLayer(ic, g.m_Layer);
+                if (!mainLayer && !interfaceLayer)
+                {
+                    // The shipped reflection camera has its own layer (including torch
+                    // highlights). Drawing those sprites through the main camera creates
+                    // a bright streak above the water, beneath the torch itself.
+                    var reflected = r as SpriteRenderer;
+                    if (!VisualQuality.Lite && reflectionCamera != null && CameraIncludesLayer(reflectionCamera, g.m_Layer)
+                        && reflected != null && reflected.m_Sprite != null && reflected.m_Sprite.data != null)
+                    {
+                        var matrix = reflected.transform.localToWorldMatrix;
+                        s_ReflectionItems.Add(new Item { sr = reflected, m = matrix, dist = matrix.m23 - cp.z, order = reflected.m_SortingOrder, id = reflected.m_InstanceID });
+                    }
+                    continue;
+                }
 
                 var sr = r as SpriteRenderer;
                 if (sr != null)
@@ -292,8 +334,8 @@ namespace KNL
                     }
                     var m = tr.localToWorldMatrix;
                     float wx = m.m03, wy = m.m13;
-                    bool mainView = Mathf.Abs(wx - cp.x) <= halfW + 8f && Mathf.Abs(wy - cp.y) <= halfH + 8f;
-                    bool uiView = !mainView && hasIc && Mathf.Abs(wx - icPos.x) <= icHalfW && Mathf.Abs(wy - icPos.y) <= icHalfH;
+                    bool mainView = mainLayer && Mathf.Abs(wx - cp.x) <= halfW + 8f && Mathf.Abs(wy - cp.y) <= halfH + 8f;
+                    bool uiView = !mainView && interfaceLayer && Mathf.Abs(wx - icPos.x) <= icHalfW && Mathf.Abs(wy - icPos.y) <= icHalfH;
                     if (!mainView && !uiView) continue;
                     // Cull the actual transformed image before sorting/copying Items or entering
                     // DrawSprite. A one-pixel guard makes rounding at the view edge conservative.
@@ -318,6 +360,7 @@ namespace KNL
                 var mr = r as MeshRenderer;
                 if (mr != null)
                 {
+                    if (!mainLayer) continue;
                     var mm = mr.transform.localToWorldMatrix;
                     items.Add(new Item { mr = mr, m = mm, dist = mm.m23 - cp.z, order = mr.m_SortingOrder, id = mr.m_InstanceID });
                 }
@@ -329,6 +372,10 @@ namespace KNL
             if (keys.Length < n) keys = new Key[n * 2];
             for (int i = 0; i < n; i++) { var it = items[i]; keys[i] = new Key { order = it.order, dist = it.dist, id = it.id, idx = i }; }
             Array.Sort(keys, 0, n, keyOrder);
+            int rn = s_ReflectionItems.Count;
+            if (s_ReflectionKeys.Length < rn) s_ReflectionKeys = new Key[rn * 2];
+            for (int i = 0; i < rn; i++) { var it = s_ReflectionItems[i]; s_ReflectionKeys[i] = new Key { order = it.order, dist = it.dist, id = it.id, idx = i }; }
+            Array.Sort(s_ReflectionKeys, 0, rn, keyOrder);
             PrepareLights(cp, halfW);
             pt = Prof.Add("render: sort", pt);
             for (int i = 0; i < n; i++)
@@ -517,6 +564,15 @@ namespace KNL
                 if (water != null) { var f = water.GetType().GetField("reflectionScale"); if (f != null) scale = (float)f.GetValue(water); }
                 // the reflection starts at the waterline (top of the quad) and fills to the bottom of the screen
                 Native.knl_reflect((int)Mathf.Round(y0), Height, scale, mat.GetColor("_Color").ToRGBA32(), Time.time, 1.2f);
+                float axis = cp.y + (Height / 2f - y0) / k;
+                for (int i = 0; i < s_ReflectionItems.Count; i++)
+                {
+                    var reflected = s_ReflectionItems[s_ReflectionKeys[i].idx];
+                    var matrix = reflected.m;
+                    matrix.m10 *= -scale; matrix.m11 *= -scale; matrix.m12 *= -scale;
+                    matrix.m13 = axis - (matrix.m13 - axis) * scale;
+                    DrawSprite(reflected.sr, matrix, cp, k);
+                }
                 return;
             }
             var tint = mat != null && mat.m_ColorProps.ContainsKey("_Color") ? mat.GetColor("_Color") : Color.white;
@@ -575,14 +631,36 @@ namespace KNL
         public static float OriginalHalfWidth = 7.1f;      // 8 units tall at 16:9 -> 14.2 wide
         public static Color Purple = new Color(0.56f, 0.25f, 0.66f, 1f);
         internal static readonly List<Component> s_Enemies = new List<Component>();
-        static Type s_Enemy; static bool s_Looked;
+        static Type s_Enemy, s_Damageable; static bool s_Looked;
+        static System.Reflection.PropertyInfo s_IsDead;
         public static int LastLeft, LastRight;
 
         public static bool IsEnemy(Component c)
         {
             if (c == null) return false;
-            if (!s_Looked) { s_Looked = true; var asm = World.GameAssembly("Assembly-CSharp"); s_Enemy = asm != null ? asm.GetType("Enemy") : null; }
+            if (!s_Looked)
+            {
+                s_Looked = true;
+                var asm = World.GameAssembly("Assembly-CSharp");
+                s_Enemy = asm != null ? asm.GetType("Enemy") : null;
+                s_Damageable = asm != null ? asm.GetType("Damageable") : null;
+                s_IsDead = s_Damageable != null ? s_Damageable.GetProperty("isDead") : null;
+            }
             return s_Enemy != null && s_Enemy.IsInstanceOfType(c);
+        }
+
+        // Damageable marks death before its fade/destruction coroutine finishes. An active
+        // corpse can therefore remain in the enemy registry after its visible sprite is gone.
+        // Use the game's death state, rather than sprite alpha (live enemies can fade in).
+        public static bool IsLivingEnemy(Component c)
+        {
+            if (c == null || c.m_Destroyed || !IsEnemy(c)) return false;
+            var behaviour = c as Behaviour;
+            if (behaviour != null && !behaviour.enabled) return false;
+            var g = c.m_GameObject;
+            if (g == null || g.m_Destroyed || !g.activeInHierarchy) return false;
+            var damageable = s_Damageable != null ? g.GetComponent(s_Damageable) : null;
+            return damageable == null || s_IsDead == null || !(bool)s_IsDead.GetValue(damageable, null);
         }
 
         public static void Draw(Vector3 cp, float k)
@@ -601,6 +679,7 @@ namespace KNL
                 if (g == null || g.m_Destroyed || !g.activeInHierarchy) continue;
                 var p = g.m_Transform.position; float dx = p.x - cp.x;
                 if (Mathf.Abs(dx) <= halfView || Mathf.Abs(dx) > OriginalHalfWidth) continue;
+                if (!IsLivingEnemy(c)) continue;
                 if (dx < 0) { LastLeft++; leftY = p.y; } else { LastRight++; rightY = p.y; }
             }
             float pulse = 0.75f + 0.25f * Mathf.Sin(Time.unscaledTime * 6f);

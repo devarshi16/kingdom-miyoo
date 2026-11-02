@@ -340,3 +340,13 @@ Bug fixed on the way: `Transform.Find` / `GameObject.Find` did not skip empty pa
 (Unity does). Saved objects are re-parented by paths like `Level/GameLayer/`, so a continued game
 put them outside their layer (wrong draw order, the king hidden behind scenery) and the next save
 threw a NullReferenceException.
+
+## D23 — Compatibility repairs must preserve original data and mechanisms (accepted, rc4)
+
+Restore typed UI.Text font-layout metadata rather than override individual broken labels. Existing packs may use a source-verified, object-hash-bound repair sidecar; fresh conversions retain layouts inline. Bitmap glyph metrics stay in baked pixels and UI.Text applies its pixelsPerUnit division once.
+
+Honor camera culling masks across main/interface/reflection passes and compute MeshRenderer bounds from transformed vertices. Read original Damageable death state for threat indicators, separately from active/fading sprite state.
+
+Catapult chassis displacement was a missing free-wheel hinge constraint, not a missing image. Import explicit wheel anchors/connected bodies, preserve independent world poses of parented rigidbodies, solve support and axle contacts together, and suppress collisions between connected bodies when configured. This is a bounded hinge subset with the same approximate inertia as the existing adapter, not full Unity 2D physics. Unsupported active motor/limit/automatic-anchor use is logged.
+
+Exact performance changes preserve pair/query order, same-frame query semantics and hierarchy invalidation. Test later-island copies and report fixed-timestep diagnostic throughput separately from normal gameplay. See `docs/VALIDATION-1.1.0-rc4.md` for measured gains and unresolved reports; the project remains experimental.

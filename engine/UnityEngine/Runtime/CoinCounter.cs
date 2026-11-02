@@ -29,6 +29,7 @@ public static class CoinCounter {
     public static void BeforeAwake(MonoBehaviour mb) {
         if (!Enabled || mb == null) return;
         string name = mb.GetType().Name;
+        if (name == "Menu" || name == "Kingdom" || name == "Director") DayHud.Observe(mb);
         if (name == "CoinBag" || name == "BagCoin") {
             if (name == "CoinBag") {
                 hiddenBags.RemoveWhere(g => g == null);
@@ -188,6 +189,7 @@ public static class CoinCounter {
         PrepareAtlas();
         if (shownText == null || shownCount != count) { shownCount = count; shownText = count.ToString(System.Globalization.CultureInfo.InvariantCulture); }
         int width = 19 + shownText.Length * 8, left = RenderSystem.Width - 5 - width, top = 5;
+        DayHud.Draw(left, top);
         Rect(left, top, width, 19, 0xB8201B16u);
         if (atlas < 0) { DrawWithoutAtlas(left, top); return; }
         Glyph(left+3, top+4, 9, 11, 30, 0, 9, 11, 0xFFFFFFFFu);

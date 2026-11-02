@@ -18,6 +18,7 @@ namespace KNL
         /// before layout: size screen-space roots to the screen, then let UI.dll rebuild (Canvas.willRenderCanvases)
         public static void Prepare()
         {
+            DayHud.Prepare();
             roots.Clear();
             var all = Canvas.s_All;
             int count = all.Count;
@@ -82,6 +83,7 @@ namespace KNL
         static void Walk(Transform t, float alpha, Matrix4x4 toPixel, Canvas root)
         {
             var go = t.gameObject;
+            if (DayHud.ReplacesStock(go)) return;
             if (!go.m_IsActive) return;
             CanvasRenderer cr = null;
             foreach (var c in go.m_Components)
@@ -139,7 +141,7 @@ namespace KNL
 
         /// knl texture handle for a Texture2D: sprite cut-outs reuse the sprite PNG, others load
         /// textures/<file>/<pathid>_*.png exported by convert.py. -1 = untextured (solid colour).
-        static int Handle(Texture2D t)
+        internal static int Handle(Texture2D t)
         {
             if (t == null) return -1;
             if (t.m_KnlTex != -2) return t.m_KnlTex;

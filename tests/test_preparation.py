@@ -106,7 +106,7 @@ class PreparationTests(unittest.TestCase):
     def test_release_is_deterministic_and_excludes_owned_data(self):
         import package_release as release
         build = self.root / 'build'
-        for n in release.RUNTIME + ['managed/Assembly-CSharp.dll', 'data/kingdom.knlpack', 'mono/mono-sgen']:
+        for n in release.RUNTIME + ['managed/Assembly-CSharp.dll', 'data/kingdom.knlpack', 'data/ui-fontdata.json', 'mono/mono-sgen']:
             p = build / release.GAME / n
             p.parent.mkdir(parents=True, exist_ok=True)
             p.write_bytes(b'fixture')
@@ -119,6 +119,7 @@ class PreparationTests(unittest.TestCase):
         with zipfile.ZipFile(archive) as z:
             self.assertNotIn(release.GAME + 'managed/Assembly-CSharp.dll', z.namelist())
             self.assertNotIn(release.GAME + 'data/kingdom.knlpack', z.namelist())
+            self.assertNotIn(release.GAME + 'data/ui-fontdata.json', z.namelist())
             self.assertNotIn(release.GAME + 'mono/mono-sgen', z.namelist())
             self.assertIn('prepare_data.py', z.namelist())
             manifest = json.loads(z.read('release-manifest.json'))

@@ -1,6 +1,6 @@
 # Kingdom: New Lands on Miyoo Mini / Mini Plus
 
-**Experimental candidate: 1.1.0-rc2. Full gameplay validation is pending.**
+**Experimental candidate: 1.1.0-rc4. Full gameplay validation is pending.**
 
 Please wait before buying the PC game specifically for this port. Tutorial, menu/save navigation, upgrades, coin-pouch physics and long-session stability still need a complete playthrough. The previous v1.0 release had installation and runtime defects. A successful boot does not establish that the full game works.
 
@@ -53,6 +53,8 @@ For setup failures, attach `prepare.log` from beside the preparer. For game fail
 
 The Miyoo candidate uses a top-right coin counter and lighter decorative effects by default. Overflow is a measured approximation of the original pouch, with no drops at 40 coins or below. [Counter behavior and measurements](docs/POUCH-COUNTER.md) and [visual changes](docs/LITE-VISUALS.md) describe the tradeoffs and optional modes.
 
+The current local candidate also repairs catapult wheel hinges, torch reflection layers, baked menu font layout and the day HUD. Second-island performance and clustered enemy visibility still need gameplay validation; see [rc4 measurements and remaining issues](docs/VALIDATION-1.1.0-rc4.md).
+
 Please report tutorial completion, menu/save navigation and upgrades even if there is no crash. No exception in a log does not prove correct behavior. See [the testing checklist](docs/TESTING.md).
 
 ## Developer build and checks
@@ -63,6 +65,12 @@ Linux prerequisites: Mono development tools (`mcs`, `mono`), GCC/G++, SDL2 devel
 ./compile.sh "/path/to/Kingdom_Data"
 python3 -m unittest discover -s tests -v
 ./tests/run_runtime.sh
+./tests/run_physics_performance.sh
+./tests/run_transform_cache.sh
+./tests/run_hinges.sh
+./tests/run_enemy_indicators.sh
+./tests/run_rendering_bounds.sh
+./tests/run_ui.sh
 ./tests/run_native.sh
 ./tests/run_visual.sh
 ./tests/run_coin_counter.sh

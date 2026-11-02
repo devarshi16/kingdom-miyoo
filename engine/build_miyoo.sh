@@ -57,6 +57,8 @@ cp "$B"/*.dll "$GAME/managed/"
 rm -f "$GAME/managed/"*.stage1.dll
 echo "== data: your device pack (never share)"
 cp "$PACK/kingdom.knlpack" "$GAME/data/"
+rm -f "$GAME/data/ui-fontdata.json"
+if [ -f "$PACK/ui-fontdata.json" ]; then cp "$PACK/ui-fontdata.json" "$GAME/data/"; fi
 rm -rf "$GAME/data/music"; cp -r "$PACK/music" "$GAME/data/"
 
 cp "$HERE/miyoo/knl.sh" "$GAME/"

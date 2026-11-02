@@ -212,12 +212,12 @@ namespace UnityEngine
         public float GetPreferredWidth(string s, TextGenerationSettings t)
         {
             t.horizontalOverflow = HorizontalWrapMode.Overflow; t.generationExtents = Vector2.zero;
-            return Measure(s, t).x / Mathf.Max(t.scaleFactor, 1e-4f);
+            return Measure(s, t).x;
         }
         public float GetPreferredHeight(string s, TextGenerationSettings t)
         {
             t.verticalOverflow = VerticalWrapMode.Overflow;
-            return Measure(s, t).y / Mathf.Max(t.scaleFactor, 1e-4f);
+            return Measure(s, t).y;
         }
         Vector2 Measure(string s, TextGenerationSettings t)
         {
@@ -240,7 +240,10 @@ namespace UnityEngine
             var font = t.font;
             if (font == null) { m_Extents = new Rect(0, 0, 0, 0); AddTrailing(); return; }
             float sf = t.scaleFactor <= 0 ? 1f : t.scaleFactor;
-            float scale = (t.fontSize > 0 && font.m_FontSize > 0 ? (float)t.fontSize / font.m_FontSize : 1f) * sf;
+            // UI.Text uses fontSize=0 for baked fonts and divides native-pixel vertices and
+            // preferred metrics by pixelsPerUnit itself. Scaling those intrinsic glyphs here
+            // again doubles small-font labels and wraps words that fit in the original UI.
+            float scale = t.fontSize > 0 && font.m_FontSize > 0 ? (float)t.fontSize / font.m_FontSize * sf : 1f;
             float lineH = font.m_LineSpacing * scale * (t.lineSpacing == 0 ? 1f : t.lineSpacing);
             float ascent = font.m_Ascent * scale;
             Vector2 ext = t.generationExtents * sf;

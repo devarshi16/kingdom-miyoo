@@ -85,7 +85,9 @@ def jsonable(x):
     if isinstance(x, (bytes, bytearray, memoryview)):
         return {"$bytes": len(x)}
     if isinstance(x, dict):
-        return {k: ({"$stripped": len(v)} if k in STRIP and hasattr(v, "__len__") else jsonable(v))
+        # UI.Text's m_FontData is a layout object, whereas Font.m_FontData is binary font
+        # payload. Stripping both silently loses font/alignment/wrapping for every UI label.
+        return {k: ({"$stripped": len(v)} if k in STRIP and not isinstance(v, dict) and hasattr(v, "__len__") else jsonable(v))
                 for k, v in x.items()}
     if isinstance(x, (list, tuple)):
         return [jsonable(v) for v in x]

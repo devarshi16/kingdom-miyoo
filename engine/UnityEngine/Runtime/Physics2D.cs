@@ -206,13 +206,13 @@ namespace UnityEngine
         public static Collider2D OverlapPoint(Vector2 p) { return OverlapPoint(p, DefaultRaycastLayers); }
         public static Collider2D OverlapPoint(Vector2 p, int mask) { var l = KNL.Physics2DSystem.QueryPoint(p, mask); return l.Count > 0 ? l[0] : null; }
         public static int OverlapPointNonAlloc(Vector2 p, Collider2D[] r) { return OverlapPointNonAlloc(p, r, DefaultRaycastLayers); }
-        public static int OverlapPointNonAlloc(Vector2 p, Collider2D[] r, int mask) { return Fill(KNL.Physics2DSystem.QueryPoint(p, mask), r); }
+        public static int OverlapPointNonAlloc(Vector2 p, Collider2D[] r, int mask) { return KNL.Physics2DSystem.QueryPointNonAlloc(p, mask, r); }
         public static Collider2D OverlapArea(Vector2 a, Vector2 b) { return OverlapArea(a, b, DefaultRaycastLayers); }
         public static Collider2D OverlapArea(Vector2 a, Vector2 b, int mask) { var l = KNL.Physics2DSystem.QueryArea(a, b, mask); return l.Count > 0 ? l[0] : null; }
         public static Collider2D[] OverlapAreaAll(Vector2 a, Vector2 b) { return OverlapAreaAll(a, b, DefaultRaycastLayers); }
         public static Collider2D[] OverlapAreaAll(Vector2 a, Vector2 b, int mask) { return KNL.Physics2DSystem.QueryArea(a, b, mask).ToArray(); }
         public static int OverlapAreaNonAlloc(Vector2 a, Vector2 b, Collider2D[] r) { return OverlapAreaNonAlloc(a, b, r, DefaultRaycastLayers); }
-        public static int OverlapAreaNonAlloc(Vector2 a, Vector2 b, Collider2D[] r, int mask) { return Fill(KNL.Physics2DSystem.QueryArea(a, b, mask), r); }
+        public static int OverlapAreaNonAlloc(Vector2 a, Vector2 b, Collider2D[] r, int mask) { return KNL.Physics2DSystem.QueryAreaNonAlloc(a, b, mask, r); }
         public static Collider2D OverlapCircle(Vector2 c, float rad) { return OverlapCircle(c, rad, DefaultRaycastLayers); }
         public static Collider2D OverlapCircle(Vector2 c, float rad, int mask) { var l = KNL.Physics2DSystem.QueryCircle(c, rad, mask); return l.Count > 0 ? l[0] : null; }
         public static Collider2D[] OverlapCircleAll(Vector2 c, float rad, int mask) { return KNL.Physics2DSystem.QueryCircle(c, rad, mask).ToArray(); }
@@ -341,8 +341,10 @@ namespace KNL
         public static bool Overlaps(Collider2D a, Collider2D b) { return AabbOf(a).Overlaps(AabbOf(b)); }
 
         // ------------------------------------------------------------- registry
-        sealed class Entry { public Collider2D c; public Rigidbody2D rb; public Aabb box; public int layer; }
+        sealed class Entry { public Collider2D c; public Rigidbody2D rb; public Aabb box; public int layer; public float sortedX; }
         static readonly List<Entry> entries = new List<Entry>();
+        static readonly List<Entry> gatherEntries = new List<Entry>();
+        static bool entriesOrdered;
         static readonly List<Entry> entryPool = new List<Entry>();   // reused every step (M5: no per-step garbage)
         static readonly List<Rigidbody2D> bodies = new List<Rigidbody2D>();
 
@@ -350,7 +352,8 @@ namespace KNL
 
         static void Gather()
         {
-            entries.Clear(); bodies.Clear();
+            gatherEntries.Clear(); bodies.Clear();
+            bool sameStructure = true;
             int pass = GameObject.NewPass();
             var cols = Collider2D.s_All;
             int colCount = cols.Count;
@@ -360,10 +363,12 @@ namespace KNL
                 if (c == null || c.m_Destroyed || !c.m_Enabled) continue;
                 var g = c.m_GameObject;
                 if (g == null || g.m_Destroyed || !g.ActiveInPass(pass)) continue;
-                if (entryPool.Count == entries.Count) entryPool.Add(new Entry());
-                var e = entryPool[entries.Count];
+                if (entryPool.Count == gatherEntries.Count) entryPool.Add(new Entry());
+                var e = entryPool[gatherEntries.Count];
+                if (!ReferenceEquals(e.c, c)) sameStructure = false;
                 e.c = c; e.rb = BodyOf(c, pass); e.box = AabbOf(c); e.layer = g.m_Layer;
-                entries.Add(e);
+                if (float.IsNaN(e.box.x0) || float.IsNaN(e.sortedX)) sameStructure = false;
+                gatherEntries.Add(e);
             }
             var bds = Rigidbody2D.s_All;
             int bdCount = bds.Count;
@@ -375,7 +380,24 @@ namespace KNL
                 if (g == null || g.m_Destroyed || !g.ActiveInPass(pass)) continue;
                 bodies.Add(rb);
             }
-            entries.Sort(s_EntryComparison);
+            // Pool entries keep their identity while the active registry is unchanged.
+            // Reuse the last sweep order only if every strict/equal neighbor relationship
+            // is unchanged. Otherwise sort the original registry order exactly as before,
+            // including the framework sort's ordering of equal-x colliders.
+            bool sorted = sameStructure && entries.Count == gatherEntries.Count;
+            if (sorted)
+                for (int i = 1; i < entries.Count; i++)
+                {
+                    var a = entries[i - 1]; var b = entries[i];
+                    if (a.box.x0 > b.box.x0 || (a.box.x0 == b.box.x0) != (a.sortedX == b.sortedX)) { sorted = false; break; }
+                }
+            if (!sorted)
+            {
+                entries.Clear(); entries.AddRange(gatherEntries);
+                entries.Sort(s_EntryComparison);
+            }
+            for (int i = 0; i < entries.Count; i++) entries[i].sortedX = entries[i].box.x0;
+            entriesOrdered = true;
         }
 
         static Rigidbody2D BodyOf(Collider2D c, int pass)
@@ -395,6 +417,9 @@ namespace KNL
         static HashSet<PairKey> triggersPrev = new HashSet<PairKey>(), triggersNow = new HashSet<PairKey>();
         static HashSet<PairKey> contactsPrev = new HashSet<PairKey>(), contactsNow = new HashSet<PairKey>();
         static readonly Dictionary<PairKey, Collision2D> contactInfo = new Dictionary<PairKey, Collision2D>();
+        static int[] nextBodyEntry = new int[0];
+        struct HingeContact { public Entry a, b; }
+        static readonly List<HingeContact> hingeContacts = new List<HingeContact>();
 
         public static void Step()
         {
@@ -404,12 +429,14 @@ namespace KNL
             // integrate
             PouchPhysics.Prepare(bodies);
             PouchPhysics.Step(dt);
+            HingePhysics.Prepare();
             int bCount = bodies.Count;
             for (int i = 0; i < bCount; i++)
             {
                 var rb = bodies[i];
                 if (rb == null || rb.m_Destroyed || rb.m_BodyType == 2) continue;
                 if (PouchPhysics.Owns(rb)) continue;
+                HingePhysics.BeforeIntegrate(rb);
                 if (rb.m_BodyType == 0)
                 {
                     rb.m_Velocity += Gravity * rb.m_GravityScale * dt;
@@ -427,24 +454,33 @@ namespace KNL
                 }
                 if (rb.m_AngularVelocity != 0 && (rb.m_Constraints & RigidbodyConstraints2D.FreezeRotation) == 0)
                     rb.transform.Rotate(0, 0, rb.m_AngularVelocity * dt);
+                HingePhysics.AfterIntegrate(rb);
             }
+            HingePhysics.FinishIntegrate();
             if (Prof.Level > 1) pt = Prof.Add("  physics integrate", pt);
             Gather();
             if (Prof.Level > 1) pt = Prof.Add("  physics gather", pt);
             triggersNow.Clear(); contactsNow.Clear();
+            hingeContacts.Clear();
             PouchPhysics.Contacts();
+            int entryCount = entries.Count;
+            if (nextBodyEntry.Length <= entryCount) nextBodyEntry = new int[Math.Max(64, (entryCount + 1) * 2)];
+            nextBodyEntry[entryCount] = entryCount;
+            for (int i = entryCount - 1; i >= 0; i--)
+                nextBodyEntry[i] = entries[i].rb != null ? i : nextBodyEntry[i + 1];
             // sweep-and-prune on x
-            for (int i = 0; i < entries.Count; i++)
+            for (int i = 0; i < entryCount; i++)
             {
                 var A = entries[i];
-                for (int j = i + 1; j < entries.Count; j++)
+                bool staticA = A.rb == null;
+                for (int j = staticA ? nextBodyEntry[i + 1] : i + 1; j < entryCount; j = staticA ? nextBodyEntry[j + 1] : j + 1)
                 {
                     var B = entries[j];
                     if (B.box.x0 > A.box.x1) break;
-                    if (A.rb == null && B.rb == null) continue;                  // static vs static
                     if (!LayersCollide(A.layer, B.layer)) continue;
                     if (!A.box.Overlaps(B.box)) continue;
                     if (A.rb != null && ReferenceEquals(A.rb, B.rb)) continue;   // same body
+                    if (HingePhysics.SuppressCollision(A.rb, B.rb)) continue;
                     if (PouchPhysics.Handles(A.c, B.c)) continue;
                     if (A.c.m_IsTrigger || B.c.m_IsTrigger)
                     {
@@ -456,9 +492,27 @@ namespace KNL
                         continue;
                     }
                     Resolve(A, B);
+                    if ((HingePhysics.ContainsBody(A.rb) || HingePhysics.ContainsBody(B.rb)) && contactsNow.Contains(Key(A.c, B.c)))
+                        hingeContacts.Add(new HingeContact { a = A, b = B });
                 }
             }
             if (Prof.Level > 1) pt = Prof.Add("  physics pairs", pt);
+            HingePhysics.Solve();
+            // Ground contacts and axle constraints must support the same assembly. Revisit
+            // only contacts involving a hinge body; unrelated collision work is unchanged.
+            if (hingeContacts.Count > 0)
+                for (int iteration = 0; iteration < 4; iteration++)
+                {
+                    foreach (var contact in hingeContacts)
+                    {
+                        contact.a.box = AabbOf(contact.a.c); contact.b.box = AabbOf(contact.b.c);
+                        Resolve(contact.a, contact.b);
+                    }
+                    HingePhysics.Solve(4, 4);
+                }
+            // Resolve may move entry bounds across a neighbor. Queries in callbacks must
+            // keep their existing snapshot/order semantics, without an unsafe x early-out.
+            entriesOrdered = false;
             Dispatch();
             if (Prof.Level > 1) Prof.Add("  physics messages", pt);
         }
@@ -857,27 +911,75 @@ namespace KNL
         // ---------------------------------------------------------------- queries
         static IEnumerable<Entry> Live(int mask)
         {
-            if (entries.Count == 0 || Time.frameCount != gatheredFrame) { Gather(); gatheredFrame = Time.frameCount; }
+            EnsureGathered();
             foreach (var e in entries)
                 if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0) yield return e;
         }
         static int gatheredFrame = -1;
+        static void EnsureGathered()
+        {
+            if (entries.Count == 0 || Time.frameCount != gatheredFrame) { Gather(); gatheredFrame = Time.frameCount; }
+        }
         public static void Invalidate() { gatheredFrame = -1; }
 
         public static List<Collider2D> QueryPoint(Vector2 p, int mask)
-        { return Live(mask).Where(e => ContainsPoint(e.c, p)).Select(e => e.c).ToList(); }
+        {
+            EnsureGathered();
+            var result = new List<Collider2D>();
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var e = entries[i];
+                // ContainsPoint refreshes a collider's live transform even between queries
+                // in the same frame; its older gather bound cannot safely cull that test.
+                if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0 && ContainsPoint(e.c, p)) result.Add(e.c);
+            }
+            return result;
+        }
+        public static int QueryPointNonAlloc(Vector2 p, int mask, Collider2D[] result)
+        {
+            EnsureGathered(); int count = 0, capacity = result.Length;
+            for (int i = 0; i < entries.Count && count < capacity; i++)
+            {
+                var e = entries[i];
+                if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0 && ContainsPoint(e.c, p)) result[count++] = e.c;
+            }
+            return count;
+        }
         public static List<Collider2D> QueryArea(Vector2 a, Vector2 b, int mask)
         {
             var q = new Aabb { x0 = Mathf.Min(a.x, b.x), x1 = Mathf.Max(a.x, b.x), y0 = Mathf.Min(a.y, b.y), y1 = Mathf.Max(a.y, b.y) };
-            return Live(mask).Where(e => e.box.Overlaps(q)).Select(e => e.c).ToList();
+            EnsureGathered(); var result = new List<Collider2D>();
+            for (int i = 0; i < entries.Count; i++)
+            {
+                var e = entries[i];
+                if (entriesOrdered && e.box.x0 > q.x1) break;
+                if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0 && e.box.Overlaps(q)) result.Add(e.c);
+            }
+            return result;
+        }
+        public static int QueryAreaNonAlloc(Vector2 a, Vector2 b, int mask, Collider2D[] result)
+        {
+            var q = new Aabb { x0 = Mathf.Min(a.x, b.x), x1 = Mathf.Max(a.x, b.x), y0 = Mathf.Min(a.y, b.y), y1 = Mathf.Max(a.y, b.y) };
+            EnsureGathered(); int count = 0, capacity = result.Length;
+            for (int i = 0; i < entries.Count && count < capacity; i++)
+            {
+                var e = entries[i];
+                if (entriesOrdered && e.box.x0 > q.x1) break;
+                if (!e.c.m_Destroyed && ((1 << e.layer) & mask) != 0 && e.box.Overlaps(q)) result[count++] = e.c;
+            }
+            return count;
         }
         public static List<Collider2D> QueryCircle(Vector2 c, float r, int mask)
         {
-            return Live(mask).Where(e =>
+            EnsureGathered(); var result = new List<Collider2D>();
+            for (int i = 0; i < entries.Count; i++)
             {
+                var e = entries[i];
+                if (e.c.m_Destroyed || ((1 << e.layer) & mask) == 0) continue;
                 float cx = Mathf.Clamp(c.x, e.box.x0, e.box.x1), cy = Mathf.Clamp(c.y, e.box.y0, e.box.y1);
-                return (cx - c.x) * (cx - c.x) + (cy - c.y) * (cy - c.y) <= r * r;
-            }).Select(e => e.c).ToList();
+                if ((cx - c.x) * (cx - c.x) + (cy - c.y) * (cy - c.y) <= r * r) result.Add(e.c);
+            }
+            return result;
         }
         public static List<RaycastHit2D> RayAll(Vector2 o, Vector2 d, float dist, int mask, float minDepth, float maxDepth)
         {

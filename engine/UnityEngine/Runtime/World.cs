@@ -50,6 +50,7 @@ namespace KNL
                 var b = Pack.Read("objects/" + name);
                 if (b == null) { Log.Write("WARN", "no data for " + name); return f; }
                 f.objects = ObjectTable.FromPack(b, f.externals);
+                UIFontMetadata.VerifyPackEntry(name, b);
                 return f;
             }
             string p = Path.Combine(Path.Combine(Paths.DataDir, "objects"), name + ".json");
@@ -452,7 +453,8 @@ namespace KNL
                     var tr = comp as Transform;
                     if (tr != null) go.m_Transform = tr;
                     f.instances[cpid] = comp;
-                    if (ce.ContainsKey("data")) populateQueue.Add(new KeyValuePair<UnityEngine.Object, JObj>(comp, (JObj)ce["data"]));
+                    if (ce.ContainsKey("data")) populateQueue.Add(new KeyValuePair<UnityEngine.Object, JObj>(comp,
+                        UIFontMetadata.Restore(f.name, cpid, comp, (JObj)ce["data"])));
                 }
             }
             // phase 2: apply data (references can now resolve inside this file)
@@ -604,6 +606,20 @@ namespace KNL
                 var ec = c as EdgeCollider2D; if (ec != null) ec.m_Points = ((List<object>)d["m_Points"]).Select(Json.V2).ToArray();
                 return;
             }
+            var hinge = c as HingeJoint2D;
+            if (hinge != null)
+            {
+                hinge.m_ConnectedBody = Resolve(f, d["m_ConnectedRigidBody"]) as Rigidbody2D;
+                hinge.m_EnableCollision = Json.B(d, "m_EnableCollision");
+                hinge.m_Anchor = Json.V2(d["m_Anchor"]);
+                hinge.m_ConnectedAnchor = Json.V2(d["m_ConnectedAnchor"]);
+                hinge.m_AutoConfigureConnectedAnchor = Json.B(d, "m_AutoConfigureConnectedAnchor");
+                hinge.m_UseMotor = Json.B(d, "m_UseMotor");
+                hinge.m_UseLimits = Json.B(d, "m_UseLimits");
+                if (hinge.enabled && (hinge.m_UseMotor || hinge.m_UseLimits || hinge.m_AutoConfigureConnectedAnchor))
+                    Log.Write("WARN", "HingeJoint2D supports explicit free wheel anchors only: " + c.name);
+                return;
+            }
             var tj = c as TargetJoint2D;
             if (tj != null)
             {
@@ -663,6 +679,8 @@ namespace KNL
                 cam.m_OrthographicSize = Json.F(d, "orthographic size", 5f);
                 cam.m_BackgroundColor = Json.C(d["m_BackGroundColor"]);
                 cam.m_Depth = Json.F(d, "m_Depth");
+                object mask;
+                if (d.TryGetValue("m_CullingMask", out mask)) cam.m_CullingMask = unchecked((int)(uint)Json.L((JObj)mask, "m_Bits"));
                 cam.nearClipPlane = Json.F(d, "near clip plane");
                 cam.farClipPlane = Json.F(d, "far clip plane");
                 cam.m_TargetTexture = Resolve(f, d["m_TargetTexture"]) as RenderTexture;
@@ -783,6 +801,7 @@ namespace KNL
             var a = c as Animator; if (a != null) { Animator.s_All.Add(a); return; }
             var col = c as Collider2D; if (col != null) { Collider2D.s_All.Add(col); return; }
             var rb = c as Rigidbody2D; if (rb != null) { PhysicsTopologyVersion++; Rigidbody2D.s_All.Add(rb); return; }
+            var hj = c as HingeJoint2D; if (hj != null) { HingeJoint2D.s_All.Add(hj); return; }
             var cam = c as Camera; if (cam != null) { Camera.s_All.Add(cam); return; }
             var cv = c as Canvas; if (cv != null) { Canvas.s_All.Add(cv); return; }
             var al = c as AudioListener; if (al != null) { AudioListener.s_All.Add(al); return; }
@@ -835,6 +854,7 @@ namespace KNL
             Animator.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
             Collider2D.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
             Rigidbody2D.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
+            HingeJoint2D.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
             Camera.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
             Canvas.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);
             AudioListener.s_All.RemoveAll(c => c == null || c.m_Destroyed || c.m_GameObject == null || c.m_GameObject.m_Destroyed);

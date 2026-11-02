@@ -1,0 +1,95 @@
+{
+  "date": "2026-11-02",
+  "scope": "Original serialized camera/prefab data and managed CIL; compatibility-engine runtime probes. This does not claim execution of the original Unity player.",
+  "rea_evidence": [
+    "ev_1831f9e435f94d0b10a98d5df885242d0a13535f638141a9cea15c8e23d0e1c2",
+    "ev_fe921513eff2bc671cbd912d5810bf49e322cd62bcdb0f3083e57585b1292976"
+  ],
+  "original_artifacts": {
+    "Managed/Assembly-CSharp.dll": "89e7bdc9b18ccb4a6d37e93c09245c58d67506d92d1fdc26206ef096c73150e3",
+    "level2": "f5ab8dfb310d8ec909c4be1ea65b9f492bddb8b579454ac930b499833e5aa92f",
+    "sharedassets0.assets": "dcbe30d3a828aba69583bd55609aed7a8aeebce538d2f84199bf0e3ba3fa80b9",
+    "sharedassets2.assets": "d7f0291aac639cf53a8a3bd9769882850bf4dfdb2f27d0fa027be13b3ca9c920"
+  },
+  "observations": [
+    {
+      "fact": "Main Camera excludes reflection-only sprites; Reflection Camera includes only layer 29.",
+      "source": "level2 Camera path IDs 267 and 264",
+      "main_mask": 536870889,
+      "reflection_mask": 536870912,
+      "interface_mask": 33
+    },
+    {
+      "fact": "Torch fire instantiates a Reflected Light Small prefab on layer 29.",
+      "source": "Assembly-CSharp Fire.Awake; sharedassets2.assets Fire component396, reflection prefab267, SpriteRenderer392"
+    },
+    {
+      "fact": "ReflectedLight.Awake obtains Water MeshRenderer.bounds.max.y; its coroutine positions the highlight at this axis plus 0.25.",
+      "source": "Assembly-CSharp ReflectedLight.Awake token0x060012c3; iterator MoveNext token0x06001b15"
+    },
+    {
+      "fact": "Water quad world bounds should have max.y0.25, not transform.position.y-0.75.",
+      "source": "level2 Water GameObject56, Transform184, MeshFilter277 (builtinquad10210), MeshRenderer270",
+      "position_y": -0.75,
+      "scale_y": -2,
+      "local_quad_half_height": 0.5
+    },
+    {
+      "fact": "Catapult wheels have explicit hinge joints to the chassis, explaining why independently integrated wheel and chassis positions diverge.",
+      "source": "sharedassets0.assets Catapult GameObject2222, chassisRigidbody3136, wheelRigidbodies3181/3125, HingeJoint2D3870/3872",
+      "anchors": [
+        [
+          0.421875,
+          0.171875
+        ],
+        [
+          -0.421875,
+          0.171875
+        ]
+      ]
+    }
+  ],
+  "runtime_probes": {
+    "save_source": "work/knl-gameplay-issues/20261102T053150Z/save (copied before every run)",
+    "torch": {
+      "frames": 661,
+      "mode": "lite",
+      "test_overrides": [
+        "Player.torchBrightnessThreshold=2 to activate the shipped torch in daylight",
+        "Reflection highlight alpha=1 at the single captured frame to make misplaced highlights visible"
+      ],
+      "before_log": "/tmp/knl-torch-before.log",
+      "after_log": "/tmp/knl-torch-after.log",
+      "before_png_sha256": "d259490f940807eb7f4a6f8be64195d31ab8631a1580b315d3f1ad0eb09d4c67",
+      "after_png_sha256": "a37f0e524e277ba35d1eae716b3083f3d7bd5f83d94deb26a7c1c4198cd61bdf",
+      "observed": "Before: visible streak below player torch. After: streak removed, hand flame retained. Both runs zero logged lifecycle exceptions, audio72 plays/missing0."
+    },
+    "full_mode": {
+      "frames": 661,
+      "log": "/tmp/knl-torch-full.log",
+      "png_sha256": "9f795f63222f2ed9daf5aa41462f4878a7e56dea51265fcd96c2b985336d31ee",
+      "observed": "Water reflection retained, reflection-only highlights appear below the shoreline, hand flame retained; zero logged lifecycle exceptions."
+    },
+    "catapult": {
+      "frames": 670,
+      "log": "/tmp/knl-siege-workshop.log",
+      "actions": [
+        "frame600 original PayableWorkshop.Pay on active Left and Right workshops",
+        "frame605 original WorkableBuilding.CompleteConstruction",
+        "frame660 capture both catapults"
+      ],
+      "observed": "Both chassis roots at y0.1 while wheel centers remained y1.0. Body sprites enabled/alpha1 and directions+/-1, proving physics displacement rather than missing sprite images. Hinge correction assigned to parent agent."
+    }
+  },
+  "regression": "tests/RenderingBoundsRegression.cs:10 assertions pass; mesh bounds under negative scale/rotation/parenting, original layer masks and layer31/invalid-index handling.",
+  "limitations": [
+    "Full water reflection pass is a CPU approximation of original shader/camera rendering; not pixel-identical to original Unity.",
+    "Torch screenshots are private owned-asset QA artifacts under /tmp, not distributed.",
+    "Hinge correction and Miyoo device performance validation are performed by the parent agent, not represented as complete by this evidence record."
+  ],
+  "parent_integration": {
+    "hinges": "Implemented explicit free-wheel anchors, connected-body import/clone remapping, parented body world poses, collision exclusions and contact/anchor iteration. Nine regressions pass. Active original joints use no motors or limits.",
+    "workshop_after": "Both workshop-constructed chassis near y0.9; original Ready/Fire animations release launched boulders in opposite directions. Copied-save Save+Quit and reload retain both supported catapults.",
+    "hardware": "Same sequence executed on stock Miyoo: 1001 frames, zero logged exceptions, original Save+Quit success. Probe camera/inspection overhead means FPS is not normal gameplay evidence."
+  }
+}
