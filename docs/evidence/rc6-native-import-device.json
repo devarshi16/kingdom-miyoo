@@ -18,8 +18,8 @@
   "audio_plays": 30,
   "audio_missing": 0,
   "save_sentinel_unchanged": true,
-  "restoration": "Onion MainUI resumed; prior ondemand governor and audioserver -8 restored",
-  "limits": "Audio output muted in boot. Interruption on device used SIGTERM; activation-boundary recovery is synthetic, not a physical power-cut or disk-full injection.",
+  "restoration": "Onion MainUI resumed and prior ondemand governor restored. The attempted audioserver -8 restart failed with MI_AO_SetPubAttr while MainUI retained the audio device; the idle device was rebooted after QA to restore the normal boot audio state.",
+  "limits": "Audio output muted in boot. Interruption on device used SIGTERM; activation-boundary recovery is synthetic, not a physical power-cut or disk-full injection. A later SSH audio smoke test fell back to headless audio; it does not verify audible output. Normal frontend audio needs gameplay verification.",
   "qa_package": {
     "archive_sha256": "f2aa319bb8c09170b5fe4ebb66e31f8325d26d3570c7fad2a0da5916852e98b4",
     "source_commit": "eb555e88b0e4bef1f6dad7037850b9e90f27d647",

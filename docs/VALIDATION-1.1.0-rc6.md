@@ -37,7 +37,7 @@ The same stock clock, muted output and profiler 0 were also tested with ordinary
 | 79-enemy winter horde | 601–1800 | 11.13–19.25 |
 | 8 knights / 32 archers at a portal | 601–1800 | 12.99–17.75 |
 
-The fresh start exceeds the 30 FPS target in this muted test. Heavy combat remains below it. Real-time timing can run up to 2.5 physics steps per slow frame, whereas the fixed-step comparison averages 1.67; lowering simulation frequency merely to inflate FPS would change the mechanics budget. Audio-enabled performance remains unmeasured. Individual windows are in `evidence/rc6-realtime-throughput.csv` and the workbook.
+The fresh start exceeds the 30 FPS target in this muted test. Heavy combat remains below it. Real-time timing can run up to 2.5 physics steps per slow frame, whereas the fixed-step comparison averages 1.67; lowering simulation frequency merely to inflate FPS would change the mechanics budget. Audio-enabled performance remains unmeasured. A later 300-frame SSH smoke test of the installed runtime had zero exceptions and 30 clip plays, but output fell back to headless audio: MI_AO_SetPubAttr was denied while the paused Onion menu retained the device. The idle Miyoo was rebooted after QA. Audible output through a normal frontend launch still needs verification. Individual windows are in `evidence/rc6-realtime-throughput.csv` and the workbook.
 
 ## Installation
 
