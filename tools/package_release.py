@@ -20,7 +20,7 @@ RUNTIME += ["importer/" + n for n in ("NativeImporter.exe", "Mono.Cecil.dll", "u
                                    "supported_build.json", "build-id.txt", "runtime.json")]
 RUNTIME += ["importer/licenses/" + n for n in ("Mono.Cecil-LICENSE", "Pillow-LICENSE", "UnityPy-LICENSE",
              "libogg-COPYING", "libvorbis-COPYING", "vgmstream-COPYING")]
-PLAYER = ["prepare_data.py", "setup_windows.bat", "setup.sh", "setup_gui.py", "README.md", "VERSION", "THIRD_PARTY_NOTICES.md", "docs/TESTING.md",
+PLAYER = ["prepare_data.py", "setup_windows.bat", "setup.sh", "setup_gui.py", "README.md", "docs/DEVELOPMENT.md", "docs/RELEASE-NOTES-1.1.0.md", "docs/media/README.md", "docs/media/first-launch.jpg", "docs/media/first-launch.gif", "docs/media/gameplay.gif", "VERSION", "THIRD_PARTY_NOTICES.md", "docs/TESTING.md",
           "docs/VALIDATION-1.1.0-rc6.md", "docs/evidence/rc6-device-stress.csv", "docs/evidence/rc6-combat-regression.json",
           "docs/evidence/rc6-realtime-throughput.csv", "docs/images/import-progress.png", "docs/evidence/rc6-import-parity.json", "docs/evidence/rc6-native-import-device.json",
           "docs/LITE-VISUALS.md", "docs/POUCH-COUNTER.md", "docs/VALIDATION-1.1.0-rc4.md", "docs/VALIDATION-1.1.0-rc5.md", "docs/ON_DEVICE_IMPORT.md", "docs/PERFORMANCE-BUDGET.xlsx", "docs/evidence/rc5-device-throughput.csv",

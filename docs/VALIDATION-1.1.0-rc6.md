@@ -2,6 +2,8 @@
 
 Status: experimental candidate. Full gameplay and a natural winter playthrough remain pending. No 30 FPS crowded-combat claim is made.
 
+Release 1.1.0 uses these same tested runtime binaries with updated player documentation and owner-supplied presentation media. This record describes the pre-publication rc6 tests; see [1.1.0 release notes](RELEASE-NOTES-1.1.0.md).
+
 ## Combat cost and exact optimizations
 
 The original Troll FixedUpdate uses an upward collider cast with infinite distance and then ancestor Damageable lookups. In a controlled winter horde, that method consumed 29.60 ms/frame before the cast change. The replacement now hoists direction/layer checks, uses collision-mask candidates, rejects impossible vertical slabs and reuses hit storage. It preserves the same intersection calculation and sort/tie behavior. Local hierarchy/body cache invalidation avoids invalidating unrelated island colliders when pooled actors change. Generic component lookup preserves the existing Type API's ordering and destroyed-first behavior.
