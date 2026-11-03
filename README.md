@@ -25,19 +25,29 @@ Roms/PORTS/Games/KingdomNewLands/
 | :---: | :---: |
 | <img src="docs/media/first-launch.gif" alt="The final seconds of preparation on a Miyoo Mini Plus" width="230"> | <img src="docs/media/gameplay.gif" alt="Kingdom New Lands gameplay on a Miyoo Mini Plus" width="230"> |
 
-## 🤖 AI installation
+## 🤖 AI installation over Wi-Fi
 
-Using an AI assistant that can access files on your computer? Paste this prompt and provide your game-folder and SD-card locations:
+An AI assistant with terminal and network access can install directly over Wi-Fi. Keep your computer and Miyoo on the **same local network**, enable **SSH on the Miyoo**, and provide its **Wi-Fi IP** and SSH login when needed. No SD-card reader is required for this route.
+
+Paste this prompt:
 
 ```text
-Help me install Kingdom: New Lands on my Miyoo Mini Plus:
+Install Kingdom: New Lands on my Miyoo Mini Plus over Wi-Fi:
 https://github.com/devarshi16/kingdom-miyoo
 
-Follow the repository's README and use the complete release ZIP.
-I will provide my original Kingdom_Data folder and SD card location.
-Back up existing saves, copy the release and original files to the
-correct locations, and verify the folder layout. Do not format the
-card or change other games. Tell me what to launch on the Miyoo.
+Miyoo Wi-Fi IP: <MIYOO_WIFI_IP>
+Locate my installed Kingdom_Data folder, or ask me where it is.
+Use my configured SSH access; ask for login details if needed.
+
+Follow the README and use the complete latest release ZIP.
+Ensure the game is closed, then back up the Miyoo's saves locally.
+Prefer the included PC preparation tools, then transfer the prepared
+port and Onion shortcut over SSH using a method the device supports.
+If PC preparation is unavailable, transfer the release and original
+Kingdom_Data folder so first launch can prepare them on the Miyoo.
+Stage and verify the files before activating the installation, preserve
+existing saves, and leave other games unchanged. Do not format the card.
+Tell me when it is ready to launch from Ports.
 ```
 
 ## 🕹️ Controls
