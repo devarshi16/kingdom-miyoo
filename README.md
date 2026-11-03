@@ -25,13 +25,6 @@ Roms/PORTS/Games/KingdomNewLands/
 | :---: | :---: |
 | <img src="docs/media/first-launch.gif" alt="The final seconds of preparation on a Miyoo Mini Plus" width="230"> | <img src="docs/media/gameplay.gif" alt="Kingdom New Lands gameplay on a Miyoo Mini Plus" width="230"> |
 
-<details>
-<summary>📸 See the preparation screen</summary>
-
-<img src="docs/media/first-launch.jpg" alt="First-launch preparation screen showing stage and progress" width="360">
-
-</details>
-
 ## 🤖 AI installation
 
 Using an AI assistant that can access files on your computer? Paste this prompt and provide your game-folder and SD-card locations:
