@@ -1,0 +1,43 @@
+{
+  "clock_mhz": 1200,
+  "overclock": false,
+  "audio": "muted",
+  "profiler": 0,
+  "timestep": "fixed, 1/30 second render timestep; original 50 Hz physics",
+  "max_dt": 0.05,
+  "frames": 1800,
+  "conditions": "same immutable isolated save and seed; MainUI paused; framebuffer window; never normal saves",
+  "scenarios": {
+    "winter-horde": {
+      "baseline_log": "winter-valid-rc5.log",
+      "candidate_log": "winter-simple-d.log",
+      "matching_combat_samples": 20,
+      "matching_fields": "enemy/army/arrow/coin counts, unit coin balances, hits/damage, pickups, portal HP, winter/redmoon and exception totals",
+      "king": "invulnerable in isolated test only",
+      "gameplay_limit": "sample equality is bounded regression evidence, not original Unity parity or a full playthrough"
+    },
+    "portal-assault": {
+      "baseline_log": "portal-rc5.log",
+      "candidate_log": "portal-casts-d.log",
+      "matching_combat_samples": 20,
+      "matching_fields": "enemy/army/arrow/coin counts, unit coin balances, hits/damage, pickups, portal HP, winter/redmoon and exception totals",
+      "king": "invulnerable in isolated test only",
+      "gameplay_limit": "sample equality is bounded regression evidence, not original Unity parity or a full playthrough"
+    },
+    "coin-health": {
+      "baseline_log": "health-squads-rc5.log",
+      "candidate_log": "health-squads-rc6.log",
+      "matching_combat_samples": 20,
+      "matching_fields": "enemy/army/arrow/coin counts, unit coin balances, hits/damage, pickups, portal HP, winter/redmoon and exception totals",
+      "fixture": "2 knights with 8 archers, 60 original enemies, open ground, winter/redmoon; enemies positioned on both sides to exercise health coins",
+      "initial_unit_coins": 14,
+      "lowest_sampled_unit_coins": 11,
+      "final_sampled_unit_coins": 13,
+      "coin_pickups": 6,
+      "final_sampled_hits": 346,
+      "exceptions": 0,
+      "king": "invulnerable in isolated test only",
+      "gameplay_limit": "Exact rc5 regression match, not original Unity physics parity or a full playthrough"
+    }
+  }
+}

@@ -3,7 +3,8 @@
 GameName="Kingdom New Lands"
 GameDir="KingdomNewLands"
 GameExecutable="knl.sh"
-GameDataFile="kingdom.knlpack"
+# The launcher must run before owned data has been imported.
+GameDataFile="knl.sh"
 KillAudioserver=1
 PerformanceMode=1
 Arguments=""

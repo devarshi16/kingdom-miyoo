@@ -165,22 +165,22 @@ namespace UnityEngine
 
         internal static int s_ActiveTopologyVersion = 1;
         internal static int NewPass() { return s_ActiveTopologyVersion; }
-        int c_ActivePass; bool c_Active;
+        internal bool c_ActiveValid; bool c_Active;
         public bool activeInHierarchy
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             get
             {
-                if (c_ActivePass == s_ActiveTopologyVersion) return c_Active;
+                if (c_ActiveValid) return c_Active;
                 return RefreshActiveHierarchy();
             }
         }
         bool RefreshActiveHierarchy()
         {
-            if (!m_IsActive || m_Scene == null) { c_Active = false; c_ActivePass = s_ActiveTopologyVersion; return false; }
+            if (!m_IsActive || m_Scene == null) { c_Active = false; c_ActiveValid = true; return false; }
             var p = m_Transform != null ? m_Transform.m_Parent : null;
             c_Active = p == null || p.m_GameObject.activeInHierarchy;
-            c_ActivePass = s_ActiveTopologyVersion;
+            c_ActiveValid = true;
             return c_Active;
         }
         internal bool ActiveInPass(int pass) { return activeInHierarchy; }
@@ -224,7 +224,12 @@ namespace UnityEngine
             for (int i = 0; i < m_Components.Count; i++) if (t.IsInstanceOfType(m_Components[i])) return m_Components[i];
             return null;
         }
-        public T GetComponent<T>() { return (T)(object)GetComponent(typeof(T)); }
+        public T GetComponent<T>()
+        {
+            for (int i = 0; i < m_Components.Count; i++)
+                if (m_Components[i] is T) return (T)(object)m_Components[i];
+            return (T)(object)null;
+        }
         public Component GetComponent(string typeName)
         {
             foreach (var c in m_Components) if (c.GetType().Name == typeName) return c;
@@ -255,7 +260,23 @@ namespace UnityEngine
             { var c = tr.m_GameObject.activeInHierarchy ? tr.m_GameObject.GetComponent(t) : null; if (c != null) return c; }
             return null;
         }
-        public T GetComponentInParent<T>() { return (T)(object)GetComponentInParent(typeof(T)); }
+        public T GetComponentInParent<T>()
+        {
+            for (var t = m_Transform; t != null; t = t.m_Parent)
+            {
+                var go = t.m_GameObject;
+                if (!go.activeInHierarchy) continue;
+                var components = go.m_Components;
+                for (int i = 0; i < components.Count; i++)
+                    if (components[i] is T)
+                    {
+                        var c = components[i];
+                        if (c != null) return (T)(object)c;
+                        break; // preserve the Type API's destroyed-first ancestor rule
+                    }
+            }
+            return (T)(object)null;
+        }
         public Component[] GetComponentsInChildren(Type t, bool includeInactive)
         { var l = new List<Component>(); CollectChildren(t, includeInactive, l); return l.ToArray(); }
         internal void CollectChildren(Type t, bool includeInactive, List<Component> l)
@@ -331,6 +352,15 @@ namespace UnityEngine
         }
         internal Transform m_Parent;
         internal List<Transform> m_Children = new List<Transform>();
+        // Attachment depends only on this ancestor chain. Pooling an arrow elsewhere must
+        // not invalidate thousands of static colliders on the rest of the island.
+        internal int m_BodyTopologyStamp;
+        internal void InvalidateBodyAttachments(bool activeHierarchyChanged = false)
+        {
+            unchecked { m_BodyTopologyStamp++; }
+            if (activeHierarchyChanged && m_GameObject != null) m_GameObject.c_ActiveValid = false;
+            for (int i = 0; i < m_Children.Count; i++) m_Children[i].InvalidateBodyAttachments(activeHierarchyChanged);
+        }
 
         public Vector3 localPosition { get { return m_LocalPosition; } set { m_LocalPosition = value; } }
         public Quaternion localRotation { get { return m_LocalRotation; } set { m_LocalRotation = value; } }

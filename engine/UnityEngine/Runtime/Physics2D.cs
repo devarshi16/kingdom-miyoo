@@ -86,10 +86,11 @@ namespace UnityEngine
         {
             get
             {
-                if (m_RbCached && m_RbVersion == KNL.World.PhysicsTopologyVersion && (m_CachedRb == null || !m_CachedRb.m_Destroyed)) return m_CachedRb;
+                int version = gameObject != null ? gameObject.m_Transform.m_BodyTopologyStamp : -1;
+                if (m_RbCached && m_RbVersion == version && (m_CachedRb == null || !m_CachedRb.m_Destroyed)) return m_CachedRb;
                 m_CachedRb = gameObject != null ? FindAttachedBody(gameObject) : null;
                 m_RbCached = true;
-                m_RbVersion = KNL.World.PhysicsTopologyVersion;
+                m_RbVersion = version;
                 return m_CachedRb;
             }
         }
@@ -1068,22 +1069,42 @@ namespace KNL
             tHit = tmin;
             return true;
         }
+        [ThreadStatic] static List<RaycastHit2D> castHits;
+        static readonly Comparison<RaycastHit2D> s_CastComparison = (a, b) => a.m_Distance.CompareTo(b.m_Distance);
         public static int Cast(Collider2D c, Vector2 dir, RaycastHit2D[] results, float distance)
         {
             var me = AabbOf(c); var rb = c.attachedRigidbody;
             var ctr = new Vector2((me.x0 + me.x1) / 2, (me.y0 + me.y1) / 2); var half = new Vector2((me.x1 - me.x0) / 2, (me.y1 - me.y0) / 2);
-            var hits = new List<RaycastHit2D>();
-            foreach (var e in Live(-1))
+            // Cast never dispatches callbacks. A per-thread scratch list retains the exact
+            // framework sort/tie order while avoiding a list and backing array per enemy.
+            var hits = castHits ?? (castHits = new List<RaycastHit2D>());
+            hits.Clear();
+            var direction = dir.normalized;
+            bool vertical = Mathf.Abs(direction.x) < 1e-9f; // same test as RayBox's x slab
+            int layer = c.gameObject.m_Layer;
+            EnsureGathered();
+            var candidates = EntriesForMask(unchecked((int)CollisionMask(layer)));
+            for (int i = 0; i < candidates.Count; i++)
             {
-                if (ReferenceEquals(e.c, c) || (rb != null && ReferenceEquals(e.rb, rb)) || e.c.m_IsTrigger) continue;
-                if (!LayersCollide(c.gameObject.m_Layer, e.layer)) continue;
-                var grown = new Aabb { x0 = e.box.x0 - half.x, x1 = e.box.x1 + half.x, y0 = e.box.y0 - half.y, y1 = e.box.y1 + half.y };
+                var e = candidates[i];
+                if (e.c.m_Destroyed || ReferenceEquals(e.c, c) || (rb != null && ReferenceEquals(e.rb, rb)) || e.c.m_IsTrigger) continue;
+                if (!LayersCollide(layer, e.layer)) continue;
+                float x0 = e.box.x0 - half.x, x1 = e.box.x1 + half.x;
+                // The game's charging Troll casts straight up. Reject only the same
+                // impossible x slabs RayBox would reject; snapshot bounds remain intact.
+                if (vertical)
+                {
+                    if (entriesOrdered && x0 > ctr.x) break;
+                    if (ctr.x < x0 || ctr.x > x1) continue;
+                }
+                var grown = new Aabb { x0 = x0, x1 = x1, y0 = e.box.y0 - half.y, y1 = e.box.y1 + half.y };
                 float t; Vector2 n;
-                if (RayBox(ctr, dir.normalized, grown, out t, out n) && t <= distance)
-                    hits.Add(new RaycastHit2D { m_Collider = e.c, m_Point = ctr + dir.normalized * t, m_Normal = n, m_Distance = t });
+                if (RayBox(ctr, direction, grown, out t, out n) && t <= distance)
+                    hits.Add(new RaycastHit2D { m_Collider = e.c, m_Point = ctr + direction * t, m_Normal = n, m_Distance = t });
             }
-            hits.Sort((a, b) => a.m_Distance.CompareTo(b.m_Distance));
+            hits.Sort(s_CastComparison);
             int k = Mathf.Min(hits.Count, results.Length); for (int i = 0; i < k; i++) results[i] = hits[i];
+            hits.Clear(); // do not retain despawned scene objects between casts
             return k;
         }
     }

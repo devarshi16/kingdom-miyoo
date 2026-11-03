@@ -15,7 +15,14 @@ RUNTIME = ["knl.sh", "lib/libknlcore.so", "lib/libgssapi_krb5.so.2", "mono/bin/m
 RUNTIME += ["managed/" + n for n in ("UnityEngine.dll", "Rewired_Core.dll", "knl.dll")]
 RUNTIME += ["mono/lib/mono/4.5/" + n + ".dll" for n in
             ("mscorlib", "System", "System.Core", "System.Xml", "System.Configuration", "Mono.Security")]
+RUNTIME += ["lib/libknlimport.so"]
+RUNTIME += ["importer/" + n for n in ("NativeImporter.exe", "Mono.Cecil.dll", "unity2017.knlt",
+                                   "supported_build.json", "build-id.txt", "runtime.json")]
+RUNTIME += ["importer/licenses/" + n for n in ("Mono.Cecil-LICENSE", "Pillow-LICENSE", "UnityPy-LICENSE",
+             "libogg-COPYING", "libvorbis-COPYING", "vgmstream-COPYING")]
 PLAYER = ["prepare_data.py", "setup_windows.bat", "setup.sh", "setup_gui.py", "README.md", "VERSION", "THIRD_PARTY_NOTICES.md", "docs/TESTING.md",
+          "docs/VALIDATION-1.1.0-rc6.md", "docs/evidence/rc6-device-stress.csv", "docs/evidence/rc6-combat-regression.json",
+          "docs/evidence/rc6-realtime-throughput.csv", "docs/images/import-progress.png", "docs/evidence/rc6-import-parity.json", "docs/evidence/rc6-native-import-device.json",
           "docs/LITE-VISUALS.md", "docs/POUCH-COUNTER.md", "docs/VALIDATION-1.1.0-rc4.md", "docs/VALIDATION-1.1.0-rc5.md", "docs/ON_DEVICE_IMPORT.md", "docs/PERFORMANCE-BUDGET.xlsx", "docs/evidence/rc5-device-throughput.csv",
           "docs/evidence/rc4-device-throughput.csv", "docs/evidence/render-camera-findings.json", "docs/evidence/original-pouch-20.csv", "docs/evidence/original-pouch-20.json",
           "tools/reference_pouch/README.md", "tools/reference_pouch/OriginalPouchTrials.cs", "tools/reference_pouch/Instrument.cs",
@@ -35,7 +42,7 @@ def main():
     payload[shortcut] = (ROOT / "engine/miyoo/Kingdom New Lands.port").read_bytes()
     for name in PLAYER:
         payload[name] = (ROOT / name).read_bytes()
-    payload[GAME + "data/PLACE_DATA_HERE.txt"] = b"Run the included setup_windows.bat or setup.sh to prepare your owned game data. See README.md.\n"
+    payload[GAME + "COPY_GAME_FILES_HERE.txt"] = b"Copy your complete original Kingdom_Data folder here, beside knl.sh. Launch Kingdom New Lands in Ports; first launch prepares the game files. See README.md.\n"
     commit = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     dirty = bool(subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT))
     manifest = {"version": version, "source_commit": commit, "source_modified": dirty,

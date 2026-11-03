@@ -1,0 +1,14 @@
+scenario,window_ending_frame,fps,timing,clock_mhz,audio,profiler,source_log
+winter-horde,600,33.7,real-time; max-dt 0.05,1200,muted,0,winter-realtime-rc6.log
+winter-horde,900,11.13,real-time; max-dt 0.05,1200,muted,0,winter-realtime-rc6.log
+winter-horde,1200,14.69,real-time; max-dt 0.05,1200,muted,0,winter-realtime-rc6.log
+winter-horde,1500,17.57,real-time; max-dt 0.05,1200,muted,0,winter-realtime-rc6.log
+winter-horde,1800,19.25,real-time; max-dt 0.05,1200,muted,0,winter-realtime-rc6.log
+portal-assault,600,33.74,real-time; max-dt 0.05,1200,muted,0,portal-realtime-rc6.log
+portal-assault,900,12.99,real-time; max-dt 0.05,1200,muted,0,portal-realtime-rc6.log
+portal-assault,1200,16.22,real-time; max-dt 0.05,1200,muted,0,portal-realtime-rc6.log
+portal-assault,1500,17.75,real-time; max-dt 0.05,1200,muted,0,portal-realtime-rc6.log
+portal-assault,1800,16.8,real-time; max-dt 0.05,1200,muted,0,portal-realtime-rc6.log
+fresh-start,600,45.71,real-time; max-dt 0.05,1200,muted,0,start-realtime-rc6.log
+fresh-start,900,54.09,real-time; max-dt 0.05,1200,muted,0,start-realtime-rc6.log
+fresh-start,1200,58.74,real-time; max-dt 0.05,1200,muted,0,start-realtime-rc6.log

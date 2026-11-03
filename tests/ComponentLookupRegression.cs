@@ -26,8 +26,6 @@ class ComponentLookupRegression
         Check(Match<LookupBase>(child) && ParentMatch<LookupBase>(child) && ParentMatch<ILookupMarker>(child), "destroyed-first component preserves direct lookup and parent null semantics");
         var firstBody = child.AddComponent<Rigidbody2D>(); child.AddComponent<Rigidbody2D>();
         typeof(UnityEngine.Object).GetField("m_Destroyed", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(firstBody, true);
-        var version = typeof(World).GetField("PhysicsTopologyVersion", BindingFlags.Static | BindingFlags.NonPublic);
-        version.SetValue(null, (int)version.GetValue(null) + 1);
         Check(ReferenceEquals(child.GetComponent<BoxCollider2D>().attachedRigidbody, child.GetComponentInParent(typeof(Rigidbody2D))), "attached body skips an ancestor whose first body has been destroyed, matching Type API");
         var random = new System.Random(283); var nodes = new List<GameObject>(); var colliders = new List<Collider2D>();
         for (int i = 0; i < 140; i++)
@@ -36,7 +34,6 @@ class ComponentLookupRegression
             go.AddComponent<LookupBase>(); if (i % 4 == 0) go.AddComponent<Rigidbody2D>();
             colliders.Add(go.AddComponent<BoxCollider2D>()); nodes.Add(go);
         }
-        var topology = typeof(World).GetField("PhysicsTopologyVersion", BindingFlags.Static | BindingFlags.NonPublic);
         bool equal = true;
         for (int sample = 0; sample < 800; sample++)
         {
@@ -48,7 +45,6 @@ class ComponentLookupRegression
                 case 2: if (go.GetComponent<Rigidbody2D>() == null) go.AddComponent<Rigidbody2D>(); break;
                 case 3: var rb = go.GetComponent<Rigidbody2D>(); if (rb != null) UnityEngine.Object.DestroyImmediate(rb); break;
             }
-            topology.SetValue(null, (int)topology.GetValue(null) + 1);
             for (int j = 0; j < 4; j++)
             {
                 int i = random.Next(nodes.Count); var c = colliders[i];

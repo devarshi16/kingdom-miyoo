@@ -1,0 +1,86 @@
+    // Private QA host only. No hooks or scenario switches are compiled into the game.
+    static readonly System.Reflection.BindingFlags QFlags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance;
+    static readonly string QScenario = Environment.GetEnvironmentVariable("KNL_STRESS_SCENARIO") ?? "winter-horde";
+    static readonly List<GameObject> QArmy = new List<GameObject>();
+    static readonly HashSet<int> QArrows = new HashSet<int>(), QCoins = new HashSet<int>();
+    static readonly Dictionary<GameObject,string> QGroups = new Dictionary<GameObject,string>();
+    static int QHits, QEnemyHits, QFriendlyHits, QPickups, QDamage, QSpawned;
+    static bool QProtected;
+    static float QFocus; static Component QDirector, QWorld, QManager, QPortal; static bool QReady;
+    static object QField(object o,string n) { for(var t=o.GetType();t!=null;t=t.BaseType) {var f=t.GetField(n,QFlags|System.Reflection.BindingFlags.DeclaredOnly);if(f!=null)return f.GetValue(o);}throw new Exception("missing field "+o.GetType()+"."+n); }
+    static void QSet(object o,string n,object value) { for(var t=o.GetType();t!=null;t=t.BaseType) {var f=t.GetField(n,QFlags|System.Reflection.BindingFlags.DeclaredOnly);if(f!=null){f.SetValue(o,value);return;}}throw new Exception("missing field "+n); }
+    static object QCall(object o,string n,params object[] args) { var m=o.GetType().GetMethods(QFlags).Single(x=>x.Name==n&&x.GetParameters().Length==args.Length);return m.Invoke(o,args); }
+    static Component QComponent(string name) {return World.SceneObjects.Where(g=>g.activeInHierarchy).SelectMany(g=>g.m_Components).First(c=>c!=null&&c.GetType().Name==name);}
+    static GameObject QPrefab(object o) {return o as GameObject ?? ((Component)o).gameObject;}
+    static object QEnum(string name,int value) {return Enum.ToObject(QManager.GetType().Assembly.GetType(name),value);}
+    static void QHit(int amount,GameObject hitter,int source,string group) {QHits++;QDamage+=amount;if(group=="enemy")QEnemyHits++;else QFriendlyHits++;}
+    static void QTrack(GameObject g,string group) {
+        if(QGroups.ContainsKey(g))return;QGroups.Add(g,group);
+        var d=g.GetComponent("Damageable");if(d!=null){
+            var ev=d.GetType().GetEvent("OnReceiveDamage");var dt=ev.EventHandlerType;var ps=dt.GetMethod("Invoke").GetParameters().Select(p=>System.Linq.Expressions.Expression.Parameter(p.ParameterType,p.Name)).ToArray();
+            var call=System.Linq.Expressions.Expression.Call(typeof(Program).GetMethod("QHit",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic),ps[0],ps[1],System.Linq.Expressions.Expression.Convert(ps[2],typeof(int)),System.Linq.Expressions.Expression.Constant(group));
+            ev.AddEventHandler(d,System.Linq.Expressions.Expression.Lambda(dt,call,ps).Compile());
+        }
+        var w=g.GetComponent("Wallet");if(w!=null)w.GetType().GetEvent("OnPickupCoin").AddEventHandler(w,new Action(()=>QPickups++));
+    }
+    static GameObject QSpawn(object prefab,float x) {
+        var p=QPrefab(prefab);var pool=QManager.GetType().Assembly.GetType("Pool");var m=pool.GetMethods(System.Reflection.BindingFlags.Public|System.Reflection.BindingFlags.Static).Single(xm=>xm.Name=="SpawnGO"&&xm.GetParameters().Length==6);
+        var player=World.SceneObjects.First(g=>g.m_Tag=="Player"&&g.activeInHierarchy);
+        return (GameObject)m.Invoke(null,new object[]{p,new Vector3(x,.875f,0),Quaternion.identity,player.transform.parent,true,true});
+    }
+    static void QBefore(int frame) {
+        if(frame==0){UnityEngine.Random.InitState(93117);Console.Error.WriteLine("STRESS seed=93117 scenario="+QScenario);}
+        if(!QProtected){var player=World.SceneObjects.FirstOrDefault(g=>g.m_Tag=="Player"&&g.activeInHierarchy);if(player!=null){var damage=player.GetComponent("Damageable");if(damage!=null){damage.GetType().GetProperty("invulnerable").SetValue(damage,true,null);QProtected=true;Console.Error.WriteLine("STRESS protected test king frame="+frame);}}}
+        if(frame!=600)return;
+        QDirector=QComponent("Director");QWorld=QComponent("World");QManager=QComponent("EnemyManager");var holder=QComponent("Holder");
+        var kingdom=QComponent("Kingdom");float camp=Convert.ToSingle(QField(kingdom,"campfirePosition"));
+        QPortal=World.SceneObjects.Where(g=>g.activeInHierarchy).SelectMany(g=>g.m_Components).Where(c=>c!=null&&c.GetType().Name=="Portal"&&(bool)c.GetType().GetProperty("canSpawnWave").GetValue(c,null)).OrderBy(c=>Math.Abs(c.transform.position.x-camp)).First();
+        float side=QPortal.transform.position.x<camp?-1:1;
+        var walls=World.SceneObjects.Where(g=>g.activeInHierarchy&&g.m_Components.Any(c=>c!=null&&c.GetType().Name=="Wall")&&Math.Sign(g.transform.position.x-camp)==side).ToArray();
+        var wall=walls.OrderByDescending(g=>Math.Abs(g.transform.position.x-camp)).First();
+        bool health=QScenario=="coin-health",winter=QScenario!="portal-assault";
+        QFocus=winter?wall.transform.position.x:QPortal.transform.position.x-side*3f;
+        if(health)QFocus+=side*20; // open ground, so the wall cannot absorb this fixture's hits
+        QCall(QDirector,"ClearAllEvents");QSet(QDirector,"_currentTime",22f);QSet(QDirector,"_currentDay",winter?Convert.ToInt32(QField(QDirector,"_beginWinter"))+2:20);
+        QSet(QDirector,"_lastDayAdded",Convert.ToInt32(QField(QDirector,"_currentDay"))+5);
+        QCall(QWorld,"GoToSeason",QEnum("Season",winter?4:1),true);QSet(QWorld,"_seasonDelta",0f);
+        var king=World.SceneObjects.First(g=>g.m_Tag=="Player"&&g.activeInHierarchy);king.transform.position=new Vector3(wall.transform.position.x-side*8,.875f,king.transform.position.z);
+        QTrack(wall,"wall");
+        var weather=QCall(holder,"GetBlenderWeatherState",QEnum("BlenderState+Weather",winter?64:1),QEnum("Season",winter?4:1),QEnum("BlenderState+PartOfDay",3));
+        if(weather==null)throw new Exception("No original winter/night weather state");
+        QCall(QComponent("Blender"),"AddState",weather,0f,0f,1f);
+        // Scenario construction only: prepare actual original units at the battle, then leave
+        // all AI, damage, wallets, projectiles, collision callbacks and hinges untouched.
+        int knights=health?2:winter?4:8;int archersPerKnight=4;
+        for(int k=0;k<knights;k++) {
+            var go=QSpawn(QField(holder,"knightPrefab"),QFocus-side*(1.5f+k*.35f));var knight=go.GetComponent("Knight");
+            knight.GetType().GetProperty("side",QFlags).SetValue(knight,QEnum("Side",(int)side),null);
+            var wallet=go.GetComponent("Wallet");wallet.GetType().GetProperty("coins").SetValue(wallet,7,null);QArmy.Add(go);QTrack(go,"friendly");
+            for(int a=0;a<archersPerKnight;a++) {var ag=QSpawn(QField(holder,"archerPrefab"),QFocus-side*(3+k*.3f+a*.2f));var ac=ag.GetComponent("Archer");QCall(ac,"SetGuardSide",QEnum("Side",(int)side));QCall(ac,"SetKnight",knight);QCall(ac,"ConvertToSoldier");QArmy.Add(ag);QTrack(ag,"friendly");}
+            if(!winter||health)QCall(knight,"DoCharge");
+        }
+        if(winter){
+            var wave=ScriptableObject.CreateInstance(QManager.GetType().Assembly.GetType("Wave"));wave.name="private QA winter horde";
+            foreach(var pair in new[]{new KeyValuePair<string,int>("numTrolls",health?40:60),new KeyValuePair<string,int>("numToughTrolls",20),new KeyValuePair<string,int>("numSquids",0),new KeyValuePair<string,int>("numBosses",0),new KeyValuePair<string,int>("numKillerBosses",0)})QSet(wave,pair.Key,new AnimationCurve(new Keyframe(0,pair.Value),new Keyframe(200,pair.Value)));
+            QSet(wave,"bossWave",true);QSet(wave,"spawnOnBothSides",false);
+            if(!(bool)QCall(QManager,"SpawnWave",wave,Convert.ToInt32(QField(QDirector,"_currentDay")),QEnum("Side",(int)side)))throw new Exception("Original SpawnWave rejected scenario");
+            var portal=(Component)QCall(kingdom,"ClosestSpawner",QEnum("Side",(int)side),true);var queue=(System.Collections.IList)QField(portal,"_spawnQueue");var blueprints=queue.Cast<object>().ToArray();queue.Clear();
+            foreach(var bp in blueprints){
+                // Split the health fixture across both sides of the knights. Front-only
+                // attacks exercise shield blocks and need not cost any health coins.
+                float enemyX=health?QFocus+(QSpawned<4?side*.3f:-side*2.5f):QFocus+side*(2f+QSpawned*.18f);
+                var enemy=(Component)QCall(bp,"Instantiate",new Vector3(enemyX,.875f,0));enemy.transform.SetParent(portal.transform.parent,true);QTrack(enemy.gameObject,"enemy");QSpawned++;
+            }
+        }
+        // Camera-only override keeps the battle visible without modifying player safety.
+        RenderSystem.CameraOverride=new Vector3(QFocus,1.88f,-10);
+        QReady=true;Console.Error.WriteLine("STRESS setup frame="+frame+" knights="+knights+" archers="+(knights*archersPerKnight)+" enemy_blueprints="+QSpawned+" focus="+QFocus+" portal="+QPortal.transform.position.x+" winter_economy="+QDirector.GetType().GetProperty("CurrentSeason").GetValue(QDirector,null)+" original_redmoon="+(QField(QManager,"_redMoonState")!=null));
+    }
+    static void QAfter(int frame) {
+        if(!QReady||frame%60!=0)return;
+        int enemies=0,arrows=0,coins=0;float walletTotal=0;int aliveArmy=0;
+        foreach(var go in World.SceneObjects){if(!go.activeInHierarchy)continue;foreach(var c in go.m_Components){if(c==null)continue;string n=c.GetType().Name;if(n=="Troll"||n=="Squid"||n=="Boss"){enemies++;QTrack(go,"enemy");}if(n=="Arrow"){arrows++;QArrows.Add(go.GetInstanceID());}if(n=="Coin"){coins++;QCoins.Add(go.GetInstanceID());}}}
+        foreach(var go in QArmy){if(go==null||!go.activeInHierarchy)continue;aliveArmy++;var w=go.GetComponent("Wallet");if(w!=null)walletTotal+=Convert.ToSingle(w.GetType().GetProperty("coins").GetValue(w,null));}
+        var pdam=QPortal.gameObject.GetComponent("Damageable");object hp=pdam==null?null:pdam.GetType().GetProperty("hitPoints").GetValue(pdam,null);
+        Console.Error.WriteLine("STRESS sample frame="+frame+" sim="+Time.time.ToString("F3")+" enemies="+enemies+" army="+aliveArmy+" arrows="+arrows+" arrow_actors="+QArrows.Count+" coins="+coins+" coin_actors="+QCoins.Count+" unit_coins="+walletTotal+" hits="+QHits+" enemy_hits="+QEnemyHits+" friendly_hits="+QFriendlyHits+" damage="+QDamage+" pickups="+QPickups+" portal_hp="+hp+" winter="+QWorld.GetType().GetProperty("winterness").GetValue(QWorld,null)+" redmoon="+(QField(QManager,"_redMoonState")!=null)+" exceptions="+Lifecycle.Exceptions);
+    }

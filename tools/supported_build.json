@@ -27,6 +27,20 @@
     "Managed/SonyPS4CommonDialog.dll": "00c22be661d72d66d8cb9e7778e1f0f4c0f38f9850ec401be8b9003d9ea7f2e2",
     "Managed/SonyPS4SavedGames.dll": "2ea15a170543702a9a991ebe2f9e0ae78b3f9938ad004c8f00575fceef7bd022",
     "Managed/UnityEngine.dll": "ac58b0e45834c81a4905677874592ec75072f697e020a0c0d485daec74b9981d",
-    "Managed/Rewired_Core.dll": "d1f90f269f48a9632214f1d6782def2a1dffb3acf1460f89e4840441aabb5832"
-  }
+    "Managed/Rewired_Core.dll": "d1f90f269f48a9632214f1d6782def2a1dffb3acf1460f89e4840441aabb5832",
+    "Managed/Mono.Security.dll": "cf5d6ad860659738141b5613ae5f212b44e700d46343ecb8213b068ab0367532",
+    "Managed/Rewired_Windows_Lib.dll": "6e9ca1b517899dc748413bac9355c9c9d21378c44f90ee8ca600c653ce2b2c9a",
+    "Managed/System.Core.dll": "18d50be25ff4e4756aa9646b495201e6c6d64e17c45372439d42b3fe0f594cba",
+    "Managed/System.Xml.dll": "d5aef968d3c732ee4a9651caec8333f6c1d2c709dba2b9efd8e586d90b48c319",
+    "Managed/System.dll": "903dc6cf317674a90729bcd8113fce90160204492a91ad140380dc3ebd64d955",
+    "Managed/mscorlib.dll": "59eea200859e3c87e1f14ffa068b0ac475e6fb928a97a550bfad9c8496b59a83",
+    "resources.assets.resS": "d148b45e1761532213a225e615b24bd2bd3effc18e584e561904ba0bc623d09d",
+    "resources.resource": "4b605052e74ef2db64d13f20846fbfad17cf553d91ccc27b3cd13707260b98de",
+    "sharedassets0.assets.resS": "d7a3008a307cf5ab4f411356156608f064eda8b2d73345bba554dd75449c66e2",
+    "sharedassets0.resource": "f70295826eff52704bfbe8a4eac87f9df7c92fca4643f824ba1693be123c3771",
+    "sharedassets1.resource": "469623169cebc59c54c254d22cb3a4626411c3cf1bf7d1d5992b53160c3fe693",
+    "sharedassets2.assets.resS": "e3c2e72957708fc296b87f4042c37239eb5538ce8e8e61ad19ec94f9f7d74ba3",
+    "sharedassets2.resource": "c7d5afa429be7e3556a5cef481439106e5fe299c974252e57b2dcbb5bce086f3"
+  },
+  "fingerprint_scope": "Serialized data, original managed metadata, and all texture/audio resource streams; verified together by native import."
 }

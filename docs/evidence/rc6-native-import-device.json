@@ -1,0 +1,39 @@
+{
+  "target": "Miyoo Mini Plus",
+  "clock_max_khz": 1200000,
+  "clock_during_test": "performance, no overclock",
+  "route": "extracted public runtime from candidate ZIP; original input copied to Kingdom_Data; actual Onion launch_standalone.sh -> knl.sh -> importer -> game",
+  "fresh_prepare_seconds": 737.92,
+  "fresh_peak_rss_kib": 81924,
+  "fresh_completion_rss_kib": 76020,
+  "fresh_completion_swap_kib": 36220,
+  "swap_note": "Process swap at completion, not peak swap. Device had Onion swap enabled.",
+  "input_files_verified": 40,
+  "objects": 16880,
+  "sprites": 2205,
+  "audio_clips": 297,
+  "pack_entries": 356,
+  "boot_frames": 1200,
+  "boot_exceptions": 0,
+  "audio_plays": 30,
+  "audio_missing": 0,
+  "save_sentinel_unchanged": true,
+  "restoration": "Onion MainUI resumed; prior ondemand governor and audioserver -8 restored",
+  "limits": "Audio output muted in boot. Interruption on device used SIGTERM; activation-boundary recovery is synthetic, not a physical power-cut or disk-full injection.",
+  "qa_package": {
+    "archive_sha256": "f2aa319bb8c09170b5fe4ebb66e31f8325d26d3570c7fad2a0da5916852e98b4",
+    "source_commit": "eb555e88b0e4bef1f6dad7037850b9e90f27d647",
+    "source_modified": true,
+    "qa_root": "/mnt/SDCARD/Roms/PORTS/Games/KingdomNewLandsQA-rc6-firstlaunch"
+  },
+  "tested_runtime_sha256": {
+    "managed/UnityEngine.dll": "011327dfb1c7435dda2223b006c4119e19ab6a98600d77c75bd626d6add394ef",
+    "managed/Rewired_Core.dll": "a40913743c4d38050fb51458a7f3397811bf9c114290315c2296714f7e3bf704",
+    "managed/knl.dll": "d65ba15bae08c98e18424e34b363f3aa0929df1852e616c1267263c6569f0501",
+    "lib/libknlcore.so": "4bf39810fb65d5096e5bf94a46039acacbe21447b66a505b8b95e55f76f565fa",
+    "lib/libknlimport.so": "22496422d3034f34609f148404cf2c3e3b383c53825e01687376cb1786901b4a",
+    "importer/Mono.Cecil.dll": "0ed119d785a2da236bd7a5d5330ba3b009c95023390fc59c7450173a114ddec5",
+    "importer/unity2017.knlt": "66f7767634d9c5d8727fccc136928c71cc08e2ef173a53af33e4375d44fef5ad",
+    "importer/NativeImporter.exe": "ecbfd5008d7889dc9676dfabed737bf77fbccaff9825d9c1ed5dffe91cc11b63"
+  }
+}

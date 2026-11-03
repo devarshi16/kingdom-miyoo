@@ -789,6 +789,7 @@ namespace KNL
             c.m_GameObject = go; c.name = go.name;
             go.m_Components.Add(c);
             go.m_PhysicsMaskValid = false;
+            if (c is Rigidbody2D) go.m_Transform.InvalidateBodyAttachments();
             if (go.m_Scene != null) RegisterSceneComponent(c);
             Lifecycle.OnComponentAdded(c);
             return c;
@@ -800,7 +801,7 @@ namespace KNL
             var r = c as Renderer; if (r != null) { Renderer.s_All.Add(r); return; }
             var a = c as Animator; if (a != null) { Animator.s_All.Add(a); return; }
             var col = c as Collider2D; if (col != null) { Collider2D.s_All.Add(col); return; }
-            var rb = c as Rigidbody2D; if (rb != null) { PhysicsTopologyVersion++; Rigidbody2D.s_All.Add(rb); return; }
+            var rb = c as Rigidbody2D; if (rb != null) { rb.transform.InvalidateBodyAttachments(); Rigidbody2D.s_All.Add(rb); return; }
             var hj = c as HingeJoint2D; if (hj != null) { HingeJoint2D.s_All.Add(hj); return; }
             var cam = c as Camera; if (cam != null) { Camera.s_All.Add(cam); return; }
             var cv = c as Canvas; if (cv != null) { Canvas.s_All.Add(cv); return; }
@@ -818,7 +819,8 @@ namespace KNL
         {
             if (ReferenceEquals(o, null) || o.m_Destroyed) return;
             pruneNeeded = true;
-            if (o is GameObject || o is Rigidbody2D) PhysicsTopologyVersion++;
+            var destroyedBody = o as Rigidbody2D;
+            if (destroyedBody != null) destroyedBody.transform.InvalidateBodyAttachments();
             var go = o as GameObject;
             if (go != null)
             {
@@ -869,12 +871,11 @@ namespace KNL
             foreach (var g in SceneObjects) if (g.transform.root == root.transform) g.m_Scene = PersistentScene;
         }
         public static bool IsPersistent(GameObject g) { return g.m_Scene != null && g.m_Scene.persistent; }
-        public static void OnActiveChanged(GameObject go) { Lifecycle.OnActiveChanged(go); }
+        public static void OnActiveChanged(GameObject go) { go.m_Transform.InvalidateBodyAttachments(true); Lifecycle.OnActiveChanged(go); }
         public static void OnBehaviourEnabledChanged(Behaviour b) { Lifecycle.OnBehaviourEnabledChanged(b); }
-        internal static int PhysicsTopologyVersion;
         public static void OnParentChanged(Transform t)
         {
-            PhysicsTopologyVersion++;
+            t.InvalidateBodyAttachments(true);
             Lifecycle.OnActiveChanged(t.gameObject);
         }
     }

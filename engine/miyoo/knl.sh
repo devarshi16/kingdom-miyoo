@@ -13,6 +13,13 @@ export MONO_GC_PARAMS=major=marksweep,nursery-size=16m
 export KNL_CONTROLS=gamepad
 export KNL_VISUALS="${KNL_VISUALS:-lite}"
 export KNL_WALLET="${KNL_WALLET:-counter}"
+# Check the public runtime and any completed owned-data installation. On a new SD
+# card, the importer reads the unmodified Kingdom_Data folder copied by the owner.
+IMPORTER="$D/importer/NativeImporter.exe"
+[ -f "$IMPORTER" ] || { echo "Importer missing; re-extract the complete release ZIP." > "$D/logs/prepare.log"; exit 1; }
+if ! "$D/mono/bin/mono-sgen" "$IMPORTER" --root "$D" --check > "$D/logs/prepare-check.log" 2>&1; then
+  "$D/mono/bin/mono-sgen" "$IMPORTER" --root "$D" --window > "$D/logs/prepare.log" 2>&1 || exit "$?"
+fi
 cd managed
 RUN_TARGET="knl.dll"
 [ -f "$RUN_TARGET" ] || RUN_TARGET="knl.exe" # compatibility with pre-1.1 local builds

@@ -5,6 +5,15 @@
 - The preparer installs UnityPy, TypeTreeGeneratorAPI, dnfile and Pillow using `tools/requirements.txt`. Their distributions carry their own notices. FFmpeg is a separately supplied prerequisite; this candidate does not bundle FFmpeg.
 - SigmaStar MI libraries are linked against the device's firmware-provided libraries; they are not included in the candidate archive.
 
+The first-launch importer additionally includes the following licensed components. Complete notices ship in `Roms/PORTS/Games/KingdomNewLands/importer/licenses/`:
+
+- Mono.Cecil 0.11, MIT, https://github.com/jbevain/cecil . Used only to inspect the owner's assembly metadata.
+- UnityPy 1.25.4's generic Unity class layouts, MIT, https://github.com/K0lb3/UnityPy . The exported database contains generic built-in schemas, not Kingdom scripts or extracted asset data. Python/UnityPy are author dependencies and are not installed on the Miyoo.
+- A polygon scan-conversion adaptation from Pillow 12.0.0, HPND, https://github.com/python-pillow/Pillow . This adaptation preserves sprite mesh masks; Pillow itself is not bundled on the Miyoo.
+- libogg, BSD, https://github.com/xiph/ogg , source commit `06a5e0262cdc28aa4ae6797627a783b5010440f0`.
+- libvorbis/libvorbisenc, BSD, https://github.com/xiph/vorbis , source commit `1b75110b5a2754ba1931d82dd83cb822b266a21d`. Codec libraries are statically linked into `libknlimport.so`.
+- vgmstream's generic FSB Vorbis setup-codebook table, BSD, https://github.com/vgmstream/vgmstream , source commit `d29ffa6e19a41efb54bfd9f68bd65f93c3d2ab25`. No FMOD binary is included. The independent FSB reader follows documented container fields.
+
 The original game's assemblies and assets are supplied by the player and excluded from release archives.
 
 Box2D 2.3.1 is used for the pouch's polygon contacts. Source: https://github.com/erincatto/box2d/tree/v2.3.1 (commit 7e633c4fb86a68bf072fb8ae67ea2c060114750e). The bridge is separate; the explicitly marked change to `Dynamics/b2Island.cpp` applies the game's serialized motion limits. Other upstream library files are unchanged.

@@ -33,12 +33,13 @@ def validate_source(data, allow_unsupported=False):
     if missing:
         raise ValueError("Incomplete Kingdom_Data. Missing/empty files: " + ", ".join(missing))
     profile = json.loads(Path(__file__).with_name("supported_build.json").read_text(encoding="utf-8"))
-    matched = all(digest(data / n) == sha for n, sha in profile["fingerprints"].items())
+    matched = all((data / n).is_file() and digest(data / n) == sha
+                  for n, sha in profile["fingerprints"].items())
     if not matched and not allow_unsupported:
         raise ValueError("This game build has not been verified. The tested profile is " + profile["name"] +
                          ". Use --allow-unsupported only to create an explicitly untested candidate.")
     # Resource streams are hashed too: cached extraction must never mix different source data.
-    source_files = sorted(set(required + [p.name for p in data.iterdir()
+    source_files = sorted(set(required + [n for n in profile["fingerprints"] if (data / n).is_file()] + [p.name for p in data.iterdir()
                                          if p.is_file() and p.suffix in (".resource", ".resS")]))
     return {"profile": profile["name"] if matched else "UNVERIFIED",
             "files": {n: digest(data / n) for n in source_files}}

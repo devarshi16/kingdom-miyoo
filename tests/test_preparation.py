@@ -90,6 +90,26 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual((target / 'save/sentinel').read_bytes(), b'preserved')
         self.assertFalse(list(target.parent.glob('KingdomNewLands.backup-*')))
 
+    def test_pc_preparation_replaces_native_receipt_and_retains_rollback(self):
+        target, pack, source = self.make_install()
+        (target / '.native-ready').write_text('prior native receipt')
+        cache = target / '.prepare-v1/old'; cache.mkdir(parents=True)
+        (cache / 'checkpoint').write_text('prior native checkpoint')
+        prep.install_candidate(pack, source, self.root / 'sd', {})
+        self.assertFalse((target / '.native-ready').exists())
+        self.assertFalse((target / '.prepare-v1').exists())
+        backup = next(target.parent.glob('KingdomNewLands.backup-*'))
+        self.assertEqual((backup / '.native-ready').read_text(), 'prior native receipt')
+        self.assertEqual((target / 'save/sentinel').read_bytes(), b'preserved')
+
+    def test_pc_preparation_refuses_unrecovered_native_transaction(self):
+        target, pack, source = self.make_install()
+        (target / '.install-journal').write_text('pending activation')
+        with self.assertRaisesRegex(ValueError, 'recover'):
+            prep.install_candidate(pack, source, self.root / 'sd', {})
+        self.assertEqual((target / 'save/sentinel').read_bytes(), b'preserved')
+        self.assertFalse(list(target.parent.glob('KingdomNewLands.backup-*')))
+
     def test_failed_commit_rolls_back_existing_directory(self):
         target, pack, source = self.make_install()
         original = Path.rename

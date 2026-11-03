@@ -1,0 +1,13 @@
+scenario,window_ending_frame,rc5_fps,rc6_fps,relative_change,timing,baseline_log,candidate_log
+winter-horde,300,12.05,11.81,-0.019917,fixed,winter-valid-rc5.log,winter-simple-d.log
+winter-horde,600,30.76,31.1,0.011053,fixed,winter-valid-rc5.log,winter-simple-d.log
+winter-horde,900,10.48,13.73,0.310115,fixed,winter-valid-rc5.log,winter-simple-d.log
+winter-horde,1200,14.15,18.7,0.321555,fixed,winter-valid-rc5.log,winter-simple-d.log
+winter-horde,1500,19.14,19.86,0.037618,fixed,winter-valid-rc5.log,winter-simple-d.log
+winter-horde,1800,22.89,22.88,-0.000437,fixed,winter-valid-rc5.log,winter-simple-d.log
+portal-assault,300,11.84,12.02,0.015203,fixed,portal-rc5.log,portal-casts-d.log
+portal-assault,600,30.28,30.94,0.021797,fixed,portal-rc5.log,portal-casts-d.log
+portal-assault,900,15.85,16.97,0.070662,fixed,portal-rc5.log,portal-casts-d.log
+portal-assault,1200,18.5,19.64,0.061622,fixed,portal-rc5.log,portal-casts-d.log
+portal-assault,1500,22.32,22.63,0.013889,fixed,portal-rc5.log,portal-casts-d.log
+portal-assault,1800,23.03,23.3,0.011724,fixed,portal-rc5.log,portal-casts-d.log

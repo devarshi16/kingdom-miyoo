@@ -76,12 +76,18 @@ def install_candidate(pack_dir, data_dir, out_root, manifest):
     bundle = HERE / "Roms/PORTS/Games/KingdomNewLands"
     if not target.is_dir() and not bundle.is_dir():
         raise ValueError("No port runtime found. Use the complete release ZIP, or extract its Roms folder to this output first.")
+    if (target / ".install-journal").exists():
+        raise ValueError("An on-device installation was interrupted. Launch the port on the Miyoo to recover it before using PC setup.")
     # Whole-directory replacement on the destination filesystem. The previous installation,
     # including its saves, is retained as a backup; a failed rename rolls back.
     with tempfile.TemporaryDirectory(prefix=".knl-install-", dir=str(target.parent)) as temporary:
         stage = Path(temporary) / "KingdomNewLands"
         if target.exists():
-            shutil.copytree(target, stage)
+            # The previous directory remains intact as the rollback copy. Its native
+            # receipt/checkpoints describe different data and must not follow this pack.
+            native_state = {".native-ready", ".prepare-v1", ".install-rollback", ".prepare.lock"}
+            shutil.copytree(target, stage, ignore=lambda directory, names:
+                            native_state.intersection(names) if Path(directory) == target else set())
         else:
             stage.mkdir()
         if bundle.exists():

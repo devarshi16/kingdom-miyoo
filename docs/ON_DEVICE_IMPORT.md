@@ -1,111 +1,47 @@
-# First-launch import investigation
+# First-launch preparation
 
-Status: **stage 1 prototype implemented; full first-launch import is not implemented.** The
-native reader validates the nine supported serialized files, checks their SHA-256 fingerprints,
-and emits the complete format-17 type table and object index without reading object payloads.
-It does not yet convert MonoBehaviour payloads, textures, fonts, or audio, or produce a runtime
-pack. It is not wired to the launcher and must not be presented as a playable installation path.
+The complete converter is implemented and connected to the Onion launcher. It reads the owner's original `Kingdom_Data` folder on the SD card. Players need no compiler, Python, FFmpeg, SSH or internet connection. The earlier `native_index.c` remains a developer-only header/index probe; it is not the installed converter.
 
-## Existing evidence and constraints
+## Player route
 
-The current Python converter took 34.8 seconds on the development PC and peaked at 522756 KiB
-RSS (510.5 MiB). The inspected Onion 4.3.1-1 device reported MemTotal 103360 KiB, MemAvailable
-about 74180 KiB and 128 MiB unused swap. Those measurements show that the Python pipeline cannot
-move unchanged onto the device; they do not establish a lower bound for a native converter.
+Extract the full release ZIP onto the SD root. Copy the complete original `Kingdom_Data` into `Roms/PORTS/Games/KingdomNewLands/Kingdom_Data`. Launch Kingdom New Lands from Ports. The screen displays **PREPARING GAME FILES**, **THIS IS A ONE-TIME PROCESS**, the current stage and a percentage. Sound conversion is the longest stage. The tested stock-clock card took **12 minutes 18 seconds** for a fresh preparation. Other cards/configurations can differ. Keep the device charged. B pauses conversion; relaunching reuses verified checkpoints. During final activation the screen asks the player to wait and stops accepting cancellation.
 
-The existing conversion reads nine serialized files and emits 16,880 objects, including 4,357
-MonoBehaviours. It also exports 2,205 sprites, 96 textures, 297 audio clips, and fonts/text. The
-largest RGBA atlas is 2048×2048 (16 MiB), and the resources audio stream is about 218 MiB on disk.
-Texture and audio streams need not all reside in RAM at once. MonoBehaviour type trees are absent
-from this build, so a complete reader must reconstruct their layouts from the user's own managed
-assemblies and retain the existing per-build quirks (including header alignment and string-list
-handling).
+Only the fingerprinted PC build 1.2.8 / Unity 2017.1.2p1 is supported. The importer checks 40 serialized, managed and resource files and rechecks source consistency before activation. Missing or mismatched files stop with a readable error and A retry / B exit. Copying an executable alone is insufficient. A new card must have at least 192 MiB free **after** copying the runtime and original folder. Existing installed data, originals and rollback copies also consume space.
 
-## Stage 1 prototype
+The shortcut checks for the shipped `knl.sh`, allowing first launch before `kingdom.knlpack` exists. `knl.sh` validates the public runtime, recovers interrupted activation, then either launches prepared data or opens the preparation screen. A verified existing PC-prepared installation can start without the raw folder. Public runtime updates do not force importing unchanged owned data again.
 
-`tools/native_import/native_index.c` is a standalone C prototype. It supports Unity serialized
-format 17 / Unity 2017.1.2p1. It validates file size, metadata bounds, target platform fields,
-type records (including MonoScript IDs and type hashes), optional flattened type trees, object
-IDs, type indices, sizes, and payload ranges. It streams SHA-256 over the nine serialized files
-against the values in `tools/supported_build.json`; this stage does not yet verify the managed
-DLLs or resource-stream files. It only holds one file's type/object index at a time. Object
-payloads are not decoded.
+Logs: `logs/prepare-check.log`, `logs/prepare.log`, and then `logs/knl.log`. Review logs for local paths before sharing. The raw folder, pack, game DLLs, saves, staging and screenshots are private owner data.
 
-The progress output on stderr begins with `Preparing game files — this is a one-time process`,
-then reports source verification and each indexed file. Failures use an `ERROR:` line and a
-nonzero exit code. The JSON lines on stdout are private derived metadata and should stay outside
-the repository. The test-only `fixture-index` command bypasses source fingerprints and is not a
-player command.
+The preparation screen captured on the Miyoo:
 
-Build and run on a development host:
+![First-launch progress on the Miyoo](images/import-progress.png)
 
-```sh
-gcc -O2 -Wall -Wextra -Werror tools/native_import/native_index.c -o /tmp/native_index
-/usr/bin/time -v /tmp/native_index index \
-  /home/devarshi/Games/KingdomNewLands/Kingdom_Data \
-  >/tmp/knl-native-index.jsonl 2>/tmp/knl-native-status.log
-python3 tools/native_import/test_native_index.py
-```
+## Conversion and memory design
 
-The current x86-64 runs indexed all 16,880 records in 0.02–0.03 seconds with 1,792 KiB peak RSS;
-that number includes only fingerprinting and metadata indexing, and says nothing about device
-import time or decode memory. The fixture suite covers valid records, restart repeatability,
-truncation, declared-size mismatch, out-of-range payloads, and missing input. Against the existing
-local UnityPy extraction, all nine per-file PathID sets matched exactly.
+- Nine format-17 serialized files contain 16,880 objects, including 4,357 MonoBehaviours. Mono.Cecil inspects original assemblies as metadata; it does not load or execute their code. Original Unity/game metadata resolves before the replacement engine. Generic built-in schemas come from UnityPy's licensed database.
+- Object values stream into one KNLB section at a time. Structured UI.Text font layout survives, while binary font data is omitted as in the desktop packer. Text and required non-sprite textures are retained.
+- All 96 textures and 2,205 sprites are converted with mesh masks, crop, orientation, pivot, PPU and indexed/RGBA fallback. RGBA atlas bytes read directly into the output buffer. Desktop comparison found all source and sprite pixels identical to the existing converter.
+- All 297 FSB5 clips use bounded PCM16/Vorbis decoding. SFX become 254 mono 22.05 kHz IMA-ADPCM payloads; 43 music tracks become 22.05 kHz stereo Ogg Vorbis. A 64 KiB buffer copies each resource range; native codec work streams through bounded buffers. No FMOD library is bundled. Music is lossy re-encoding, so byte identity with FFmpeg is not expected.
+- The KNLP archive contains 356 entries. Validation checks index bounds/overlap, required object sections and sprite count. Full output hashes are checked before activation. Startup checks public hashes, owned DLL hashes, output sizes and pack structure; it does not reread every audio/pack byte on every launch.
 
-Cross-compile for the project's ARM hard-float target (the output is a private build artifact):
+The ARM helper statically links pinned BSD libogg/libvorbis and generic vgmstream codec tables. Their notices, Mono.Cecil's MIT notice, UnityPy's MIT notice and Pillow's polygon-raster notice ship under `importer/licenses/`. No AssetStudio/Unity reference-only code or owner-derived schema is shipped.
 
-```sh
-/home/devarshi/Recompilation/tools/prebuilt/bin/arm-linux-gnueabihf-gcc \
-  -O2 -Wall -Wextra -Werror tools/native_import/native_index.c \
-  -o /home/devarshi/Recompilation/work/knl-rc5/native-import/native_index.armhf
-```
+## Recovery
 
-When the owner runs the device check, record the exact command, elapsed time, peak RSS, free SD
-space, available memory, and Onion version. For this stage, the command is
-`native_index.armhf index <Kingdom_Data> >/tmp/knl-native-index.jsonl`; keep the output in
-private storage. The prototype was subsequently run on the Miyoo: all nine files / 16,880 objects indexed in **0.506 seconds**, with **1,288 KiB peak RSS**. The device was idle in Onion, governor ondemand, maximum 1200 MHz, MemAvailable 80,944 KiB. These are measured index-stage costs, not a full conversion time or memory estimate. The private original files and index stayed in the isolated QA installation; the normal game and saves were untouched. See `docs/evidence/native-index-device.json`.
+Conversion writes under `.prepare-v1/<source-and-importer-identity>/`. A checkpoint is reused only when its output SHA-256 and source/build identity match. Partial or damaged payloads are rebuilt. A process lock also covers startup recovery, so a second launch cannot roll back an active importer.
 
-## Recovery and installation contract for a future complete importer
+Only `data/` and `managed/` participate in activation. Original inputs are read-only. `save/` is never staged, renamed, deleted or enumerated by the importer. Existing data/managed directories move into `.install-rollback/<transaction>/`, then the completed stage moves into place. A flushed journal recovers every partial activation prefix, retaining old data until a complete owned-data receipt is durable. Rollback copies are retained for the owner to remove after successful gameplay/save checks.
 
-The index prototype writes to stdout and does not alter an installation. Before any full import
-is connected to the launcher, its output should follow this same-filesystem staging contract:
+PC setup can replace a completed native installation. It retains the previous directory as its backup and drops obsolete native receipts/checkpoints from its new stage. It refuses an unrecovered native activation journal until the Miyoo recovers it.
 
-1. Verify every required input fingerprint and available SD space before creating output. Keep
-   the original `Kingdom_Data` read-only. Hash the managed DLLs and resource streams as well as
-   the nine serialized files before a full conversion can claim the verified build.
-2. Write only under a sibling staging directory, such as
-   `Roms/PORTS/Games/.KingdomNewLands.data.new/`. Store the profile and source hashes in a
-   journal. Write each file to a temporary name, flush it, then rename it into the stage. A
-   restart may reuse only files whose journal entry and output hash both match the same source
-   fingerprint; otherwise redo that file. Never mix partial output from different source builds.
-3. Keep the active game data and `save/` untouched throughout conversion. Put save data outside
-   the replaceable imported-data directory. Do not remove an old installation to make space.
-4. After all conversions pass validation, write and flush a complete manifest, then activate via
-   same-filesystem renames. First move existing imported data to a uniquely named backup; next
-   move the completed stage into place. A small activation journal must make interruption between
-   these renames recoverable: if the new target is absent, restore the backup; if the new target
-   validates, finish activation and retain the backup until the game/save checks pass. Startup
-   recovery must run before launching the game.
-5. Report each stage and actionable failure in the UI. Do not show a success state until the
-   activated manifest and installed-file hashes validate. Keep the original save path stable.
+## Validation status
 
-These are design requirements for the full importer, not behavior implemented by stage 1.
+A complete on-device conversion, interrupted during audio and resumed, passed activation with all saves unchanged. The resumed portion took 584.56 seconds, with 82,036 KiB peak RSS and 8,716 KiB process swap at completion. These are **resumed-run** figures, not a fresh-install time or peak-swap measurement. One completed SFX checkpoint was deliberately damaged; it was detected and rebuilt. All 16,880 original objects separately decoded on the device with zero failures.
 
-## Remaining work before first-launch import
+The current synthetic suite covers 26 transaction, lock and resource-range cases, including all seven activation prefixes, completed-journal recovery, damaged owned DLLs, missing music, malformed journals and cancellation. Desktop audio validation decodes all 43 generated music tracks, checks 22.05 kHz/stereo and duration agreement, and compares first-20-second signal levels. All 254 SFX durations match the desktop outputs. These checks do not replace listening or a complete playthrough.
 
-- Reconstruct and stream MonoBehaviour values using the user's managed assemblies; verify all
-  4,357 script references and compare decoded types/fields against UnityPy output.
-- Convert one texture or bounded tile at a time while preserving Sprite rect, pivot, mesh,
-  packing, alpha, and atlas semantics. Measure native buffers and peak RSS.
-- Establish the ARM-compatible audio decoder, Unity/FMOD format coverage, licensing notices,
-  and streaming/cache policy. The current conversion depends on UnityPy and FFmpeg.
-- Convert fonts, text, non-sprite textures, and other referenced payloads; build pack sections
-  incrementally and validate them with the existing runtime pack checks.
-- Add managed-DLL/resource-stream fingerprints, preflight free-space estimates, persistent
-  journal recovery, and explicit disk-full/corrupt-source failures.
-- Integrate the UI and launcher, then validate full first launch, interruption/restart, existing
-  installation preservation, save/reload, and representative gameplay on real hardware.
+The fresh extracted-package route also passed through Onion’s real shortcut launcher: **737.92 seconds**, **81,924 KiB peak RSS**, and **36,220 KiB swap in use at completion**. This was stock 1200 MHz with the device’s Onion swap enabled. The game then booted automatically for 1,200 frames with zero exceptions, 30 audio plays and zero missing clips (audio output muted). A pre-existing save sentinel survived. `evidence/rc6-native-import-device.json` records the route and measurements; `evidence/rc6-import-parity.json` records complete device-pack comparison. Kernel peak RSS and completion swap are different measures; peak swap was not captured. Process interruption was tested on-device; activation-boundary faults are synthetic, rather than physical SD power cuts or disk-full injections. See `VALIDATION-1.1.0-rc6.md` for gameplay limits. The earlier index-only measurements remain in `evidence/native-index-device.json` and must not be quoted as a full import cost.
 
-Do not publish a first-launch time, memory-feasibility claim, or successful import claim until the
-full texture/audio/font pipeline and the device restart/save checks have been measured.
+## Author build
+
+Run `engine/build.sh` against owned input, then `engine/build_miyoo.sh --runtime-only OUT`. The importer build requires Mono.Cecil 0.11, CMake and the Python dependencies on the development PC, and downloads fixed upstream codec commits into `KNL_IMPORT_CACHE`. Optional `KNL_IMPORT_SOURCES` points to existing checkouts at those exact commits. Put the cache/build output on a data volume. `tools/package_release.py --build OUT` uses a fixed public-file allowlist and excludes every original DLL, asset, pack, save and staging file.

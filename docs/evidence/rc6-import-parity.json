@@ -1,0 +1,21 @@
+{
+  "archive_entries": 356,
+  "objects_semantically_equal_after_existing_font_sidecar": 16880,
+  "font_layouts_verified_inline": 158,
+  "sprites_pixel_and_metadata_identical": 2205,
+  "ui_textures_identical": 87,
+  "text_payloads_identical": 5,
+  "target": "Miyoo Mini Plus",
+  "reference": "Existing verified desktop pack plus its source-bound UI font-layout sidecar",
+  "audio_validation": {
+    "music_tracks_decoded": 43,
+    "rate_hz": 22050,
+    "channels": 2,
+    "maximum_duration_difference_seconds": 0.05,
+    "minimum_first20s_correlation": 0.9796631362278777,
+    "first20s_rms_ratio_min": 0.9773255656563219,
+    "first20s_rms_ratio_max": 1.0007300944628148,
+    "sfx_durations_equal": 254
+  },
+  "limits": "Music signal checks use first 20 seconds; compressed audio is not byte-identical. No original assets, DLLs or private derived metadata are included."
+}

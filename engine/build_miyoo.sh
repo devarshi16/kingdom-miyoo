@@ -21,12 +21,18 @@ CXX="${MIYOO_CXX:-${CC%gcc}g++}"
 MI_INC="${MIYOO_MI_INC:-$TC/sdl2-miyoo/mini/inc}"
 MI_LIB="${MIYOO_MI_LIB:-$TC/sdl2-miyoo/mini/lib}"
 MONO_ROOT="${MONO_ROOT:-$TC/mono-armhf-6.8.0.105/root}"
-PUSH=0; OUT="$HERE/build-miyoo"
-for x in "$@"; do case "$x" in --push) PUSH=1;; *) OUT="$x";; esac; done
+PUSH=0; RUNTIME_ONLY=0; OUT="$HERE/build-miyoo"
+for x in "$@"; do case "$x" in --push) PUSH=1;; --runtime-only) RUNTIME_ONLY=1;; *) OUT="$x";; esac; done
 B="$HERE/build"; GAME="$OUT/Roms/PORTS/Games/KingdomNewLands"
 PACK="${KNL_PACK:-$ROOT/pack}"
 [ -f "$B/knl.dll" ] || { echo "run engine/build.sh first"; exit 1; }
-[ -f "$PACK/kingdom.knlpack" ] || { echo "run tools/run.sh pack.py first"; exit 1; }
+if [ "$RUNTIME_ONLY" = 1 ] && [ -f "$GAME/data/kingdom.knlpack" ]; then
+  echo "--runtime-only requires an output without owned game data; choose a fresh OUT" >&2
+  exit 1
+fi
+if [ "$RUNTIME_ONLY" = 0 ]; then
+  [ -f "$PACK/kingdom.knlpack" ] || { echo "run tools/run.sh pack.py first, or use --runtime-only for a BYOD release"; exit 1; }
+fi
 
 echo "== libknlcore.so (armhf, Cortex-A7 NEON hard-float)"
 mkdir -p "$GAME/lib" "$GAME/managed" "$GAME/mono/bin" "$GAME/mono/lib/mono/4.5" "$GAME/mono/etc/mono" "$GAME/data" "$GAME/save" "$GAME/logs" \
@@ -50,16 +56,26 @@ for a in mscorlib System System.Core System.Xml System.Configuration Mono.Securi
   cp "$MONO_ROOT/usr/lib/mono/4.5/$a.dll" "$GAME/mono/lib/mono/4.5/"
 done
 
-echo "== managed: our engine + your game assemblies (never share this folder)"
+echo "== managed runtime"
 rm -rf "$GAME/managed"
 mkdir -p "$GAME/managed"
-cp "$B"/*.dll "$GAME/managed/"
-rm -f "$GAME/managed/"*.stage1.dll
-echo "== data: your device pack (never share)"
-cp "$PACK/kingdom.knlpack" "$GAME/data/"
-rm -f "$GAME/data/ui-fontdata.json"
-if [ -f "$PACK/ui-fontdata.json" ]; then cp "$PACK/ui-fontdata.json" "$GAME/data/"; fi
-rm -rf "$GAME/data/music"; cp -r "$PACK/music" "$GAME/data/"
+if [ "$RUNTIME_ONLY" = 1 ]; then
+  for a in UnityEngine Rewired_Core knl; do cp "$B/$a.dll" "$GAME/managed/"; done
+else
+  cp "$B"/*.dll "$GAME/managed/"
+  rm -f "$GAME/managed/"*.stage1.dll
+  echo "== data: your device pack (never share)"
+  cp "$PACK/kingdom.knlpack" "$GAME/data/"
+  rm -f "$GAME/data/ui-fontdata.json"
+  if [ -f "$PACK/ui-fontdata.json" ]; then cp "$PACK/ui-fontdata.json" "$GAME/data/"; fi
+  rm -rf "$GAME/data/music"; cp -r "$PACK/music" "$GAME/data/"
+fi
+
+echo "== first-launch importer (public code and generic schemas only)"
+IMPORT_CACHE="${KNL_IMPORT_CACHE:-$TC/cache/knl-native-import}"
+IMPORT_ARGS=()
+if [ -n "${KNL_IMPORT_SOURCES:-}" ]; then IMPORT_ARGS+=(--sources "$KNL_IMPORT_SOURCES"); fi
+bash "$ROOT/tools/run.sh" native_import/build.py --target miyoo --out "$GAME" --cache "$IMPORT_CACHE" "${IMPORT_ARGS[@]}"
 
 cp "$HERE/miyoo/knl.sh" "$GAME/"
 cp "$HERE/miyoo/Kingdom New Lands.port" "$OUT/Roms/PORTS/Shortcuts/Strategy/"
